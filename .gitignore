@@ -1,0 +1,10 @@
+node_modules/
+tools/tts/.venv/
+tools/tts/piper/*.onnx
+tools/tts/out/
+tools/tts/gen_log.txt
+tools/tts/gen_err.txt
+*.log
+.DS_Store
+Thumbs.db
+dist/
