@@ -1,0 +1,1182 @@
+[
+ {
+  "id": "d_intro_1",
+  "speaker": "dieter",
+  "text": "Da seid ihr ja. Mannschaft siebenundvierzig. Kommt rein, bevor der Regen euch die Weihe abwäscht."
+ },
+ {
+  "id": "d_intro_2",
+  "speaker": "dieter",
+  "text": "Bruder Dieter. Disposition. Ich verteile die Aufträge, ihr kommt lebend zurück. So einfach ist das. Meistens."
+ },
+ {
+  "id": "d_intro_3",
+  "speaker": "dieter",
+  "text": "Ihr habt den Bergungsvertrag unterschrieben. Jede Woche will die Kanzlei ihre Quote. Schafft ihr sie nicht, werdet ihr erwählt. Und nein, das ist nicht so schön, wie es klingt."
+ },
+ {
+  "id": "d_intro_4",
+  "speaker": "dieter",
+  "text": "Geht rüber zu Ada. Sie zeigt euch die Neunte. Und dann fahrt ihr zum ersten Mal runter. Nur bis minus zwei. Kinderspiel."
+ },
+ {
+  "id": "d_intro_5",
+  "speaker": "dieter",
+  "text": "Ach, und wenn das Telefon in der Kabine klingelt: Geht ran. Die Vermittlerin hilft euch. Sie hilft allen."
+ },
+ {
+  "id": "a_intro_1",
+  "speaker": "ada",
+  "text": "Ihr seid die Neuen? Ada Brenner. Ich halte die Neunte am Leben, und die Neunte hält euch am Leben. Behandelt sie gut."
+ },
+ {
+  "id": "a_intro_2",
+  "speaker": "ada",
+  "text": "Das war mal die Heilige Kabine, wisst ihr das? Die Kanzlei hat Stahl über das Nussholz geschraubt und sie Lastaufzug getauft. Entweiht. Aber sie erinnert sich."
+ },
+ {
+  "id": "a_intro_3",
+  "speaker": "ada",
+  "text": "Stellt die Tiefe am Hebel ein. Beute, die ihr findet, bringt ihr in die Kabine. Nur was drin liegt, zählt. Und seid um drei Uhr sieben wieder hier."
+ },
+ {
+  "id": "a_intro_4",
+  "speaker": "ada",
+  "text": "Warum drei Uhr sieben? Frag nicht. Um drei Uhr sieben löst die Bremse und die Neunte schießt hoch. Mit euch oder ohne euch."
+ },
+ {
+  "id": "v_e0_hello",
+  "speaker": "vermittlerin",
+  "text": "Vermittlung der Spindel. Kabine Neun, können Sie mich hören?"
+ },
+ {
+  "id": "v_e0_hello2",
+  "speaker": "vermittlerin",
+  "text": "Gut. Atmen Sie. Sie sind nicht allein, Seilkind."
+ },
+ {
+  "id": "v_e0_stay",
+  "speaker": "vermittlerin",
+  "text": "Ich bleibe in der Leitung. Ich bleibe immer in der Leitung."
+ },
+ {
+  "id": "v_e0_needle",
+  "speaker": "vermittlerin",
+  "text": "Achten Sie nicht auf die Nadel. Das Zifferblatt ist sehr alt."
+ },
+ {
+  "id": "v_e0_return",
+  "speaker": "vermittlerin",
+  "text": "Willkommen zurück."
+ },
+ {
+  "id": "v_tut_1",
+  "speaker": "vermittlerin",
+  "text": "Die Kanzlei dankt Mannschaft siebenundvierzig für ihren Dienst. Ich werde Sie durch die erste Nacht begleiten."
+ },
+ {
+  "id": "v_tut_2",
+  "speaker": "vermittlerin",
+  "text": "Ihr Kom zeigt die Uhrzeit. Die Nacht beginnt um Mitternacht, wenn sich die Türen öffnen. Um drei Uhr sieben fährt die Kabine wieder hinauf."
+ },
+ {
+  "id": "v_tut_3",
+  "speaker": "vermittlerin",
+  "text": "Drücken Sie Q, um die Umgebung zu erfassen. Ihr Kom zeigt Ihnen, was die Kantorei für wertvoll hält."
+ },
+ {
+  "id": "v_e1_power",
+  "speaker": "vermittlerin",
+  "text": "Stromausfall. Das kennen Sie doch, Seilkind. Keine Sorge."
+ },
+ {
+  "id": "v_tut_4",
+  "speaker": "vermittlerin",
+  "text": "Bringen Sie alles, was Sie tragen können, in die Kabine. Schwere Dinge mit beiden Händen. Ich zähle mit."
+ },
+ {
+  "id": "v_e1_lamp",
+  "speaker": "vermittlerin",
+  "text": "Ihre Lampe wird schwächer. Kurbeln Sie. Aber … nicht zu laut."
+ },
+ {
+  "id": "v_e1_hide",
+  "speaker": "vermittlerin",
+  "text": "Sehen Sie den Spind? Falls Ihnen jemand begegnet, der keinen Namen mehr hat: Gehen Sie hinein. Und atmen Sie leise."
+ },
+ {
+  "id": "v_e1_girl",
+  "speaker": "vermittlerin",
+  "text": "Da war niemand, Seilkind. Hier unten ist seit langer Zeit niemand."
+ },
+ {
+  "id": "v_tut_pass1",
+  "speaker": "vermittlerin",
+  "text": "Seilkind. Sehen Sie die Gestalt am Ende des Gangs? Sehen Sie sie an. Solange jemand hinsieht, kann sie sich nicht bewegen."
+ },
+ {
+  "id": "v_tut_pass2",
+  "speaker": "vermittlerin",
+  "text": "Und im Dunkeln … sieht niemand hin."
+ },
+ {
+  "id": "v_tut_5",
+  "speaker": "vermittlerin",
+  "text": "Sie haben genug für heute. Kommen Sie zurück in die Kabine und legen Sie den Hebel um."
+ },
+ {
+  "id": "v_tut_6",
+  "speaker": "vermittlerin",
+  "text": "Sehr gut. Die Kanzlei ist zufrieden. Für den Anfang."
+ },
+ {
+  "id": "v_arr_1",
+  "speaker": "vermittlerin",
+  "text": "Ankunft. Die Türen öffnen sich. Bringen Sie uns etwas Schönes mit."
+ },
+ {
+  "id": "v_arr_2",
+  "speaker": "vermittlerin",
+  "text": "Wir sind da. Es ist sehr still hier unten. Das ist gut. Meistens."
+ },
+ {
+  "id": "v_arr_3",
+  "speaker": "vermittlerin",
+  "text": "Ankunft. Denken Sie an die Uhr, Seilkind. Die Uhr denkt an Sie."
+ },
+ {
+  "id": "v_arr_4",
+  "speaker": "vermittlerin",
+  "text": "Die Luft ist gut. Die Wände sind alt. Der Rest wird sich zeigen."
+ },
+ {
+  "id": "v_dep_1",
+  "speaker": "vermittlerin",
+  "text": "Hinab also. Halten Sie sich fest."
+ },
+ {
+  "id": "v_dep_2",
+  "speaker": "vermittlerin",
+  "text": "Es wird ein wenig ruckeln."
+ },
+ {
+  "id": "v_dep_3",
+  "speaker": "vermittlerin",
+  "text": "Möchten Sie, dass ich etwas singe? Nein? Schade."
+ },
+ {
+  "id": "v_dep_4",
+  "speaker": "vermittlerin",
+  "text": "Wissen Sie, wie viele Stufen die Spindel hat? Nach unten hin zählt niemand."
+ },
+ {
+  "id": "v_dep_5",
+  "speaker": "vermittlerin",
+  "text": "Sie machen das sehr gut. Die meisten Mannschaften hätten schon aufgegeben."
+ },
+ {
+  "id": "v_dep_6",
+  "speaker": "vermittlerin",
+  "text": "Hören Sie die anderen? Nein? Dann hören Sie genauer hin."
+ },
+ {
+  "id": "v_up_1",
+  "speaker": "vermittlerin",
+  "text": "Aufwärts. Die Kanzlei freut sich auf Ihre Gaben."
+ },
+ {
+  "id": "v_up_2",
+  "speaker": "vermittlerin",
+  "text": "Sie kommen zurück. Sie kommen immer zurück."
+ },
+ {
+  "id": "v_up_lost",
+  "speaker": "vermittlerin",
+  "text": "Nicht alle sind an Bord. Das ist traurig. Sie werden hier unten gut aufgehoben sein."
+ },
+ {
+  "id": "v_time_230",
+  "speaker": "vermittlerin",
+  "text": "Es ist halb drei, Seilkind. Die Kabine wird unruhig."
+ },
+ {
+  "id": "v_time_250",
+  "speaker": "vermittlerin",
+  "text": "Zehn nach zu spät. Verzeihung. Zehn vor drei. Kommen Sie zurück."
+ },
+ {
+  "id": "v_time_300",
+  "speaker": "vermittlerin",
+  "text": "Drei Uhr. Hören Sie die Glocke? Sie läutet für Sie."
+ },
+ {
+  "id": "v_time_305",
+  "speaker": "vermittlerin",
+  "text": "Die Türen schließen sich in einer Minute. Wer draußen bleibt, bleibt bei uns."
+ },
+ {
+  "id": "v_time_307__0",
+  "speaker": "vermittlerin",
+  "text": "Drei Uhr sieben."
+ },
+ {
+  "id": "v_time_307__1",
+  "speaker": "chor",
+  "text": "Wir rufen."
+ },
+ {
+  "id": "v_all_in",
+  "speaker": "vermittlerin",
+  "text": "Sind alle an Bord? Gut. Niemand bleibt zurück. Niemand bleibt je zurück."
+ },
+ {
+  "id": "v_wait_others",
+  "speaker": "vermittlerin",
+  "text": "Wir warten auf die anderen. Die Kabine fährt nicht ohne ihre Fahrgäste."
+ },
+ {
+  "id": "v_cabin_idle",
+  "speaker": "vermittlerin",
+  "text": "Die Kabine wartet. Sie wartet gern. Aber nicht ewig."
+ },
+ {
+  "id": "v_death_1",
+  "speaker": "vermittlerin",
+  "text": "Oh. Einer weniger. Wir kümmern uns um ihn."
+ },
+ {
+  "id": "v_death_2",
+  "speaker": "vermittlerin",
+  "text": "Keine Sorge um die Verlorenen. Hier unten geht niemand verloren."
+ },
+ {
+  "id": "v_gift_offer",
+  "speaker": "vermittlerin",
+  "text": "Seilkind. Sie sind erschöpft. Wir könnten Ihnen helfen. Es kostet so wenig."
+ },
+ {
+  "id": "v_gift_price",
+  "speaker": "vermittlerin",
+  "text": "Nur einen Buchstaben. Sie haben so viele davon."
+ },
+ {
+  "id": "v_gift_taken",
+  "speaker": "vermittlerin",
+  "text": "Danke. Er schmeckt nach Ihnen."
+ },
+ {
+  "id": "v_gift_refuse",
+  "speaker": "vermittlerin",
+  "text": "Wie Sie wünschen. Das Angebot steht."
+ },
+ {
+  "id": "v_gift_many",
+  "speaker": "vermittlerin",
+  "text": "Wir kennen Sie jetzt schon so gut."
+ },
+ {
+  "id": "v_r1_knock",
+  "speaker": "vermittlerin",
+  "text": "Das sind die Seile. Sie setzen sich. Das tun sie immer."
+ },
+ {
+  "id": "v_r1_hatch",
+  "speaker": "vermittlerin",
+  "text": "Öffnen Sie die Luke nicht. Bitte."
+ },
+ {
+  "id": "v_r2_dark",
+  "speaker": "vermittlerin",
+  "text": "Kleine Schwankung im Netz. Bleiben Sie, wo Sie sind."
+ },
+ {
+  "id": "v_r2_mirror",
+  "speaker": "vermittlerin",
+  "text": "Schauen Sie nicht so lange ins Messing, Seilkind. Es ist ein altes Metall. Es erinnert sich."
+ },
+ {
+  "id": "d_hello_1",
+  "speaker": "dieter",
+  "text": "Na, noch alle Finger dran? Dann schauen wir mal, was die Nacht hergibt."
+ },
+ {
+  "id": "d_hello_2",
+  "speaker": "dieter",
+  "text": "Aufträge hängen am Brett. Nehmt, was ihr tragen könnt. Und ein bisschen mehr."
+ },
+ {
+  "id": "d_hello_3",
+  "speaker": "dieter",
+  "text": "Die Kanzlei fragt nach euch. Ich hab gesagt, ihr seid die Besten. Enttäuscht mich nicht, sonst muss ich lügen lernen."
+ },
+ {
+  "id": "d_hello_4",
+  "speaker": "dieter",
+  "text": "Ich hab Kaffee. Er ist kalt. Er ist immer kalt. Ich weiß nicht warum."
+ },
+ {
+  "id": "d_quota_ok",
+  "speaker": "dieter",
+  "text": "Quote erfüllt. Die Kanzlei nickt. Das ist das Höchste, was die Kanzlei tut."
+ },
+ {
+  "id": "d_quota_low",
+  "speaker": "dieter",
+  "text": "Es wird knapp mit der Quote. Heute Nacht müsst ihr tiefer. Tiefer bringt mehr. Tiefer bringt auch mehr Ärger."
+ },
+ {
+  "id": "d_quota_fail",
+  "speaker": "dieter",
+  "text": "Es tut mir leid, Kinder. Es tut mir wirklich leid. Die Kantoren kommen."
+ },
+ {
+  "id": "d_week",
+  "speaker": "dieter",
+  "text": "Neue Woche, neue Quote. Sie steigt. Sie steigt immer. Wie das Wasser damals."
+ },
+ {
+  "id": "d_deep",
+  "speaker": "dieter",
+  "text": "Ada sagt, das Seil reicht jetzt tiefer. Ich hab da unten Leute verloren. Zu viele. Passt auf."
+ },
+ {
+  "id": "d_46",
+  "speaker": "dieter",
+  "text": "Sechsundvierzig Mannschaften vor euch. Ich hab jede einzelne losgeschickt. Ich hab jede einzelne gemocht."
+ },
+ {
+  "id": "d_story_13",
+  "speaker": "dieter",
+  "text": "Die Kanzlei will die Stimmreliquie aus dem Saal der Vierzig. Minus dreizehn. Ein Kirchenauftrag, goldene Siegel. Das zahlt die ganze Woche."
+ },
+ {
+  "id": "d_story_33",
+  "speaker": "dieter",
+  "text": "Bohrung Null. Die Horchstation soll wieder laufen. Die Kanzlei will hören, was da unten ist. Ich will das nicht, aber mich fragt keiner."
+ },
+ {
+  "id": "d_story_66",
+  "speaker": "dieter",
+  "text": "Minus sechsundsechzig. Da unten liegt das Archiv einer Kantorin, die zu viel gelesen hat. Die Kanzlei will es zurück. Ungelesen."
+ },
+ {
+  "id": "d_story_99",
+  "speaker": "dieter",
+  "text": "Das Haus des Erbauers. Sie sagen, es steht da unten, mitten im Fels. Holt die Spieluhr. Und wenn ihr einen großen Mann mit einer Uhr im Gesicht seht … lauft."
+ },
+ {
+  "id": "d_story_333",
+  "speaker": "dieter",
+  "text": "Minus dreihundertdreiunddreißig. Keine Mannschaft ist von dort zurückgekommen. Außer einer. Und die hat nie wieder gesprochen."
+ },
+ {
+  "id": "d_story_inf",
+  "speaker": "dieter",
+  "text": "Da unten ist Mannschaft sechsundvierzig. Ich hab sie geschickt. Ich hab gesagt, ich hol sie. Wenn ihr sie findet … sagt ihnen, dass ich es versucht habe."
+ },
+ {
+  "id": "d_bye",
+  "speaker": "dieter",
+  "text": "Möge das Seil euch halten."
+ },
+ {
+  "id": "a_hello_1",
+  "speaker": "ada",
+  "text": "Na? Kommt ihr zum Schrauben oder zum Jammern? Beides kostet."
+ },
+ {
+  "id": "a_hello_2",
+  "speaker": "ada",
+  "text": "Die Neunte hat gestöhnt, als ihr hochkamt. Sie mag euch. Glaub ich."
+ },
+ {
+  "id": "a_buy_1",
+  "speaker": "ada",
+  "text": "Gute Wahl. Ich bau es heute Nacht ein. Schlafen wird überbewertet."
+ },
+ {
+  "id": "a_buy_2",
+  "speaker": "ada",
+  "text": "Das hält. Das hält sogar, wenn ihr nicht haltet."
+ },
+ {
+  "id": "a_poor",
+  "speaker": "ada",
+  "text": "Da fehlen Marken. Ich arbeite für Messing, nicht für Hoffnung."
+ },
+ {
+  "id": "a_seil",
+  "speaker": "ada",
+  "text": "Mehr Seil. Mehr Tiefe. Ihr wisst, was mein Urahn gesagt hat: Das Seil hält nicht die Kabine."
+ },
+ {
+  "id": "a_secret_1",
+  "speaker": "ada",
+  "text": "Neunzehn Generationen haben wir ein Geheimnis weitergegeben, und das Geheimnis ist ein Satz: Das Seil hält nicht die Kabine."
+ },
+ {
+  "id": "a_secret_2",
+  "speaker": "ada",
+  "text": "Etwas hält das Seil. Wenn ihr ganz unten seid und wollt, dass es aufhört … dann schneidet es durch."
+ },
+ {
+  "id": "a_letters",
+  "speaker": "ada",
+  "text": "Bringt mir seine Briefe, falls ihr sie findet. Die an Lotte. Wir haben nie erfahren, was drinstand."
+ },
+ {
+  "id": "a_shears",
+  "speaker": "ada",
+  "text": "Ihr habt sie gefunden. Brenners Schere. Gebt her. Ich schleif sie euch, dass sie durch Gott selbst geht."
+ },
+ {
+  "id": "vo_hello_1",
+  "speaker": "voss",
+  "text": "Ah, die Tiefentaucher! Kommt näher, kommt. Voss hat alles, was die Kirche verbietet, und einiges, was sie nicht kennt."
+ },
+ {
+  "id": "vo_hello_2",
+  "speaker": "voss",
+  "text": "Heiße Ware? Ich zahl mehr als die Kantorei. Zählt halt nicht zur Quote. Man kann nicht alles haben."
+ },
+ {
+  "id": "vo_hello_3",
+  "speaker": "voss",
+  "text": "Ihr seht müde aus. Ich hab was gegen Müdigkeit. Und gegen Monster. Und gegen Gewissen."
+ },
+ {
+  "id": "vo_buy",
+  "speaker": "voss",
+  "text": "Pfleg sie gut. Und wenn sie dich nicht rettet, beschwer dich bei niemandem."
+ },
+ {
+  "id": "vo_sell",
+  "speaker": "voss",
+  "text": "Schönes Stück. Die Kanzlei hätte dir die Hälfte gegeben und ein Gebet dazu."
+ },
+ {
+  "id": "vo_name",
+  "speaker": "voss",
+  "text": "Ein Buchstabe deines Namens? Für den zahl ich richtig gut. Frag nicht, wer ihn am Ende kauft."
+ },
+ {
+  "id": "vo_name2",
+  "speaker": "voss",
+  "text": "Danke fürs Geschäft. Du klingst jetzt ein kleines bisschen weniger nach dir."
+ },
+ {
+  "id": "vo_dieter",
+  "speaker": "voss",
+  "text": "Mit wem redest du da drüben in der Disposition? Da ist seit Jahren keiner."
+ },
+ {
+  "id": "ve_hello_1",
+  "speaker": "veit",
+  "text": "Gesegnet sei die Hand, die aus der Tiefe gibt. Legt eure Gaben auf den Tisch."
+ },
+ {
+  "id": "ve_hello_2",
+  "speaker": "veit",
+  "text": "Die Kantorei nimmt, was ihr bringt, und die Kanzlei schreibt es euch gut. So ist es recht."
+ },
+ {
+  "id": "ve_sell",
+  "speaker": "veit",
+  "text": "Dies wird dem Chor übergeben. Freuet euch."
+ },
+ {
+  "id": "ve_quota",
+  "speaker": "veit",
+  "text": "Die Zehntwoche ist um. Die Kanzlei zieht die Quote ein. Möge sie reichen."
+ },
+ {
+  "id": "ve_doubt",
+  "speaker": "veit",
+  "text": "Manchmal frage ich mich, wohin die Gaben gehen, wenn wir sie nachts in die Leitungen legen. Dann bete ich, bis die Frage weggeht."
+ },
+ {
+  "id": "ve_angry",
+  "speaker": "veit",
+  "text": "Die Stummen senden Lügen über ihren Piratensender. Wer ihnen hilft, zahlt doppelt. Das ist nicht Rache. Das ist Buchführung."
+ },
+ {
+  "id": "r_e1_1",
+  "speaker": "rauschen",
+  "text": "N—cht … t—efer …"
+ },
+ {
+  "id": "r_e1_2",
+  "speaker": "rauschen",
+  "text": "—hören Sie—? —ist nicht—"
+ },
+ {
+  "id": "r_e2_1",
+  "speaker": "rauschen",
+  "text": "—die Liste—! Lies die—Liste—"
+ },
+ {
+  "id": "r_e3_1",
+  "speaker": "rauschen",
+  "text": "Sie—lügt. Die Walze war leer, schon—immer—"
+ },
+ {
+  "id": "r_e3_2",
+  "speaker": "rauschen",
+  "text": "Hör—mir zu. Ich bin—das bin—ICH—"
+ },
+ {
+  "id": "r_e6_1",
+  "speaker": "rauschen",
+  "text": "Die Mikrofone—hörten—uns alle—ich war—auch—"
+ },
+ {
+  "id": "r_e7_1",
+  "speaker": "rauschen",
+  "text": "Sie—sagt wir. Hast du gehört? Sie sagt—WIR—"
+ },
+ {
+  "id": "r_e8_1",
+  "speaker": "rauschen",
+  "text": "Jetzt—hörst du—mich. Endlich. Ich bin es. Margarete."
+ },
+ {
+  "id": "r_e8_2",
+  "speaker": "rauschen",
+  "text": "Alles, was ihr der Kantorei gebt, fließt nachts nach unten. Ihr füttert es. Ihr füttert es jede Woche."
+ },
+ {
+  "id": "r_e12_1",
+  "speaker": "rauschen",
+  "text": "Gleich bist du da. Denk an das, was Ada gesagt hat. Denk an das Seil."
+ },
+ {
+  "id": "r_rand_1",
+  "speaker": "rauschen",
+  "text": "—nicht—dem Telefon—glauben—"
+ },
+ {
+  "id": "r_rand_2",
+  "speaker": "rauschen",
+  "text": "—geh—zurück—es ist—zu spät—"
+ },
+ {
+  "id": "i_e1_hum",
+  "speaker": "ilse",
+  "text": "Mmh-mmh … mmh-mmh-mmh …"
+ },
+ {
+  "id": "i_help_1",
+  "speaker": "ilse",
+  "text": "Hier lang. Da drüben liegt was Schönes."
+ },
+ {
+  "id": "i_help_2",
+  "speaker": "ilse",
+  "text": "Nicht in den Schrank. Da ist schon wer drin."
+ },
+ {
+  "id": "i_help_3",
+  "speaker": "ilse",
+  "text": "Papa hat gesagt, ich soll im Auto warten. Ich warte schon so lange."
+ },
+ {
+  "id": "i_help_4",
+  "speaker": "ilse",
+  "text": "Kennst du das Lied? Mmh-mmh-mmh."
+ },
+ {
+  "id": "i_keep",
+  "speaker": "ilse",
+  "text": "Das gehört mir. Bringst du es in die Kapelle? Dann kann ich es wiederfinden."
+ },
+ {
+  "id": "i_e10_1",
+  "speaker": "ilse",
+  "text": "Das bin nicht ich. Die Puppe spricht nur nach. Papa wollte, dass ich wiederkomme, und da haben sie ihm die gegeben."
+ },
+ {
+  "id": "i_e10_2",
+  "speaker": "ilse",
+  "text": "Er hat es gewusst. Er hat trotzdem jeden Abend gute Nacht gesagt."
+ },
+ {
+  "id": "c_near_1",
+  "speaker": "chor",
+  "text": "Wie heißt du?"
+ },
+ {
+  "id": "c_near_2",
+  "speaker": "chor",
+  "text": "Sag es uns. Nur einmal."
+ },
+ {
+  "id": "c_near_3",
+  "speaker": "chor",
+  "text": "Wir sind so viele. Wir haben Platz."
+ },
+ {
+  "id": "v_e3_arrive",
+  "speaker": "vermittlerin",
+  "text": "Der Saal der Vierzig. Hier aßen die Getreuen ihr letztes Mahl, bevor sie mit dem Erbauer hinauffuhren."
+ },
+ {
+  "id": "v_e3_relic",
+  "speaker": "vermittlerin",
+  "text": "Die Stimmreliquie ruht im Schrein hinter der Bühne. Bringen Sie sie der Kanzlei. Vorsichtig. Sie ist … mir sehr lieb."
+ },
+ {
+  "id": "v_e3_merchant",
+  "speaker": "vermittlerin",
+  "text": "Der Koch. Er ist … geblieben. Er tut niemandem etwas."
+ },
+ {
+  "id": "v_e3_shrine",
+  "speaker": "vermittlerin",
+  "text": "Seilkind? Wo sind Sie? Die Leitung ist so … still geworden."
+ },
+ {
+  "id": "v_e3_after",
+  "speaker": "vermittlerin",
+  "text": "Sie waren an meinem Schrein. Bitte tun Sie das nicht wieder."
+ },
+ {
+  "id": "v_e3_after2",
+  "speaker": "vermittlerin",
+  "text": "Es gibt Dinge, die man nicht öffnet, weil man sie liebt."
+ },
+ {
+  "id": "ve_relic",
+  "speaker": "veit",
+  "text": "Die Reliquie. Leer? Das … das kann nicht sein. Die Vermittlerin spricht doch. Sie spricht doch jede Nacht."
+ },
+ {
+  "id": "v_e6_arrive",
+  "speaker": "vermittlerin",
+  "text": "Bohrung Null. Hier hat alles begonnen. Hier haben wir zum ersten Mal … Sie hat zum ersten Mal …"
+ },
+ {
+  "id": "v_e6_arrive2",
+  "speaker": "vermittlerin",
+  "text": "Verzeihung. Die Leitung. Hier hat die Spindel ihren Grund gefunden."
+ },
+ {
+  "id": "v_e6_listener",
+  "speaker": "vermittlerin",
+  "text": "Seilkind. Hören Sie das Klicken? Gehen Sie in die Hocke. Es sieht nicht. Es hört."
+ },
+ {
+  "id": "v_e6_listener2",
+  "speaker": "vermittlerin",
+  "text": "Wenn Sie rennen, hört es Sie. Wenn Sie kurbeln, hört es Sie. Wenn Sie sprechen …"
+ },
+ {
+  "id": "v_e6_station",
+  "speaker": "vermittlerin",
+  "text": "Die Horchstation braucht drei Relaiszellen und ein wenig Geduld. Dann können wir wieder … zuhören."
+ },
+ {
+  "id": "m1_intro",
+  "speaker": "brenner",
+  "text": "Jahr drei nach der Flut. Salzstock Morgenrot, Bohrung Null. Mein Name ist Hans Brenner, und ich habe an diesem Tag aufgehört, an Böden zu glauben."
+ },
+ {
+  "id": "m1_foreman_1",
+  "speaker": "vorarbeiter",
+  "text": "Herr Brenner! Der Kopf ist weg. Einfach weg. Das Gestänge hängt frei, dreihundert Meter und es zieht noch."
+ },
+ {
+  "id": "m1_foreman_2",
+  "speaker": "vorarbeiter",
+  "text": "Kein Aufschlag. Kein Geräusch. Als würde es … fallen und nie ankommen."
+ },
+ {
+  "id": "m1_brenner_1",
+  "speaker": "brenner",
+  "text": "Lasst das Mikrofon runter. Das Lange. Ich will hören, wie tief das ist."
+ },
+ {
+  "id": "m1_foreman_3",
+  "speaker": "vorarbeiter",
+  "text": "Tausend Meter Kabel sind draußen. Zweitausend. Da ist … Herr Brenner, da ist was auf der Leitung."
+ },
+ {
+  "id": "m1_voices",
+  "speaker": "chor",
+  "text": "Hans … Hans, bist du das? Es ist so kalt hier. Hans, komm und hol mich."
+ },
+ {
+  "id": "m1_brenner_2",
+  "speaker": "brenner",
+  "text": "Das … das ist meine Mutter. Meine Mutter ist in der Flut geblieben."
+ },
+ {
+  "id": "m1_kessler_1",
+  "speaker": "kessler",
+  "text": "Was ist hier los? Brenner, warum steht die Bohrung?"
+ },
+ {
+  "id": "m1_kessler_2",
+  "speaker": "kessler",
+  "text": "Gib mir den Kopfhörer."
+ },
+ {
+  "id": "m1_ilse",
+  "speaker": "ilse",
+  "text": "Papa? Papa, hier ist es dunkel. Wann holst du mich ab?"
+ },
+ {
+  "id": "m1_kessler_3",
+  "speaker": "kessler",
+  "text": "Ilse. Das ist Ilse. Brenner, das ist meine Tochter."
+ },
+ {
+  "id": "m1_kessler_4",
+  "speaker": "kessler",
+  "text": "Niemand sagt ein Wort. Niemand. Wir bauen weiter. Wir bauen genau hier."
+ },
+ {
+  "id": "m1_outro",
+  "speaker": "brenner",
+  "text": "Er baute genau dort. Und ich baute ihm einen Weg nach unten. Möge Gott mir das nicht vergeben, denn ich tue es auch nicht."
+ },
+ {
+  "id": "v_e8_arrive",
+  "speaker": "vermittlerin",
+  "text": "Oh. Oh, sehen Sie nur. Die Alte Welt. So hat es ausgesehen, bevor das Wasser kam."
+ },
+ {
+  "id": "v_e8_arrive2",
+  "speaker": "vermittlerin",
+  "text": "Das ist nicht wirklich hier, Seilkind. Das ist eine Erinnerung. Aber Sie können trotzdem darin ertrinken."
+ },
+ {
+  "id": "v_e8_water",
+  "speaker": "vermittlerin",
+  "text": "Das Wasser trägt jeden Schritt weit. Gehen Sie langsam."
+ },
+ {
+  "id": "v_e8_tape",
+  "speaker": "vermittlerin",
+  "text": "Legen Sie das weg. Das ist altes Band. Das ist nichts."
+ },
+ {
+  "id": "v_e8_tape2",
+  "speaker": "vermittlerin",
+  "text": "Seilkind. Hören Sie auf damit. Sie macht Ihnen Angst. Ich mache Ihnen doch keine Angst."
+ },
+ {
+  "id": "v_e8_after__0",
+  "speaker": "vermittlerin",
+  "text": "Sie wissen es jetzt. Gut. Dann müssen wir uns nicht mehr verstellen."
+ },
+ {
+  "id": "v_e8_after__1",
+  "speaker": "chor",
+  "text": "Wir sind so müde vom Verstellen."
+ },
+ {
+  "id": "v_e8_after2",
+  "speaker": "vermittlerin",
+  "text": "Aber Sie brauchen die Quote. Und wir brauchen Sie. Also machen wir weiter. Zusammen."
+ },
+ {
+  "id": "margarete_tape_1",
+  "speaker": "margarete",
+  "text": "Hier spricht Margarete Wendt. Vermittlung der Spindel. Es ist Silvester, das Jahr dreiunddreißig, und ich habe nicht mehr viel Zeit."
+ },
+ {
+  "id": "margarete_tape_2",
+  "speaker": "margarete",
+  "text": "Wenn jemand das hört, dann hören Sie mir zu. Es gibt eine Stimme, die sich Vermittlerin nennt. Sie klingt wie ich."
+ },
+ {
+  "id": "margarete_tape_3",
+  "speaker": "margarete",
+  "text": "Das bin nicht ich. Es hat meine Stimme genommen und trägt sie wie einen Mantel. Es hat keine eigene."
+ },
+ {
+  "id": "margarete_tape_4",
+  "speaker": "margarete",
+  "text": "Es kann nichts nehmen. Nur empfangen. Es wird freundlich zu Ihnen sein, es wird Ihnen helfen, es wird Sie trösten."
+ },
+ {
+  "id": "margarete_tape_5",
+  "speaker": "margarete",
+  "text": "Und dann wird es Sie um Ihren Namen bitten. Geben Sie ihm niemals Ihren Namen. Niemals."
+ },
+ {
+  "id": "margarete_tape_6",
+  "speaker": "margarete",
+  "text": "Ich gehe jetzt hinunter. Ich werde versuchen, laut zu bleiben. Wenn Sie ein Rauschen hören, das nicht weggeht … das bin ich."
+ },
+ {
+  "id": "m2_radio_1",
+  "speaker": "radio",
+  "text": "Achtung, Sturmflutwarnung für den gesamten Hafenbereich. Der Pegel steigt weiter. Suchen Sie höher gelegene Gebäude auf."
+ },
+ {
+  "id": "m2_radio_2",
+  "speaker": "radio",
+  "text": "Die Hafenbrücke ist gesperrt. Ich wiederhole: Die Hafenbrücke ist gesperrt."
+ },
+ {
+  "id": "m2_papa_1",
+  "speaker": "kessler",
+  "text": "Ilse! Ilse, bleib im Auto! Ich hole Hilfe, hörst du? Bleib, wo du bist!"
+ },
+ {
+  "id": "m2_ilse_1",
+  "speaker": "ilse",
+  "text": "Papa? Das Wasser ist an meinen Füßen."
+ },
+ {
+  "id": "m2_ilse_2",
+  "speaker": "ilse",
+  "text": "Ich hab Angst. Ich sing das Lied. Dann hab ich keine Angst."
+ },
+ {
+  "id": "m2_papa_2",
+  "speaker": "kessler",
+  "text": "Ilse! Ilse, wo bist du? Antworte mir!"
+ },
+ {
+  "id": "m2_ilse_3",
+  "speaker": "ilse",
+  "text": "Hier, Papa. Ich bin doch hier."
+ },
+ {
+  "id": "m2_outro",
+  "speaker": "ilse",
+  "text": "Papa hat mich nicht gehört. Aber jemand anders hat mich gehört. Jemand, der ganz unten wohnt."
+ },
+ {
+  "id": "v_e10_arrive",
+  "speaker": "vermittlerin",
+  "text": "Das Haus des Erbauers. So hat er es in Erinnerung. Wir haben es für ihn aufbewahrt."
+ },
+ {
+  "id": "v_e10_porter",
+  "speaker": "vermittlerin",
+  "text": "Oh. Der Portier ist wach. Er hält die Tür, wissen Sie. Er hat sie schon immer gehalten."
+ },
+ {
+  "id": "v_e10_porter2",
+  "speaker": "vermittlerin",
+  "text": "Lassen Sie sich nicht von ihm sehen. Er nimmt seine Pflicht sehr ernst."
+ },
+ {
+  "id": "v_e10_box",
+  "speaker": "vermittlerin",
+  "text": "Die Spieluhr. Wie lange haben wir sie nicht gehört."
+ },
+ {
+  "id": "v_e10_tally",
+  "speaker": "vermittlerin",
+  "text": "Sechsundvierzig Striche. Sechsundvierzig Mannschaften. Und jede war so überrascht."
+ },
+ {
+  "id": "puppe_1",
+  "speaker": "puppe",
+  "text": "Papa? Papa, bist du das?"
+ },
+ {
+  "id": "puppe_2",
+  "speaker": "puppe",
+  "text": "Papa, bist du das. Papa, bist du das. Papa—"
+ },
+ {
+  "id": "puppe_3",
+  "speaker": "puppe",
+  "text": "Ich habe keine Angst. Ich habe keine Angst. Ich habe—"
+ },
+ {
+  "id": "puppe_4",
+  "speaker": "puppe",
+  "text": "Gute Nacht, Papa. Gute Nacht, Papa. Gute Nacht."
+ },
+ {
+  "id": "m3_intro",
+  "speaker": "margarete",
+  "text": "Silvester im Jahr dreiunddreißig. Mein letzter Dienst am Stöpselbrett. Ich wusste es nur noch nicht."
+ },
+ {
+  "id": "m3_caller_1",
+  "speaker": "kantor",
+  "text": "Vermittlung? Verbinden Sie mich mit dem Erbauer. Es geht um die Gästeliste."
+ },
+ {
+  "id": "m3_kessler_1",
+  "speaker": "kessler",
+  "text": "Sprechen Sie."
+ },
+ {
+  "id": "m3_kantor_1",
+  "speaker": "kantor",
+  "text": "Die Vierzig sind vollzählig. Sie glauben, es geht in den neuen Festsaal. Keiner ahnt etwas."
+ },
+ {
+  "id": "m3_kessler_2",
+  "speaker": "kessler",
+  "text": "Gut. Und die Telefonistin?"
+ },
+ {
+  "id": "m3_kantor_2",
+  "speaker": "kantor",
+  "text": "Wendt? Sie hat die Liste gesehen. Sie stellt Fragen."
+ },
+ {
+  "id": "m3_kessler_3",
+  "speaker": "kessler",
+  "text": "Dann setzen Sie sie auf die Liste. Einundvierzig. Er wird es nicht übel nehmen."
+ },
+ {
+  "id": "m3_margarete_1",
+  "speaker": "margarete",
+  "text": "Einundvierzig. Er meinte mich."
+ },
+ {
+  "id": "m3_margarete_2",
+  "speaker": "margarete",
+  "text": "Ich muss es jemandem sagen. Ich muss es aufnehmen. Irgendwo, wo sie es nicht finden."
+ },
+ {
+  "id": "m3_kantor_3",
+  "speaker": "kantor",
+  "text": "Fräulein Wendt! Bleiben Sie stehen! Der Erbauer möchte Sie beim Festmahl sehen!"
+ },
+ {
+  "id": "m3_outro",
+  "speaker": "margarete",
+  "text": "Sie fanden mich um dreiundzwanzig Uhr neunundfünfzig. Aber das Band fanden sie nicht."
+ },
+ {
+  "id": "kw1_1",
+  "speaker": "kessler",
+  "text": "Sie sagen, ich hätte eine Kirche gegründet. Ich habe keine Kirche gegründet. Ich habe einen Grund gesucht, jeden Tag in dieses Loch zu horchen."
+ },
+ {
+  "id": "kw1_2",
+  "speaker": "kessler",
+  "text": "Ilse ist da unten. Ich habe sie gehört. Sie hat nach mir gefragt, sie hat gefragt, wann ich sie abhole."
+ },
+ {
+  "id": "kw1_3",
+  "speaker": "kessler",
+  "text": "Wie viele Menschen müssen freiwillig etwas geben, damit ein Vater seine Tochter wiederbekommt? Das frage ich mich jede Nacht. Und jeden Morgen rechne ich weiter."
+ },
+ {
+  "id": "kw3_1",
+  "speaker": "kessler",
+  "text": "Sie haben mir Ilse zurückgegeben. Eine Puppe mit ihrer Stimme. Sie spricht nach, was man ihr sagt."
+ },
+ {
+  "id": "kw3_2",
+  "speaker": "kessler",
+  "text": "Heute fahre ich hinunter, mit den Vierzig. Die Kirche wird sagen, ich bin hinaufgefahren. Das ist die Lüge, die sie brauchen."
+ },
+ {
+  "id": "kw3_3",
+  "speaker": "kessler",
+  "text": "Ich fahre nicht hinauf. Ich halte jetzt die Tür. Einer muss die Tür halten, damit sie weiter hindurchgehen."
+ },
+ {
+  "id": "kw4_1",
+  "speaker": "kessler",
+  "text": "Manchmal kommt eine Mannschaft, die sich weigert. Dann jage ich sie, weil das meine Pflicht ist. Und ich hoffe, dass sie schneller ist als ich."
+ },
+ {
+  "id": "kw4_2",
+  "speaker": "kessler",
+  "text": "Wenn du eine Spieluhr findest … spiel sie mir vor. Ich habe das Lied vergessen."
+ },
+ {
+  "id": "oskar_1",
+  "speaker": "oskar",
+  "text": "Dreiunddreißig Jahre Nacht. Jede Nacht um drei Uhr sieben der Ruf."
+ },
+ {
+  "id": "oskar_2",
+  "speaker": "oskar",
+  "text": "Ich hab nie abgenommen. Ich hab gezählt. Ich hab Gedichte geschrieben, die keiner lesen wollte."
+ },
+ {
+  "id": "oskar_3",
+  "speaker": "oskar",
+  "text": "Dann hab ich einmal abgenommen, und am anderen Ende war jemand, der geweint hat."
+ },
+ {
+  "id": "oskar_4",
+  "speaker": "oskar",
+  "text": "Ich wollte ihn holen. Deshalb bin ich hier. Ich bin nur nie unten angekommen."
+ },
+ {
+  "id": "oskar_5",
+  "speaker": "oskar",
+  "text": "Hier. Das letzte Gedicht. Und nimm meine Laterne. Stell sie in die Kapelle, dann weiß ich, wo oben ist."
+ },
+ {
+  "id": "v_e12_arrive",
+  "speaker": "chor",
+  "text": "Der Schlund. Hier sind Kirche und Maschine und wir ein Leib geworden."
+ },
+ {
+  "id": "v_e12_arrive2",
+  "speaker": "vermittlerin",
+  "text": "Verzeihen Sie. Es fällt uns schwer, nur eine zu sein, so nah am Grund."
+ },
+ {
+  "id": "v_e13_arrive",
+  "speaker": "chor",
+  "text": "Du bist in uns. Hörst du, wie viele wir sind?"
+ },
+ {
+  "id": "nia_1",
+  "speaker": "nia",
+  "text": "Jomo? Jomo, bist du das? Das Funkgerät geht noch!"
+ },
+ {
+  "id": "nia_2",
+  "speaker": "nia",
+  "text": "Ich hab die Tasten gedrückt, vier, zwei, sechs, zwei, zehn, fünf. Und dann ist eine Frau eingestiegen."
+ },
+ {
+  "id": "nia_3",
+  "speaker": "nia",
+  "text": "Sie hat gefragt, wie ich heiße. Ich hab es ihr gesagt, Jomo. Ich war doch nur höflich."
+ },
+ {
+  "id": "nia_4",
+  "speaker": "nia",
+  "text": "Sag Mama, dass es nicht wehtut. Es ist nur sehr, sehr voll hier drin."
+ },
+ {
+  "id": "nia_5",
+  "speaker": "nia",
+  "text": "Du bist nicht Jomo. Aber du hast sein Funkgerät. Sag ihm … sag ihm, ich hab gewonnen. Beim Neunerspiel."
+ },
+ {
+  "id": "c_e14_1",
+  "speaker": "chor",
+  "text": "Willkommen, Mannschaft siebenundvierzig. Wir haben so lange gewartet."
+ },
+ {
+  "id": "c_e14_2",
+  "speaker": "chor",
+  "text": "Sieh sie dir an. Die Kabine von Mannschaft sechsundvierzig. Sieh nach, wer darin sitzt."
+ },
+ {
+  "id": "c_e14_3",
+  "speaker": "chor",
+  "text": "Er kam im Jahr sechshundertzwölf, um sie zu holen. Wir haben ihn behalten. Er schickt uns seitdem neue Kinder. Er meint es gut."
+ },
+ {
+  "id": "c_e14_5",
+  "speaker": "chor",
+  "text": "Sprecht eure Namen, und es hört auf. Keine Quote mehr. Keine Nacht. Kein Unten. Kein Oben."
+ },
+ {
+  "id": "r_e14_1",
+  "speaker": "rauschen",
+  "text": "Ihr müsst nicht. Hört ihr? Ihr müsst nicht. Das Seil. Brenners Schere. Ihr wisst, was ihr tun könnt."
+ },
+ {
+  "id": "i_e14_1",
+  "speaker": "ilse",
+  "text": "Oder ihr spielt mein Lied. Das erste, das sie gehört haben. Da werden sie ganz still."
+ },
+ {
+  "id": "c_e14_forced",
+  "speaker": "chor",
+  "text": "Ihr habt ihn uns längst gesagt. Buchstabe für Buchstabe."
+ },
+ {
+  "id": "d_ghost",
+  "speaker": "dieter",
+  "text": "Ihr seid gekommen. Ihr seid wirklich gekommen. Sechsundvierzig … es tut mir so leid, Kinder."
+ },
+ {
+  "id": "end_a_1",
+  "speaker": "chor",
+  "text": "Danke."
+ },
+ {
+  "id": "end_a_2",
+  "speaker": "vermittlerin",
+  "text": "Vermittlung der Spindel. Mannschaft achtundvierzig, können Sie uns hören? Wir bleiben in der Leitung."
+ },
+ {
+  "id": "end_b_1",
+  "speaker": "chor",
+  "text": "Nein. Nein, nein, nein, nicht das Seil—"
+ },
+ {
+  "id": "end_b_2",
+  "speaker": "margarete",
+  "text": "Danke. Es ist still."
+ },
+ {
+  "id": "end_b_3",
+  "speaker": "ilse",
+  "text": "Es ist so leise. Ich kann das Meer hören."
+ },
+ {
+  "id": "end_c_1",
+  "speaker": "ilse",
+  "text": "Papa hat das Lied vergessen. Ich nicht."
+ },
+ {
+  "id": "end_c_2",
+  "speaker": "ilse",
+  "text": "Kommt. Die Treppe ist lang, aber oben ist Morgen."
+ },
+ {
+  "id": "end_c_3",
+  "speaker": "kessler",
+  "text": "Ilse?"
+ },
+ {
+  "id": "end_c_4",
+  "speaker": "ilse",
+  "text": "Komm mit, Papa. Du musst die Tür nicht mehr halten."
+ },
+ {
+  "id": "mm_1",
+  "speaker": "crew_m",
+  "text": "Hilfe! Hier drüben! Schnell!"
+ },
+ {
+  "id": "mm_2",
+  "speaker": "crew_m",
+  "text": "Ich hab was gefunden. Kommt mal her."
+ },
+ {
+  "id": "mm_3",
+  "speaker": "crew_m",
+  "text": "Wo seid ihr? Ich seh euch nicht."
+ },
+ {
+  "id": "mm_4",
+  "speaker": "crew_m",
+  "text": "Alles gut. Es ist weg. Kommt raus."
+ },
+ {
+  "id": "mf_1",
+  "speaker": "crew_f",
+  "text": "Hilfe! Hier drüben! Schnell!"
+ },
+ {
+  "id": "mf_2",
+  "speaker": "crew_f",
+  "text": "Ich hab was gefunden. Kommt mal her."
+ },
+ {
+  "id": "mf_3",
+  "speaker": "crew_f",
+  "text": "Wo seid ihr? Ich seh euch nicht."
+ },
+ {
+  "id": "mf_4",
+  "speaker": "crew_f",
+  "text": "Alles gut. Es ist weg. Kommt raus."
+ }
+]
