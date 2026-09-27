@@ -66,6 +66,15 @@ export const ACTS = {
   act4:   ['AKT IV', 'DER CHOR', 'Was du vergessen hast'],
 };
 
+// Intro der Hybrid-Kampagne (Schreibmaschine)
+export const INTRO_HYBRID = [
+  'Im siebenten Jahrhundert nach der Flut\ngibt es kein Land mehr.\nNur das schwarze Meer. Und die Spindeln.',
+  'In der Spindel des Erbauers\nschuldet jede Seele der Kirche ihre Stimme.\nDoch der Zehnt bleibt aus.\nUnd heimlich sinkt die Stadt.',
+  'Also öffnet die Hohe Kanzlei,\nwas sechshundert Jahre versiegelt war:\nSCHACHT NULL.',
+  'Sechsundvierzig Mannschaften sind hinabgefahren.\nKeine hat ihre Quote lange erfüllt.',
+  'Ihr seid Mannschaft Siebenundvierzig.\nIhr habt unterschrieben.\n\nDie Neunte wartet.',
+];
+
 // Intro-Text (Schreibmaschine)
 export const INTRO = [
   'Im siebenten Jahrhundert nach der Flut\ngibt es kein Land mehr.',

@@ -32,6 +32,8 @@ class UI {
           <div class="res"></div>
           <div class="msg"></div>
         </div>
+        <div id="scanlabels"></div>
+        <div id="hotbar"><div class="slots"></div><div class="hp"><i></i></div></div>
         <div id="chat"></div>
         <div id="chatin" class="interactive"><input class="text-in" maxlength="120" placeholder="Nachricht … (Enter)"></div>
       </div>
@@ -163,6 +165,25 @@ class UI {
     c.classList.remove('active'); void c.offsetWidth; c.classList.add('active');
     audio.play('stinger', { kind: 'reveal', vol: 0.7 });
     return new Promise(r => setTimeout(() => { c.classList.remove('active'); r(); }, 6200));
+  }
+
+  // Inventar-Leiste + Lebenspunkte
+  setHotbar(inv, hp) {
+    const key = inv.slots.map(s => s ? s.id : 0).join(',') + '|' + (inv.hands ? inv.hands.id : 0) + '|' + inv.active + '|' + Math.round(hp);
+    if (key === this._hotKey) return;
+    this._hotKey = key;
+    const root = document.querySelector('#hotbar .slots');
+    let html = '';
+    for (let i = 0; i < 4; i++) {
+      const s = inv.slots[i];
+      html += `<div class="slot ${i === inv.active && !inv.hands ? 'sel' : ''} ${s ? 'full' : ''}"><span class="k">${i + 1}</span>${s ? `<b>${escapeHtml(s.def.name)}</b><em>${s.value} M</em>` : ''}</div>`;
+    }
+    if (inv.hands) html += `<div class="slot hands sel full"><span class="k">✋</span><b>${escapeHtml(inv.hands.def.name)}</b><em>${inv.hands.value} M · schwer</em></div>`;
+    root.innerHTML = html;
+    const bar = document.querySelector('#hotbar .hp');
+    bar.firstChild.style.width = Math.max(0, hp) + '%';
+    bar.classList.toggle('low', hp < 35);
+    bar.style.opacity = hp < 100 ? 1 : 0.25;
   }
 
   setHidden(on) { this.hud.slits.classList.toggle('show', on); }

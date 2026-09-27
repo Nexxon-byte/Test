@@ -63,6 +63,14 @@ const DEFS = {
   shelf:         { tex: 'shelf', r: 0.85, m: 0, b: 2 },
   facade:        { tex: 'facade', r: 0.7, m: 0.1, b: 1.5, e: 1.6 },
   water:         { tex: 'water', r: 0.06, m: 0.2, b: 1.2, c: 0x2a4a50 },
+  fahrgastHead:  { tex: 'marble', r: 0.18, m: 0, b: 0.2, c: 0xf2ece2 },
+  asphaltWet:    { tex: 'asphalt', r: 0.12, m: 0.25, b: 1.5 },
+  stoneWet:      { tex: 'stone', r: 0.2, m: 0.15, b: 3 },
+  coatGreen:     { tex: 'fabric', r: 1, m: 0, b: 0.5, c: 0x2f3a2c },
+  coatBrown:     { tex: 'fabric', r: 1, m: 0, b: 0.5, c: 0x4a3524 },
+  coatGrey:      { tex: 'fabric', r: 1, m: 0, b: 0.5, c: 0x55524e },
+  coatBlue:      { tex: 'fabric', r: 1, m: 0, b: 0.5, c: 0x243040 },
+  leather:       { tex: 'fabric', r: 0.6, m: 0, b: 0.8, c: 0x3a2418 },
 };
 
 export function mat(name) {

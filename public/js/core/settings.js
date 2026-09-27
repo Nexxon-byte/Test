@@ -53,7 +53,7 @@ export function onSettings(fn) {
 }
 
 export const QUALITY = {
-  retro:    { height: 400, shadow: 512,  lights: 5, bloom: true,  mirror: 192, dust: 150 },
-  standard: { height: 540, shadow: 1024, lights: 8, bloom: true,  mirror: 256, dust: 300 },
-  hoch:     { height: 760, shadow: 2048, lights: 10, bloom: true, mirror: 384, dust: 500 },
+  retro:    { height: 400, shadow: 512,  lights: 8, bloom: true,  mirror: 192, dust: 150 },
+  standard: { height: 540, shadow: 1024, lights: 12, bloom: true,  mirror: 256, dust: 300 },
+  hoch:     { height: 760, shadow: 2048, lights: 16, bloom: true, mirror: 384, dust: 500 },
 };

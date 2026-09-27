@@ -332,3 +332,35 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px;
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-thumb { background: rgba(201,160,80,0.3); }
 ::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------------------------------------------------------------- Inventar, LP, Scan (Hybrid) */
+#hotbar { position: absolute; right: 26px; bottom: 24px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+#hotbar .slots { display: flex; gap: 6px; }
+#hotbar .slot { position: relative; width: 108px; height: 54px; padding: 6px 8px; background: rgba(6,5,4,0.62); border: 1px solid rgba(201,160,80,0.18); font-family: var(--mono); color: var(--bone-dim); display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
+#hotbar .slot .k { position: absolute; left: 6px; top: 3px; font-size: 14px; color: #6a5c48; }
+#hotbar .slot b { font-weight: normal; font-size: 15px; color: var(--bone); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#hotbar .slot em { font-style: normal; font-size: 14px; color: var(--gold); }
+#hotbar .slot.sel { border-color: var(--gold); box-shadow: 0 0 12px rgba(201,160,80,0.25); }
+#hotbar .slot.hands { width: 180px; border-color: #ffb060; }
+#hotbar .hp { width: 240px; height: 4px; background: rgba(233,220,194,0.1); position: relative; transition: opacity 0.5s; }
+#hotbar .hp i { position: absolute; left: 0; top: 0; bottom: 0; background: #d8c8a8; }
+#hotbar .hp.low i { background: var(--blood-hi); box-shadow: 0 0 8px var(--blood-hi); }
+#scanlabels { position: absolute; inset: 0; }
+#scanlabels .scan { position: absolute; transform: translate(-50%, -100%); padding: 3px 8px; font-family: var(--mono); font-size: 16px; color: var(--kom); background: rgba(2,12,5,0.7); border: 1px solid rgba(141,255,168,0.4); text-shadow: 0 0 5px rgba(141,255,168,0.5); white-space: nowrap; animation: fadeIn 0.2s ease both; display: flex; gap: 10px; }
+#scanlabels .scan b { font-weight: normal; color: var(--bone); }
+.panel.report .players li span:last-child { color: var(--gold-hi); }
+.panel.report .total { display: flex; justify-content: space-between; margin-top: 12px; font-family: var(--mono); font-size: 28px; color: var(--gold-hi); border-top: 1px solid rgba(201,160,80,0.3); padding-top: 8px; }
+
+/* Kleine Fenster: HUD mitskalieren */
+@media (max-height: 700px) {
+  #kom { transform: scale(0.72); transform-origin: left bottom; }
+  #hotbar { transform: scale(0.72); transform-origin: right bottom; }
+  #hints { transform: scale(0.8); transform-origin: right top; }
+  #objective .txt { font-size: 20px; }
+  .sub-line { font-size: 20px; }
+  #title .logo { top: 8vh; }
+  #title .logo h1 { font-size: clamp(48px, 16vh, 168px); }
+  #title .menu { bottom: 6vh; }
+  .menu-btn { font-size: 22px; padding-top: 2px; padding-bottom: 2px; }
+  #title .quote { display: none; }
+}

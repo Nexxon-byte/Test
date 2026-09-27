@@ -194,7 +194,7 @@ function buildArchitecture(b, grid, t, level) {
 }
 
 // Wand mit dem Etagentor zum Absatz: 3 m breites Lasttor in schwerem Stahlrahmen
-function buildPortal(b, grid, t, level) {
+export function buildPortal(b, grid, t, level) {
   const H = t.height, z = CAB.LANDING_Z, dw = CAB.DOOR / 2, dh = CAB.DOOR_H;
   const half = (CAB.CELLS_X * CS) / 2;
   const wallM = mat(t.wall);
@@ -234,7 +234,7 @@ function buildPortal(b, grid, t, level) {
 // Kontext für Themen-Dekoration
 // ----------------------------------------------------------------------------
 
-function makeCtx(R, b, grid, theme, level, rng) {
+export function makeCtx(R, b, grid, theme, level, rng) {
   const ctx = {
     R, b, grid, theme, level, rng, P, CS,
     rooms: grid.rooms,
