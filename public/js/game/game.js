@@ -25,6 +25,9 @@ import { openShop, openBoard, nightReport, showSlate } from '../ui/shop.js';
 import { QUOTES } from '../story/codex.js';
 import { DOCS } from '../story/docs.js';
 import { KOM, SLATE } from '../story/lines.js';
+import { DEATHS } from '../story/codex.js';
+import { Director } from './monsters/director.js';
+import * as menus from '../ui/menus.js';
 
 // Welten je Tiefenstufe: [Thema, Tiefe, Name]
 export const FLOORS = {
@@ -60,12 +63,17 @@ export class Game {
     this.paused = false;
     this.busy = false;       // läuft gerade eine Sequenz (Fahrt, Menü)
     this.hp = 100;
+    this.hurtT = 0;          // kurz nach einem Treffer (Schrecken warten)
+    this.blood = 0;          // roter Bildrand nach Treffern
+    this.echo = false;       // tot: Echo-Zuschauer bis zur Abfahrt
     this.scanUntil = 0;
     this.scanCooldown = 0;
     this.loops = [];
 
+    this.director = new Director(this);
     this._applyCampaignToCab();
     this._wireCabin();
+    this._wireGate();
     this._wirePlayerSounds();
     this.heart = null;
   }
@@ -110,6 +118,22 @@ export class Game {
     this._rebuildCabEntries = rebuild;
   }
 
+  // Scherengitter von Hand schließen/öffnen (nachts, von innen und außen)
+  _wireGate() {
+    const handle = new THREE.Vector3(CAB.DOOR / 2 - 0.15, 1.25, CAB.GATE_Z);
+    this.interact.add({
+      tag: 'gate', pos: handle, radius: 0.45, maxDist: 2.4, priority: 0.15,
+      prompt: () => this.elev.gateTarget > 0.5 ? 'Scherengitter schließen' : 'Scherengitter öffnen',
+      sub: () => this.elev.modules.panzergitter ? `Panzergitter ${'I'.repeat(this.elev.modules.panzergitter)}` : 'Hält nicht lange',
+      enabled: () => this.mode === 'night' && !this.busy && !this.player.dead,
+      onUse: () => {
+        if (this.elev.gateTarget > 0.5) this.elev.closeGate(); else this.elev.openGate();
+        audio.play('gate', { pos: handle, vol: 0.5 });
+        this.director.noise(0, CAB.GATE_Z, 7, 'gate');
+      },
+    });
+  }
+
   _wirePlayerSounds() {
     this.player.onFootstep = (surface, k) => {
       const s = this.elev.contains(this.player.pos) ? 'metal' : (this.world?.surfaceAt?.(this.player.pos.x, this.player.pos.z) || 'stone');
@@ -137,6 +161,7 @@ export class Game {
   // ---------------------------------------------------------------- Welten
 
   _clearWorld() {
+    this.director.clear();
     if (this.world) {
       this.world.dispose(this.R.scene, this.col);
       this.world = null;
@@ -308,10 +333,15 @@ export class Game {
         }
         break;
       case 'phone':
+        if (this.mode === 'night' && this.director.scares.answerPhone()) break;
         voice.say(this.mode === 'night' ? 'v_e0_stay' : 'v_e0_hello', { interrupt: true });
         break;
       case 'flutlicht': e.setFlood(!e.floodOn); audio.play('lampClick', { on: e.floodOn }); break;
-      case 'rufglocke': e.ringBell(); break;
+      case 'rufglocke':
+        e.ringBell();
+        // ruft die Mannschaft – und alles andere, das hört
+        if (this.mode === 'night') this.director.noise(0, 0, 45, 'bell');
+        break;
       case 'weihoel':
         if (this.hp < 100) { this.hp = Math.min(100, this.hp + 50); audio.play('pickup'); ui.toast('Weihöl. Es brennt, dann wird es warm.'); }
         else ui.toast('Du bist unversehrt.');
@@ -342,6 +372,7 @@ export class Game {
     this.items.drop(it, x, 0, z, this.player.yaw);
     if (!it.entry || !this.interact.list.has(it.entry)) this._itemEntry(it);
     audio.play('footstep', { surface: 'metal', intensity: 0.4 });
+    if (this.mode === 'night') this.director.noise(x, z, it.two ? 9 : 5, 'drop');
     this._updateKom();
   }
 
@@ -400,6 +431,7 @@ export class Game {
     if (this.busy) return;
     this.busy = true;
     ui.clearHints();
+    this.director.preload();
     const st = this.state;
     // Welt wählen
     const opts = FLOORS[stage] || FLOORS[1];
@@ -469,6 +501,7 @@ export class Game {
     audio.play('gate', { vol: 0.45 });
     await this._wait(0.6);
     audio.play('doorSlide', { vol: 0.35 });
+    await this.director.preload();
     this.busy = false;
     this._startNight();
   }
@@ -540,6 +573,9 @@ export class Game {
   _startNight() {
     this.clock = 0;
     this.nightEvents = {};
+    this.hp = Math.max(this.hp, 100);
+    this.echo = false;
+    this.director.startNight(this.world, this.nightInfo, this.state);
     this.player.toggleLamp(true);
     audio.play('lampClick', { on: true });
     const st = this.state;
@@ -557,7 +593,9 @@ export class Game {
   }
 
   _updateNight(dt) {
-    this.clock += (dt * 1000) / MS_PER_MIN;
+    // Als Echo vergeht die Nacht schneller; Leertaste ruft die Neunte sofort
+    this.clock += (dt * 1000) / MS_PER_MIN * (this.echo ? 15 : 1);
+    if (this.echo && input.hit('Space')) { this.ascend('tod'); return; }
     const c = this.clock, ev = this.nightEvents;
     const once = (key, at, fn) => { if (c >= at && !ev[key]) { ev[key] = true; fn(); } };
     once('230', 150, () => voice.say('v_time_230'));
@@ -581,12 +619,67 @@ export class Game {
     }
   }
 
+  // ---------------------------------------------------------------- Schaden & Tod
+
+  // Treffer: roter Rand, Kameraruck, Ohrenklingeln, Keuchen. 0 LP → Tod.
+  damage(amount, { from = null, kind = '' } = {}) {
+    if (this.player.dead || this.mode !== 'night' || this.busy) return;
+    this.hp = Math.max(0, this.hp - amount);
+    this.hurtT = 1.5;
+    this.blood = Math.min(1.2, this.blood + 0.25 + amount / 60);
+    this.player.shake = Math.max(this.player.shake, amount >= 30 ? 1.6 : 0.5);
+    audio.play('hurt', { heavy: amount >= 30, vol: amount >= 30 ? 0.9 : 0.5 });
+    if (amount >= 20) setTimeout(() => audio.play('breath', { fast: 1, vol: 0.4 }), 350);
+    if (amount >= 30) this.R.glitchPulse(0.5);
+    if (from?.pos) {
+      // Kamera zuckt vom Angreifer weg
+      const a = Math.atan2(this.player.pos.x - from.pos.x, this.player.pos.z - from.pos.z);
+      this.player.pos.x += Math.sin(a) * 0.25; this.player.pos.z += Math.cos(a) * 0.25;
+    }
+    this.lastHurtKind = kind;
+    if (this.hp <= 0) this._die(kind);
+  }
+
+  heal(amount) {
+    const before = this.hp;
+    this.hp = Math.min(100, this.hp + amount);
+    return this.hp - before;
+  }
+
+  async _die(kind) {
+    const p = this.player;
+    p.dead = true;
+    p.crouching = false;
+    this.echo = false;
+    audio.play('death', { vol: 0.9 });
+    music.setChase(0);
+    this.R.glitchPulse(1);
+    this.blood = 1.4;
+    // Getragenes fällt aus der Hand – verloren für diese Nacht (liegt beim Chor)
+    const carried = this.inv.removeAll();
+    for (const it of carried) this.items.remove(it.id);
+    this._deathLost = carried.reduce((s, i) => s + i.value, 0);
+    this._updateKom();
+    await this._wait(2.4);
+    if (this.mode !== 'night') return;
+    const key = kind === 'grab' ? 'passenger' : kind === 'bite' ? 'listener' : 'default';
+    const [title, text] = DEATHS[key] || DEATHS.default;
+    this.busy = true;
+    input.unlock();
+    const a = await menus.death(title, text, { buttons: [['echo', 'ALS ECHO ZUSEHEN'], ['up', 'DIE NEUNTE RUFEN', true]] });
+    this.busy = false;
+    if (this.mode !== 'night') return;
+    if (a === 'up') { this.ascend('tod'); return; }
+    this.echo = true;
+    ui.setEcho(true, 'ECHO · [LEERTASTE] DIE NEUNTE RUFEN');
+    input.lock();
+  }
+
   // ---------------------------------------------------------------- Aufwärts
 
   async ascend(reason) {
     if (this.busy && reason !== 'ruf') return;
     this.busy = true;
-    const inside = this.elev.contains(this.player.pos, 0.2);
     if (reason === 'ruf') {
       voice.say('v_time_307', { interrupt: true });
       this.R.glitchPulse(1);
@@ -595,8 +688,9 @@ export class Game {
     audio.play('gate', { vol: 0.5 });
     this.elev.closeDoors();
     await this._wait(2.0);
-    // Wer draußen ist, bleibt beim Chor
-    const lost = !this.elev.contains(this.player.pos, 0.2);
+    // Wer draußen ist (oder tot), bleibt beim Chor
+    const lost = this.player.dead || !this.elev.contains(this.player.pos, 0.2);
+    this.echo = false;
     const carried = lost ? this.inv.removeAll() : [];
     for (const it of carried) this.items.remove(it.id);
     // Abrechnung: was liegt im Kabinenraum + was getragen wird
@@ -606,7 +700,8 @@ export class Game {
     const outside = this.items.lying().filter(it => !this.elev.contains(it.pos));
     for (const it of outside) { this.items.remove(it.id); if (it.fixture) this.pool.remove(it.fixture); }
     const broughtValue = brought.reduce((s, i) => s + i.value, 0);
-    const lostValue = carried.reduce((s, i) => s + i.value, 0);
+    const lostValue = carried.reduce((s, i) => s + i.value, 0) + (this._deathLost || 0);
+    this._deathLost = 0;
 
     // Fahrt nach oben
     const depth = this.nightInfo?.depth ?? 2;
@@ -666,7 +761,7 @@ export class Game {
     saveCampaign(st);
 
     await this.loadHub({ spawn: lost ? 'cabin' : 'stay' });
-    if (lost) { this.player.dead = false; ui.setEcho(false); this.player.teleport(0, -0.6, Math.PI, 0); this.hp = 100; }
+    if (lost) { this.player.dead = false; ui.setEcho(false); this.player.teleport(0, -0.6, Math.PI, 0); this.hp = 100; this.blood = 0; }
     this.busy = true;
     input.unlock();
     input.enabled = false;
@@ -713,6 +808,31 @@ export class Game {
     saveCampaign(st);
     voice.say('d_quota_fail');
     return { ok: false, permadeath: d.fail === 'permadeath' };
+  }
+
+  // ---------------------------------------------------------------- Entwicklung
+
+  // Direkt in eine Nacht springen (ohne Fahrt): ?skip&night=ossuary&seed=7[&monsters=passenger,listener,rats]
+  async devNight(themeId = 'dock', seed = 7) {
+    const stageOf = Object.keys(FLOORS).find(k => FLOORS[k].some(f => f[0] === themeId)) || 1;
+    const [tid, depth, name] = FLOORS[stageOf].find(f => f[0] === themeId) || FLOORS[1][0];
+    const theme = THEMES[tid] || THEMES.dock;
+    this.nightInfo = { themeId: tid, depth, name, stage: Number(stageOf), seed };
+    this._keepOnlyCabinItems();
+    this._clearWorld();
+    await this.director.preload();
+    const level = buildLevel(this.R, this.col, theme, seed);
+    this.elev.arrive();
+    this._enterLevel(level, theme, depth, name);
+    this.elev.lightMode = 'normal';
+    this.elev.light = 0.55;
+    this.elev.openDoors();
+    this.elev.gateOpen = 1; this.elev.doorsOpen = 1;
+    this.elev._layoutGate(); this.elev._layoutOuter();
+    ui.setHud(true);
+    if (!this.heart) this.heart = audio.loop('heart');
+    this.player.teleport(0, -0.6, Math.PI, 0);
+    this._startNight();
   }
 
   // ---------------------------------------------------------------- Titel
@@ -822,11 +942,20 @@ export class Game {
 
     // Nacht
     if (this.mode === 'night' && !this.busy) this._updateNight(dt);
+    if (this.mode === 'night') this.director.update(dt, this.clock);
+
+    // Lebenspunkte: roter Rand nach Treffern, Pochen bei wenig LP; oben heilt man langsam
+    this.hurtT = Math.max(0, this.hurtT - dt);
+    this.blood = Math.max(0, this.blood - dt * 0.5);
+    if (this.mode === 'hub' && this.hp < 100) this.hp = Math.min(100, this.hp + dt * 4);
+    const low = !p.dead && this.hp < 40 ? (40 - this.hp) / 40 : 0;
+    ui.setBlood(Math.max(this.blood, low * (0.45 + 0.2 * Math.sin(this.time * 5.2))), p.dead);
 
     // Angst & Herz: Dunkelheit und Einsamkeit
     const inCab = this.elev.contains(p.pos);
     const dark = this.mode === 'night' && !inCab && (p.lampLevel ?? 0) < 0.2 ? 1 : 0;
-    p.fear = damp(p.fear, this.mode === 'night' ? (inCab ? 0.05 : 0.18 + dark * 0.35 + (this.clock > 170 ? 0.25 : 0)) : 0, 0.6, dt);
+    const threat = this.mode === 'night' ? this.director.tension * 0.5 + (this.hp < 40 ? 0.3 : 0) : 0;
+    p.fear = damp(p.fear, this.mode === 'night' ? Math.min(1, (inCab ? 0.05 : 0.18 + dark * 0.35 + (this.clock > 170 ? 0.25 : 0)) + threat) : 0, 0.6, dt);
     this.R.fx.fear = p.fear;
     this.heart?.setVol(Math.max(0, p.fear - 0.2) * 0.6);
     this.heart?.setRate(65 + p.fear * 70);

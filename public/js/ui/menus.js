@@ -206,13 +206,18 @@ export function pause({ where = '', coop = false }) {
 }
 
 // ---------------------------------------------------------------- Tod
-export function death(titleText, text, { coop = false } = {}) {
+// buttons: [[id, Beschriftung, ghost?], …] ersetzt die Standardknöpfe
+export function death(titleText, text, { coop = false, buttons = null } = {}) {
   return new Promise((resolve) => {
+    document.getElementById('death')?.remove();
     const s = document.createElement('div');
     s.id = 'death';
     s.className = 'active interactive';
+    const row = buttons
+      ? buttons.map(([id, label, ghost]) => `<button class="btn ${ghost ? 'ghost' : ''}" data-a="${id}">${escapeHtml(label)}</button>`).join('')
+      : `${coop ? '<button class="btn" data-a="echo">ALS ECHO ZUSEHEN</button>' : '<button class="btn" data-a="retry">NOCH EINMAL</button>'}<button class="btn ghost" data-a="quit">ZUM TITEL</button>`;
     s.innerHTML = `<h2>${escapeHtml(titleText)}</h2><p>${escapeHtml(text)}</p>
-      <div class="btn-row">${coop ? '<button class="btn" data-a="echo">ALS ECHO ZUSEHEN</button>' : '<button class="btn" data-a="retry">NOCH EINMAL</button>'}<button class="btn ghost" data-a="quit">ZUM TITEL</button></div>`;
+      <div class="btn-row">${row}</div>`;
     host().appendChild(s);
     s.querySelectorAll('[data-a]').forEach(b => b.addEventListener('click', () => { audio.play('uiSelect'); s.remove(); resolve(b.dataset.a); }));
   });

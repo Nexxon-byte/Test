@@ -784,6 +784,162 @@ const SFX = {
     g.gain.setValueAtTime(0.3, t + 0.2); g.gain.exponentialRampToValueAtTime(0.0001, t + 4);
     A.noiseSrc('white', t + 0.2, t + 4.2, A.filt('bandpass', 1200, 0.5, g));
   },
+
+  // -------- Kampf, Waffen, Tiere
+  // Salzkanone der Kabine: dumpfer Schlag, Salz prasselt
+  saltShot(A, { pos = null, vol = 0.9 } = {}) {
+    const t = A.now;
+    const o = A.out({ pos, vol, rev: 0.6, ref: 3 });
+    A._thump(o.input, t, 130, 35, 0.45, 1);
+    A._burst(o.input, t, 0.12, 2400, 0.7, 1);
+    A._burst(o.input, t + 0.05, 0.7, 6000, 0.5, 0.25, 'pink');
+    A._ring(o.input, t, 180, 0.8, 0.08, [1, 2.3, 3.7]);
+  },
+
+  // Salzflinte: laut wie das Jüngste Gericht
+  shotgun(A, { pos = null, vol = 1 } = {}) {
+    const t = A.now;
+    const o = A.out({ pos, vol, rev: 0.85, ref: 4 });
+    A._thump(o.input, t, 95, 28, 0.6, 1);
+    A._burst(o.input, t, 0.07, 3000, 0.6, 1);
+    A._burst(o.input, t + 0.01, 0.45, 900, 0.5, 0.6, 'brown');
+    A._burst(o.input, t + 0.06, 0.9, 5500, 0.4, 0.2, 'pink');
+  },
+
+  // Nachladen: Riegel auf, Patrone, Riegel zu
+  reload(A, { vol = 0.5 } = {}) {
+    const t = A.now;
+    const o = A.out({ vol, rev: 0.15 });
+    [0, 0.35, 0.8].forEach((dt, i) => {
+      A._burst(o.input, t + dt, 0.012, i === 1 ? 1600 : 2600, 6, 0.9);
+      A._thump(o.input, t + dt, 420, 180, 0.03, 0.4);
+    });
+  },
+
+  // Luftzug eines Schlags oder Wurfs
+  swing(A, { vol = 0.4, heavy = false } = {}) {
+    const t = A.now, dur = heavy ? 0.38 : 0.22;
+    const o = A.out({ vol, rev: 0.1 });
+    const f = A.filt('bandpass', 400, 1.2, o.input);
+    const g = A.vca(f);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.9, t + dur * 0.4); g.gain.linearRampToValueAtTime(0.0001, t + dur);
+    f.frequency.setValueAtTime(300, t); f.frequency.exponentialRampToValueAtTime(heavy ? 900 : 2200, t + dur * 0.5); f.frequency.exponentialRampToValueAtTime(300, t + dur);
+    A.noiseSrc('pink', t, t + dur + 0.05, g);
+  },
+
+  // Treffer auf Metall / Stein
+  hitMetal(A, { pos = null, vol = 0.7 } = {}) {
+    const t = A.now;
+    const o = A.out({ pos, vol, rev: 0.5 });
+    A._thump(o.input, t, 220, 90, 0.08, 0.6);
+    A._ring(o.input, t, rnd(700, 950), 0.9, 0.18, [1, 2.76, 5.4]);
+    A._burst(o.input, t, 0.04, 3200, 1, 0.5);
+  },
+
+  // Treffer auf etwas Weiches
+  hitFlesh(A, { pos = null, vol = 0.7 } = {}) {
+    const t = A.now;
+    const o = A.out({ pos, vol, rev: 0.3 });
+    A._thump(o.input, t, 140, 50, 0.15, 0.9);
+    A._burst(o.input, t, 0.1, 700, 0.8, 0.6, 'pink');
+  },
+
+  // Biss: nasses Knacken
+  bite(A, { pos = null, vol = 0.8, small = false } = {}) {
+    const t = A.now;
+    const o = A.out({ pos, vol, rev: 0.3 });
+    A._burst(o.input, t, small ? 0.05 : 0.14, small ? 2400 : 900, 1, 0.8, 'pink');
+    A._thump(o.input, t, small ? 500 : 220, small ? 200 : 60, small ? 0.04 : 0.12, 0.7);
+    const n = small ? 2 : 5;
+    for (let i = 0; i < n; i++) A._burst(o.input, t + 0.02 + i * rnd(0.015, 0.04), 0.006, rnd(1500, 4000), 4, 0.6);
+  },
+
+  // Spieler wird getroffen: dumpfer Schlag, danach Ohrenklingeln
+  hurt(A, { vol = 0.8, heavy = false } = {}) {
+    const t = A.now;
+    const o = A.out({ vol, rev: 0.15 });
+    A._thump(o.input, t, 90, 38, heavy ? 0.5 : 0.25, 1);
+    A._burst(o.input, t, 0.1, 500, 0.7, 0.6, 'brown');
+    const g = A.vca(o.input);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(heavy ? 0.06 : 0.03, t + 0.05); g.gain.exponentialRampToValueAtTime(0.0001, t + (heavy ? 3.5 : 1.6));
+    A.osc('sine', rnd(3300, 3900), t, t + 3.6, g);
+  },
+
+  // Verband anlegen: Stoff reißt, wird gewickelt
+  bandage(A, { vol = 0.5 } = {}) {
+    const t = A.now;
+    const o = A.out({ vol, rev: 0.1 });
+    const f = A.filt('highpass', 1800, 0.7, o.input);
+    const g = A.vca(f);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.7, t + 0.05); g.gain.linearRampToValueAtTime(0.0001, t + 0.35);
+    A.noiseSrc('white', t, t + 0.4, g);
+    for (let i = 0; i < 3; i++) A._burst(o.input, t + 0.5 + i * 0.28, 0.2, 1200, 0.6, 0.3, 'pink');
+  },
+
+  // Rattenquieken (n Rufe)
+  ratSqueak(A, { pos = null, vol = 0.5, n = 0, dying = false } = {}) {
+    const t = A.now;
+    const o = A.out({ pos, vol, rev: 0.4, ref: 0.8 });
+    const count = n || Math.floor(rnd(1, 4));
+    for (let i = 0; i < count; i++) {
+      const tt = t + i * rnd(0.08, 0.2), dur = dying ? 0.35 : rnd(0.05, 0.13);
+      const g = A.vca(o.input); A.env(g, tt, 0.005, 0.25, dur);
+      const s = A.osc('triangle', rnd(2600, 4200), tt, tt + dur + 0.05, g);
+      s.frequency.setValueAtTime(s.frequency.value, tt);
+      s.frequency.linearRampToValueAtTime(s.frequency.value * (dying ? 0.5 : rnd(0.8, 1.25)), tt + dur);
+    }
+  },
+
+  // Trippeln vieler kleiner Füße
+  ratScurry(A, { pos = null, vol = 0.5 } = {}) {
+    const t = A.now;
+    const o = A.out({ pos, vol, rev: 0.3, ref: 0.8 });
+    for (let i = 0; i < 26; i++) A._burst(o.input, t + rnd(0, 0.7), 0.004, rnd(2500, 6000), 5, rnd(0.3, 0.8));
+  },
+
+  // Leuchtstoffröhre klickt und brummt
+  fluorescentPing(A, { pos = null, vol = 0.4 } = {}) {
+    const t = A.now;
+    const o = A.out({ pos, vol, rev: 0.5 });
+    A._ring(o.input, t, 2400, 0.3, 0.1, [1, 1.9]);
+    const g = A.vca(A.filt('bandpass', 400, 2, o.input)); A.env(g, t, 0.02, 0.2, 0.8);
+    A.osc('sawtooth', 100, t, t + 0.9, g);
+  },
+
+  // Leuchtfackel zünden
+  flareIgnite(A, { pos = null, vol = 0.7 } = {}) {
+    const t = A.now;
+    const o = A.out({ pos, vol, rev: 0.4 });
+    const f = A.filt('bandpass', 1500, 0.8, o.input);
+    const g = A.vca(f);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.9, t + 0.25); g.gain.linearRampToValueAtTime(0.35, t + 0.9);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 1.4);
+    f.frequency.setValueAtTime(700, t); f.frequency.exponentialRampToValueAtTime(3500, t + 0.3);
+    A.noiseSrc('white', t, t + 1.5, g);
+    for (let i = 0; i < 10; i++) A._burst(o.input, t + rnd(0, 0.8), 0.008, rnd(2000, 5000), 3, 0.5);
+  },
+
+  // Klapper: Blechdose mit Schrauben
+  rattle(A, { pos = null, vol = 0.8, dur = 1.2 } = {}) {
+    const t = A.now;
+    const o = A.out({ pos, vol, rev: 0.5, ref: 2 });
+    const n = Math.floor(dur * 14);
+    for (let i = 0; i < n; i++) {
+      const tt = t + rnd(0, dur);
+      A._ring(o.input, tt, rnd(1100, 2600), 0.12, 0.05, [1, 2.4]);
+      A._burst(o.input, tt, 0.01, rnd(2500, 5000), 3, 0.4);
+    }
+  },
+
+  // Salz rieselt aus dem Sack
+  saltPour(A, { pos = null, vol = 0.5 } = {}) {
+    const t = A.now;
+    const o = A.out({ pos, vol, rev: 0.2 });
+    const g = A.vca(A.filt('lowpass', 4000, 0.7, o.input));
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.6, t + 0.15); g.gain.linearRampToValueAtTime(0.4, t + 1); g.gain.linearRampToValueAtTime(0.0001, t + 1.3);
+    A.noiseSrc('pink', t, t + 1.35, g, 1.4);
+    for (let i = 0; i < 20; i++) A._burst(o.input, t + rnd(0, 1.2), 0.004, rnd(3000, 7000), 4, 0.25);
+  },
 };
 
 // ============================================================================
@@ -908,6 +1064,18 @@ const LOOPS = {
     const n = A.noiseSrc('white', t, t + 1e5, g);
     let alive = true;
     const crackle = () => { if (!alive) return; A._burst(o.input, A.now, 0.01, rnd(1500, 5000), 2, rnd(0.3, 0.9)); setTimeout(crackle, rnd(40, 400)); };
+    crackle();
+    return handle(A, o, [n], { onStop() { alive = false; } });
+  },
+
+  // Brennende Leuchtfackel: Zischen mit Knistern
+  flareBurn(A, { pos = null, vol = 0.3 } = {}) {
+    const t = A.now;
+    const o = A.out({ pos, vol, rev: 0.3, ref: 1.2 });
+    const g = A.vca(A.filt('bandpass', 2600, 0.7, o.input), 0.45);
+    const n = A.noiseSrc('white', t, t + 1e5, g);
+    let alive = true;
+    const crackle = () => { if (!alive) return; A._burst(o.input, A.now, 0.008, rnd(1800, 5200), 3, rnd(0.2, 0.7)); setTimeout(crackle, rnd(30, 180)); };
     crackle();
     return handle(A, o, [n], { onStop() { alive = false; } });
   },

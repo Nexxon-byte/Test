@@ -86,6 +86,19 @@ export async function boot() {
   };
   canvas.addEventListener('click', () => { if (!game.titleMode && !game.busy) input.lock(); });
 
+  // Entwicklung: direkt in eine Nacht (?skip&night=dock&seed=3&stufe=2&modules=flutlicht,salzkanone)
+  if (params.has('night')) {
+    const st = newCampaign('Prüfer', params.get('diff') || 'ratte');
+    st.flags.tutorial = params.has('tutorial');
+    st.flags.introDone = true;
+    st.stage = Number(params.get('stufe') || 2);
+    for (const m of (params.get('modules') || '').split(',').filter(Boolean)) { const [id, lv] = m.split(':'); st.modules[id] = Number(lv || 1); }
+    game.adoptState(st);
+    game.titleMode = false;
+    await game.devNight(params.get('night') || 'dock', Number(params.get('seed') || 7));
+    return;
+  }
+
   // Titel
   for (;;) {
     const cont = loadCampaign();

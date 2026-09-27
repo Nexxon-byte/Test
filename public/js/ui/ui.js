@@ -12,6 +12,7 @@ class UI {
     this.root = document.getElementById('ui');
     this.root.innerHTML = `
       <div id="hud" class="screen">
+        <div id="blood"></div>
         <div id="crosshair"></div>
         <div id="prompt"></div>
         <div id="noise"><i></i><i></i><i></i><i></i><i></i></div>
@@ -51,7 +52,7 @@ class UI {
       root: $('#hud'), prompt: $('#prompt'), cross: $('#crosshair'), noise: $('#noise'), stamina: $('#stamina'),
       kom: $('#kom'), komName: $('#kom .name'), komObj: $('#kom .obj'), komMsg: $('#kom .msg'), komRes: $('#kom .res'), komClock: $('#kom .clock'),
       bat: $('#bar-bat'), hints: $('#hints'), toasts: $('#toasts'), objective: $('#objective'), floorcard: $('#floorcard'),
-      slits: $('#hideslits'), echo: $('#echo-label'), chat: $('#chat'), chatin: $('#chatin'),
+      slits: $('#hideslits'), echo: $('#echo-label'), chat: $('#chat'), chatin: $('#chatin'), blood: $('#blood'),
     };
     this.hintMap = new Map();
     this.komQueue = [];
@@ -187,7 +188,16 @@ class UI {
   }
 
   setHidden(on) { this.hud.slits.classList.toggle('show', on); }
-  setEcho(on) { this.hud.echo.classList.toggle('show', on); }
+  setEcho(on, text = 'ECHO · WARTE AUF DIE ABFAHRT') { this.hud.echo.textContent = text; this.hud.echo.classList.toggle('show', on); }
+
+  // Roter Bildrand (0 … 1+), dead = entsättigt/dunkel
+  setBlood(v, dead = false) {
+    const k = Math.round(Math.max(0, Math.min(1, v)) * 100) / 100;
+    if (k === this._blood && dead === this._bloodDead) return;
+    this._blood = k; this._bloodDead = dead;
+    this.hud.blood.style.opacity = k;
+    this.hud.blood.classList.toggle('dead', dead);
+  }
 
   chatLine(name, text) {
     const l = el('div', 'ln', `<b>${escapeHtml(name)}:</b> ${escapeHtml(text)}`);

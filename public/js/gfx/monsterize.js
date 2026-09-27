@@ -50,6 +50,7 @@ export function monsterize(character, profileName) {
   });
   const state = {
     profile: prof, enabled: true,
+    frozen: false,           // erstarrt: Zuckungen halten ihre Stellung
     update(dt) {
       if (!state.enabled) return;
       for (const e of entries) {
@@ -59,9 +60,11 @@ export function monsterize(character, profileName) {
         if (cfg.rot) [rx, ry, rz] = cfg.rot;
         if (cfg.twitch) {
           // gelegentlich ruckartig ein neues Ziel, dazwischen fast Stillstand
-          e.t -= dt;
-          if (e.t <= 0) { e.target = (Math.random() * 2 - 1) * cfg.twitch; e.t = Math.random() * 2.5 / (prof.twitchRate || 0.5) + 0.05; }
-          e.twitch += (e.target - e.twitch) * Math.min(1, dt * 22);
+          if (!state.frozen) {
+            e.t -= dt;
+            if (e.t <= 0) { e.target = (Math.random() * 2 - 1) * cfg.twitch; e.t = Math.random() * 2.5 / (prof.twitchRate || 0.5) + 0.05; }
+            e.twitch += (e.target - e.twitch) * Math.min(1, dt * 22);
+          }
           rz += e.twitch; rx += e.twitch * 0.4;
         }
         if (rx || ry || rz) bone.quaternion.multiply(_q.setFromEuler(_e.set(rx, ry, rz)));

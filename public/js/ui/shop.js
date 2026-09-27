@@ -185,10 +185,10 @@ export async function nightReport(r) {
   const rows = [...groups.entries()].map(([n, g]) => `<li><span>${g.n}× ${escapeHtml(n)}</span><span>${g.v} M</span></li>`).join('') || '<li><span>Nichts.</span><span>0 M</span></li>';
   const s = panel('report', `<div class="panel report">
     <h2>ABRECHNUNG DER NACHT</h2>
-    <div class="sub">${escapeHtml(r.name || '')} · −${r.depth} · ${r.reason === 'ruf' ? 'Die Neunte fuhr um 03:07 von selbst.' : 'Rechtzeitig aufwärts.'}</div>
+    <div class="sub">${escapeHtml(r.name || '')} · −${r.depth} · ${r.reason === 'ruf' ? 'Die Neunte fuhr um 03:07 von selbst.' : r.reason === 'tod' ? 'Die Neunte holte, was von euch übrig war.' : 'Rechtzeitig aufwärts.'}</div>
     <h3>IN DER KABINE</h3><ul class="players">${rows}</ul>
     <div class="total"><span>SUMME</span><span>${r.broughtValue} M</span></div>
-    ${r.lost ? `<h3 style="color:var(--blood-hi)">VERSCHOLLEN</h3><p class="hintline">Du bist unten geblieben. Getragene Beute verloren: ${r.lostValue} M. Bestattungsgebühr der Bruderschaft: −${r.deathFee} M.<br>Die Kanzlei holt dich trotzdem zurück. Sie braucht jede Hand.</p>` : ''}
+    ${r.lost ? `<h3 style="color:var(--blood-hi)">VERSCHOLLEN</h3><p class="hintline">${r.reason === 'tod' ? 'Du bist unten gestorben.' : 'Du bist unten geblieben.'} Getragene Beute verloren: ${r.lostValue} M. Bestattungsgebühr der Bruderschaft: −${r.deathFee} M.<br>Die Kanzlei holt dich trotzdem zurück. Sie braucht jede Hand.</p>` : ''}
     <h3>ZEHNTWOCHE ${r.week}</h3>
     <p class="hintline" style="font-style:normal;color:var(--bone)">Nacht ${r.night} von 3 · verkauft ${r.sold} / ${r.quota} M · Fracht in der Kabine: ${r.cargoValue} M</p>
     ${r.tutorial ? '<p class="hintline">Trag die Beute aus der Kabine zur <b>Waage der Kantorei</b> (rechts vorne) und verkaufe sie mit <b>E</b>, während du sie hältst.</p>' : ''}
