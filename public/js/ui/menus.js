@@ -212,7 +212,7 @@ export function death(titleText, text, { coop = false, buttons = null } = {}) {
     document.getElementById('death')?.remove();
     const s = document.createElement('div');
     s.id = 'death';
-    s.className = 'active interactive';
+    s.className = 'screen active interactive';
     const row = buttons
       ? buttons.map(([id, label, ghost]) => `<button class="btn ${ghost ? 'ghost' : ''}" data-a="${id}">${escapeHtml(label)}</button>`).join('')
       : `${coop ? '<button class="btn" data-a="echo">ALS ECHO ZUSEHEN</button>' : '<button class="btn" data-a="retry">NOCH EINMAL</button>'}<button class="btn ghost" data-a="quit">ZUM TITEL</button>`;

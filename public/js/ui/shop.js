@@ -7,6 +7,7 @@ import { input } from '../core/input.js';
 import { MODULES, DEPTH_STAGES } from '../world/cab.js';
 import { saveCampaign, quotaFor } from '../game/state.js';
 import { SLATE } from '../story/lines.js';
+import { TOOLS } from '../game/items.js';
 
 const host = () => ui.menus();
 
@@ -57,6 +58,23 @@ const TOOL_SHOP = {
   sohlen: { name: 'Filzsohlen', price: [90, 180], desc: 'Leisere Schritte. Der Hörer wird es dir danken. Oder eben nicht.' },
 };
 
+// Voss: Waffen & Werkzeug (landen in der Neunten) · Patronen gehen direkt in die Tasche
+const VOSS_SHOP = {
+  brechstange: { price: 40 },
+  fackel:      { price: 25, lvl: 'VERBRAUCH' },
+  klapper:     { price: 15 },
+  salzsack:    { price: 20, lvl: 'VERBRAUCH' },
+  verband:     { price: 20, lvl: 'VERBRAUCH' },
+  hammer:      { price: 90 },
+  flinte:      { price: 260 },
+  patronen:    { price: 30, name: 'Salzpatronen ×4', lvl: 'MUNITION', desc: 'Grobkörnig, handgestopft, ein Kreuz auf dem Boden. Für die Salzflinte.' },
+};
+
+// Anselms Küche: sättigt, heilt, macht Mut
+const KITCHEN = {
+  suppe: { price: 15, name: 'Kesselsuppe', desc: 'Heilt dich ganz. In der nächsten Nacht hältst du beim Rennen länger durch.' },
+};
+
 function card({ title, lvl = '', desc, cost, can, btn = 'KAUFEN', id, cls = '' }) {
   return `<div class="card ${cls}"><h4>${escapeHtml(title)}</h4>${lvl ? `<div class="lvl">${lvl}</div>` : ''}<p>${escapeHtml(desc)}</p>
     <div class="cost ${can ? '' : 'no'}">${cost}</div><button class="btn" data-buy="${id}" ${can ? '' : 'disabled'}>${btn}</button></div>`;
@@ -87,11 +105,13 @@ export async function openShop(kind, game) {
         cards += card({ id: 'tool:' + id, title: t.name, lvl: `STUFE ${lv + 1}/${t.price.length}`, desc: t.desc, cost: `${p} M`, can: st.marks >= p });
       }
     } else if (kind === 'voss') {
-      title = 'VOSS · SCHWARZMARKT'; sub = 'Waffen, Heißware, Dinge ohne Kirchensiegel.';
-      speech = '„Die Waffenlieferung steckt noch im Schacht fest. Komm morgen wieder. Oder übermorgen. Voss hält Wort, irgendwann.“';
-      cards += card({ id: 'x', title: 'Salzflinte', desc: 'Zwei Schuss Salz, laut wie das Jüngste Gericht.', cost: 'BALD', can: false, btn: 'NICHT DA' });
-      cards += card({ id: 'x', title: 'Leuchtfackel', desc: 'Im Licht erstarren sie. Wirf weit.', cost: 'BALD', can: false, btn: 'NICHT DA' });
-      cards += card({ id: 'x', title: 'Klapper', desc: 'Macht Lärm, wo du nicht bist.', cost: 'BALD', can: false, btn: 'NICHT DA' });
+      title = 'VOSS · SCHWARZMARKT'; sub = 'Waffen, Heißware, Dinge ohne Kirchensiegel. Was du kaufst, liegt gleich in der Neunten.';
+      speech = '„Salz, Stahl und Feuer, frisch aus dem Schacht. Voss liefert bis in die Kabine. Voss fragt nicht, wofür.“';
+      for (const [id, w] of Object.entries(VOSS_SHOP)) {
+        const def = TOOLS[id];
+        const extra = id === 'patronen' ? `Im Beutel: ${st.consumables.patronen || 0}` : '';
+        cards += card({ id: 'voss:' + id, title: w.name || def.name, lvl: [w.lvl, extra].filter(Boolean).join(' · '), desc: w.desc || def.desc, cost: `${w.price} M`, can: st.marks >= w.price });
+      }
     } else if (kind === 'veit') {
       title = 'KANTOREI-ANNAHME'; sub = 'Leg Bergegut auf die Waage, um es zu verkaufen. Hier wird die Quote abgerechnet.';
       const left = Math.max(0, st.quota - st.sold);
@@ -102,6 +122,10 @@ export async function openShop(kind, game) {
     } else if (kind === 'anselm') {
       title = 'ANSELMS GARKÜCHE'; sub = 'Der Koch schreibt auf eine Schiefertafel.';
       speech = `<div class="slate">${escapeHtml(SLATE.anselm_hello)}</div>`;
+      for (const [id, k] of Object.entries(KITCHEN)) {
+        const had = id === 'suppe' && st.buffs?.suppe;
+        cards += card({ id: 'kitchen:' + id, title: k.name, lvl: had ? 'SATT' : '', desc: k.desc, cost: `${k.price} M`, can: !had && st.marks >= k.price, btn: had ? 'SATT' : 'ESSEN' });
+      }
     }
     const html = `<div class="panel">
       <h2>${title}</h2><div class="sub">${sub}</div>
@@ -125,6 +149,20 @@ export async function openShop(kind, game) {
     } else if (id === 'week') {
       const r = game.closeWeek();
       ui.toast(r.ok ? `Quote erfüllt · Bonus +${r.bonus} M · Neue Quote: ${st.quota} M` : 'Quote verfehlt. Die Kantoren nehmen die Hälfte eurer Marken und alles Bergegut.');
+    } else if (id.startsWith('voss:')) {
+      const t = id.slice(5), w = VOSS_SHOP[t];
+      if (!w || st.marks < w.price) return;
+      st.marks -= w.price;
+      if (t === 'patronen') { st.consumables.patronen = (st.consumables.patronen || 0) + 4; ui.toast('Vier Salzpatronen. In den Beutel damit.'); }
+      else { game.deliver(t); ui.toast(`${TOOLS[t].name} liegt in der Neunten.`); }
+      if (Math.random() < 0.6) voice.say('vo_buy', { interrupt: true });
+    } else if (id.startsWith('kitchen:')) {
+      const k = KITCHEN[id.slice(8)];
+      if (!k || st.marks < k.price) return;
+      st.marks -= k.price;
+      st.buffs = { ...(st.buffs || {}), suppe: true };
+      game.heal(100);
+      ui.toast('Die Suppe ist heiß und schmeckt nach Salz. Du fühlst dich stärker.');
     } else if (id.startsWith('tool:')) {
       const t = id.slice(5), lv = st.tools[t] || 0, p = TOOL_SHOP[t].price[lv];
       if (st.marks < p) return;

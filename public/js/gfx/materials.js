@@ -98,6 +98,8 @@ const DEFS = {
   coatGrey:      { tex: 'fabric', r: 1, m: 0, b: 0.5, c: 0x55524e, pbr: 'fabric' },
   coatBlue:      { tex: 'fabric', r: 1, m: 0, b: 0.5, c: 0x243040, pbr: 'fabric' },
   leather:       { tex: 'fabric', r: 0.6, m: 0, b: 0.8, c: 0x3a2418, pbr: 'leather' },
+  burlap:        { tex: 'fabric', r: 1, m: 0, b: 1.2, c: 0x8a7252, pbr: 'fabric' },
+  rope:          { tex: 'fabric', r: 1, m: 0, b: 0.8, c: 0x6a5238, pbr: 'fabric' },
 };
 
 export function mat(name) {

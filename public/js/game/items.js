@@ -60,6 +60,28 @@ export const LOOT = {
   munition:   { name: 'Munitionskiste', model: 'ammo_box', value: [30, 60], weight: 5, desc: 'Leer. Innen Salzkrümel.' },
 };
 
+// Werkzeuge & Waffen (Voss). Kein Bergegut: Wert 0, die Kantorei kauft sie nicht.
+// tool: Art der Benutzung (LMB) · view: Haltung in der Hand { len (m), pos, rot }
+export const TOOLS = {
+  brechstange: { name: 'Brechstange', model: 'crowbar_01', weight: 2.5, tool: 'melee', desc: 'Stahl, einen Meter lang, am Ende gekröpft. Hält Ratten auf Abstand. Fahrgäste lachen darüber.',
+    view: { len: 0.55, pos: [0, 0, 0.02], rot: [1.0, 0.35, -0.6] } },
+  hammer:      { name: 'Vorschlaghammer', model: 'sledgehammer_01', weight: 6, tool: 'hammer', desc: 'Langsam und schwer. Was er trifft, steht so bald nicht wieder auf.',
+    view: { len: 0.6, pos: [-0.03, -0.05, 0.03], rot: [0.95, 0.4, -0.6] } },
+  flinte:      { name: 'Salzflinte', model: 'bolt_action_rifle_7_62', weight: 4, tool: 'gun', ammo: 2, desc: 'Zwei Schuss grobes Salz. Laut wie das Jüngste Gericht – der Hörer hört es bis ans Ende der Ebene.',
+    view: { len: 0.95, pos: [0.2, 0.1, -0.15], rot: [0.04, Math.PI / 2 + 0.12, 0.12] } },
+  fackel:      { name: 'Leuchtfackel', model: 'stick_grenade', weight: 0.4, tool: 'flare', consumable: true, desc: 'Rotes Kirchenfeuer, 45 Sekunden. Wirf sie – im Licht erstarren die Fahrgäste.',
+    view: { len: 0.28, pos: [0.04, 0.04, 0], rot: [0.5, 0.3, -0.9] } },
+  klapper:     { name: 'Klapper', weight: 0.5, tool: 'decoy', desc: 'Eine Blechdose voller Schrauben an einer Schnur. Wirf sie, und alles, was hört, geht nachsehen.',
+    view: { len: 0.15, pos: [0.04, 0.03, 0], rot: [0.3, 0.5, 0.1] } },
+  salzsack:    { name: 'Salzsack', weight: 3, tool: 'salt', consumable: true, desc: 'Grobes Salz aus Bohrung Null. Eine Linie auf dem Boden – sie kommen nicht darüber.',
+    view: { len: 0.19, pos: [0.06, 0.02, -0.04], rot: [0.25, 0.6, 0.05] } },
+  verband:     { name: 'Verband', weight: 0.2, tool: 'heal', consumable: true, desc: 'Leinen, Jod und ein Gebet auf der Banderole. Heilt 35 Lebenspunkte.',
+    view: { len: 0.13, pos: [0.05, 0.03, 0], rot: [0.5, 0.7, 0.2] } },
+};
+
+export function itemDef(type) { return LOOT[type] || TOOLS[type]; }
+export function isTool(type) { return !!TOOLS[type]; }
+
 // Welche Beute wo liegt: [id, Gewichtung]
 export const SPAWN = {
   dock:        [['zahnrad', 3], ['spule', 3], ['zelle', 2], ['roehre', 2], ['oel', 3], ['munition', 2], ['gasmaske', 2], ['messgeraet', 2], ['platine', 2], ['feuerzeug', 2], ['koffer', 1], ['megafon', 1], ['funk', 0.6], ['zifferblatt', 0.4]],
@@ -94,13 +116,37 @@ const MODELS = {
   roehre(b) { b.cyl(mat('rubber'), 0, 0, 0, 0.04, 0.04, 0.03, 10); b.cyl(glowMat(0xff7a2a, 1.6, 'nixieGlow'), 0, 0.03, 0, 0.035, 0.035, 0.1, 10); b.sphere(glowMat(0xff7a2a, 1.6, 'nixieGlow'), 0, 0.13, 0, 0.035, 8, 6); },
   salzkristall(b) { for (let i = 0; i < 5; i++) b.add(glowMat(0xa8d8ff, 0.9, 'saltGlow'), coneGeometry(0.05 + i * 0.01, 0.3 - i * 0.03, 5), Math.cos(i * 1.3) * 0.06, 0.12, Math.sin(i * 1.3) * 0.06, Math.cos(i) * 0.3, i, Math.sin(i) * 0.3); },
   handy(b) { b.box(mat('rubber'), 0, 0.006, 0, 0.075, 0.012, 0.155); b.box(glowMat(0x0a1418, 0.4, 'screenDim'), 0, 0.013, 0, 0.068, 0.002, 0.142); },
+  // --- Werkzeuge ohne fertiges Modell
+  klapper(b) {
+    // Blechdose mit Deckel, durchgebohrt, Schrauben innen, Schnurschlaufe
+    b.cyl(mat('steel'), 0, 0, 0, 0.045, 0.045, 0.11, 12);
+    b.cyl(mat('rust'), 0, 0.11, 0, 0.047, 0.047, 0.012, 12);
+    b.cyl(mat('rust'), 0, 0, 0, 0.047, 0.047, 0.01, 12);
+    for (let i = 0; i < 3; i++) b.box(mat('brassDark'), Math.cos(i * 2.1) * 0.047, 0.03 + i * 0.03, Math.sin(i * 2.1) * 0.047, 0.012, 0.012, 0.012);
+    b.add(mat('rope'), new THREE.TorusGeometry(0.035, 0.004, 4, 12).toNonIndexed(), 0, 0.15, 0, 0, 0, 0);
+  },
+  salzsack(b) {
+    // Jutesack, oben zugebunden, Salz rieselt aus einer Ecke
+    b.sphere(mat('burlap'), 0, 0.1, 0, 0.12, 10, 8, 1, 0.85, 0.9);
+    b.cyl(mat('burlap'), 0, 0.19, 0, 0.035, 0.06, 0.07, 8);
+    b.cyl(mat('rope'), 0, 0.215, 0, 0.037, 0.037, 0.018, 8);
+    b.cyl(mat('burlap'), 0, 0.245, 0, 0.05, 0.03, 0.05, 8);
+    b.sphere(mat('salt'), 0.1, 0.012, 0.03, 0.05, 6, 4, 1, 0.25, 1);
+  },
+  verband(b) {
+    // Rolle Leinen mit Banderole
+    b.cyl(mat('fabricWhite'), 0, 0.03, 0, 0.032, 0.032, 0.06, 12, { rz: Math.PI / 2 });
+    b.cyl(mat('paper'), 0, 0.03, 0, 0.034, 0.034, 0.02, 12, { rz: Math.PI / 2 });
+    b.box(mat('fabricWhite'), 0.02, 0.003, 0.05, 0.05, 0.004, 0.06);
+  },
 };
 
 export function buildItemModel(type) {
-  const def = LOOT[type];
+  const def = itemDef(type);
   if (def?.model && hasModel(def.model)) {
     const g = cloneModel(def.model);
     g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    if (type === 'fackel') tintFlare(g);
     return g;
   }
   const g = new THREE.Group();
@@ -110,6 +156,16 @@ export function buildItemModel(type) {
   g.add(m);
   g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   return g;
+}
+
+// Leuchtfackel: der Kopf wird rot lackiert, mit Warnband
+function tintFlare(g) {
+  g.traverse(o => {
+    if (!o.isMesh) return;
+    o.material = o.material.clone();
+    o.material.color.setRGB(0.55, 0.06, 0.04);
+    o.material.roughness = 0.6;
+  });
 }
 
 // ----------------------------------------------------------------------------
@@ -130,11 +186,12 @@ export class ItemManager {
     this.time = 0;
   }
 
-  spawn(type, x, y, z, { value = null, ry = null, id = null } = {}) {
-    const def = LOOT[type];
+  spawn(type, x, y, z, { value = null, ry = null, id = null, data = null } = {}) {
+    const def = itemDef(type);
     const it = {
-      id: id ?? uid++, type, def, value: value ?? Math.round(def.value[0] + Math.random() * (def.value[1] - def.value[0])),
-      weight: def.weight, two: !!def.two, holder: null,
+      id: id ?? uid++, type, def, value: def.tool ? 0 : (value ?? Math.round(def.value[0] + Math.random() * (def.value[1] - def.value[0]))),
+      weight: def.weight, two: !!def.two, holder: null, tool: def.tool || null,
+      data: data ? { ...data } : (def.ammo ? { ammo: def.ammo } : null),
       mesh: buildItemModel(type), pos: new THREE.Vector3(x, y, z),
     };
     if (id !== null) uid = Math.max(uid, id + 1);
@@ -209,7 +266,7 @@ export class ItemManager {
   }
 
   serialize() {
-    return this.lying().map(it => ({ id: it.id, type: it.type, value: it.value, x: it.pos.x, y: it.pos.y, z: it.pos.z }));
+    return this.lying().map(it => ({ id: it.id, type: it.type, value: it.value, x: it.pos.x, y: it.pos.y, z: it.pos.z, data: it.data }));
   }
 }
 

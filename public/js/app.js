@@ -96,6 +96,9 @@ export async function boot() {
     game.adoptState(st);
     game.titleMode = false;
     await game.devNight(params.get('night') || 'dock', Number(params.get('seed') || 7));
+    // &tools=flinte,fackel → gleich in die Taschen; &patronen=6
+    st.consumables.patronen = Number(params.get('patronen') || 0);
+    for (const t of (params.get('tools') || '').split(',').filter(Boolean)) game._pickup(game.deliver(t));
     return;
   }
 

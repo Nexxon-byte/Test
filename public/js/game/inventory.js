@@ -14,7 +14,15 @@ export class Inventory {
     camera.add(this.view);
     this.viewModel = null;
     this.bob = 0;
+    this.pose = { x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0 };   // Zusatzhaltung (Schlag, Rückstoß) – setzt game/tools.js
+    // Streulicht der Lampe auf dem, was man in der Hand hält (reicht nur eine Armlänge weit)
+    this.fill = new THREE.PointLight(0xffe2c0, 0, 0.5, 2);
+    this.fill.position.set(-0.1, 0.05, -0.18);
+    camera.add(this.fill);
   }
+
+  // Helligkeit des Streulichts (folgt der Lampe)
+  setFill(level) { this.fill.intensity = this.viewModel ? 0.1 + level * 0.6 : 0; }
 
   get weight() {
     let w = this.hands ? this.hands.weight : 0;
@@ -22,6 +30,7 @@ export class Inventory {
     return w;
   }
 
+  // Wert des getragenen Bergeguts (Werkzeug zählt nicht)
   get value() {
     let v = this.hands ? this.hands.value : 0;
     for (const s of this.slots) if (s) v += s.value;
@@ -80,6 +89,22 @@ export class Inventory {
     if (!it) return;
     const m = buildItemModel(it.type);
     m.traverse(o => { if (o.isMesh) { o.castShadow = false; o.renderOrder = 9; } });
+    // Werkzeug: eigene Haltung (um die Mitte gedreht, auf Länge gebracht)
+    const v = it.def?.view;
+    if (v) {
+      const box = new THREE.Box3().setFromObject(m);
+      const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+      const k = v.len / Math.max(0.01, size.x, size.y, size.z);
+      const pivot = new THREE.Group();
+      m.position.sub(c);
+      pivot.add(m);
+      pivot.scale.setScalar(k);
+      pivot.position.set(...v.pos);
+      pivot.rotation.set(...v.rot);
+      this.view.add(pivot);
+      this.viewModel = pivot;
+      return;
+    }
     // echte Modelle haben Weltmaße → auf Handgröße bringen
     let k = 1;
     if (it.def?.model) {
@@ -94,7 +119,11 @@ export class Inventory {
 
   update(dt, moving) {
     this.bob += dt * (moving ? 8 : 1.5);
-    this.view.position.y = -0.2 + Math.sin(this.bob) * (moving ? 0.008 : 0.003);
-    this.view.position.x = -0.2 + Math.cos(this.bob * 0.5) * (moving ? 0.006 : 0.002);
+    const P = this.pose;
+    this.view.position.set(
+      -0.2 + Math.cos(this.bob * 0.5) * (moving ? 0.006 : 0.002) + P.x,
+      -0.2 + Math.sin(this.bob) * (moving ? 0.008 : 0.003) + P.y,
+      -0.42 + P.z);
+    this.view.rotation.set(P.rx, P.ry, P.rz);
   }
 }

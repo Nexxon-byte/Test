@@ -350,6 +350,8 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px;
 #scanlabels { position: absolute; inset: 0; }
 #scanlabels .scan { position: absolute; transform: translate(-50%, -100%); padding: 3px 8px; font-family: var(--mono); font-size: 16px; color: var(--kom); background: rgba(2,12,5,0.7); border: 1px solid rgba(141,255,168,0.4); text-shadow: 0 0 5px rgba(141,255,168,0.5); white-space: nowrap; animation: fadeIn 0.2s ease both; display: flex; gap: 10px; }
 #scanlabels .scan b { font-weight: normal; color: var(--bone); }
+#scanlabels .scan.tool { border-color: rgba(201,160,80,0.45); color: var(--gold); }
+#hotbar .slot.tool em { color: #9fb8a0; letter-spacing: 0.05em; }
 .panel.report .players li span:last-child { color: var(--gold-hi); }
 .panel.report .total { display: flex; justify-content: space-between; margin-top: 12px; font-family: var(--mono); font-size: 28px; color: var(--gold-hi); border-top: 1px solid rgba(201,160,80,0.3); padding-top: 8px; }
 

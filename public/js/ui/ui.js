@@ -169,15 +169,16 @@ class UI {
   }
 
   // Inventar-Leiste + Lebenspunkte
-  setHotbar(inv, hp) {
-    const key = inv.slots.map(s => s ? s.id : 0).join(',') + '|' + (inv.hands ? inv.hands.id : 0) + '|' + inv.active + '|' + Math.round(hp);
+  setHotbar(inv, hp, shells = 0) {
+    const tag = (s) => s.tool ? (s.data?.ammo !== undefined ? `${s.data.ammo}/2 · +${shells}` : 'WERKZEUG') : `${s.value} M`;
+    const key = inv.slots.map(s => s ? s.id + ':' + (s.data?.ammo ?? '') : 0).join(',') + '|' + (inv.hands ? inv.hands.id : 0) + '|' + inv.active + '|' + Math.round(hp) + '|' + shells;
     if (key === this._hotKey) return;
     this._hotKey = key;
     const root = document.querySelector('#hotbar .slots');
     let html = '';
     for (let i = 0; i < 4; i++) {
       const s = inv.slots[i];
-      html += `<div class="slot ${i === inv.active && !inv.hands ? 'sel' : ''} ${s ? 'full' : ''}"><span class="k">${i + 1}</span>${s ? `<b>${escapeHtml(s.def.name)}</b><em>${s.value} M</em>` : ''}</div>`;
+      html += `<div class="slot ${i === inv.active && !inv.hands ? 'sel' : ''} ${s ? 'full' : ''} ${s?.tool ? 'tool' : ''}"><span class="k">${i + 1}</span>${s ? `<b>${escapeHtml(s.def.name)}</b><em>${tag(s)}</em>` : ''}</div>`;
     }
     if (inv.hands) html += `<div class="slot hands sel full"><span class="k">✋</span><b>${escapeHtml(inv.hands.def.name)}</b><em>${inv.hands.value} M · schwer</em></div>`;
     root.innerHTML = html;

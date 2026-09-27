@@ -12,6 +12,7 @@ import { THEMES, applyThemeEnvironment } from '../world/themes.js';
 import { Hub, HUB_THEME } from '../world/hub.js';
 import { Player } from './player.js';
 import { ItemManager, LOOT, SPAWN, TIER_VALUE, pickLoot } from './items.js';
+import { Tools } from './tools.js';
 import { Inventory } from './inventory.js';
 import { Interactions } from './interact.js';
 import { saveCampaign, quotaFor, nameWithLetters, DIFFICULTY } from './state.js';
@@ -71,6 +72,7 @@ export class Game {
     this.loops = [];
 
     this.director = new Director(this);
+    this.tools = new Tools(this);
     this._applyCampaignToCab();
     this._wireCabin();
     this._wireGate();
@@ -162,6 +164,7 @@ export class Game {
 
   _clearWorld() {
     this.director.clear();
+    this.tools.clear();
     if (this.world) {
       this.world.dispose(this.R.scene, this.col);
       this.world = null;
@@ -212,7 +215,7 @@ export class Game {
     // Beute, die oben in der Kabine liegt (noch nicht verkauft)
     for (const c of this.state.cargo) {
       if (this.items.items.has(c.id)) continue;
-      this.items.spawn(c.type, c.x, c.y, c.z, { value: c.value, id: c.id });
+      this.items.spawn(c.type, c.x, c.y, c.z, { value: c.value, id: c.id, data: c.data });
     }
     this._wireItems();
   }
@@ -225,7 +228,7 @@ export class Game {
   _itemEntry(it) {
     it.entry = this.interact.add({
       tag: 'item', pos: () => it.holder ? null : _v.copy(it.pos).setY(it.pos.y + 0.12), radius: 0.35, maxDist: 2.3, priority: 0.1,
-      prompt: () => `${it.def.name} aufheben`, sub: () => `${it.value} M · ${it.weight} kg${it.two ? ' · beide Hände' : ''}`,
+      prompt: () => `${it.def.name} aufheben`, sub: () => it.tool ? `Werkzeug · ${it.weight} kg` : `${it.value} M · ${it.weight} kg${it.two ? ' · beide Hände' : ''}`,
       enabled: () => !it.holder && !this.busy && this.mode !== 'ride',
       onUse: () => this._pickup(it),
     });
@@ -359,6 +362,7 @@ export class Game {
     this._removeCargo(it.id);
     audio.play('pickup');
     if (it.two) ui.hint('two', 'G', 'Schweres fallen lassen');
+    else if (it.tool) ui.hint('tool', 'LMT', it.tool === 'gun' ? 'Schießen · R: nachladen' : it.tool === 'heal' ? 'Verband anlegen' : ['flare', 'decoy'].includes(it.tool) ? 'Werfen' : it.tool === 'salt' ? 'Salzlinie streuen' : 'Zuschlagen', 8);
     else ui.hint('slots', '1–4', 'Taschen wechseln · G: fallen lassen · Q: Scannen', 8);
     this._updateKom();
   }
@@ -378,9 +382,20 @@ export class Game {
 
   _removeCargo(id) { this.state.cargo = this.state.cargo.filter(c => c.id !== id); }
 
+  // Gekauftes Werkzeug landet in der Kabine (und wird als Fracht gemerkt)
+  deliver(type) {
+    const p = this._freeCabSpot();
+    const it = this.items.spawn(type, p.x, 0, p.z);
+    this._itemEntry(it);
+    this.state.cargo.push({ id: it.id, type, value: 0, x: p.x, y: 0, z: p.z, data: it.data });
+    audio.play('clunk', { pos: new THREE.Vector3(p.x, 0.2, p.z), vol: 0.3 });
+    return it;
+  }
+
   _sellHeld() {
     const it = this.inv.current;
     if (!it) { ui.toast('Halte ein Stück Bergegut, um es auf die Waage zu legen.'); return; }
+    if (it.tool) { ui.toast('Die Kantorei kauft kein Werkzeug. Nur Bergegut.'); return; }
     this.inv.takeCurrent();
     this.items.remove(it.id);
     this.state.marks += it.value;
@@ -420,7 +435,7 @@ export class Game {
       if (_v.z > 1 || Math.abs(_v.x) > 1.05 || Math.abs(_v.y) > 1.05) continue;
       const x = (_v.x * 0.5 + 0.5) * w, y = (-_v.y * 0.5 + 0.5) * h;
       total += it.value;
-      html += `<div class="scan" style="left:${x | 0}px;top:${y | 0}px;opacity:${clamp(1.2 - d / 20, 0.3, 1)}"><b>${it.def.name}</b><span>${it.value} M</span></div>`;
+      html += `<div class="scan${it.tool ? ' tool' : ''}" style="left:${x | 0}px;top:${y | 0}px;opacity:${clamp(1.2 - d / 20, 0.3, 1)}"><b>${it.def.name}</b><span>${it.tool ? 'Werkzeug' : it.value + ' M'}</span></div>`;
     }
     host.innerHTML = html;
   }
@@ -575,6 +590,9 @@ export class Game {
     this.nightEvents = {};
     this.hp = Math.max(this.hp, 100);
     this.echo = false;
+    // Anselms Suppe: längerer Atem für diese Nacht
+    this._applyCampaignToCab();
+    if (this.state.buffs?.suppe) { this.player.stats.staminaMax *= 1.35; this.player.applyStats(); }
     this.director.startNight(this.world, this.nightInfo, this.state);
     this.player.toggleLamp(true);
     audio.play('lampClick', { on: true });
@@ -696,7 +714,7 @@ export class Game {
     // Abrechnung: was liegt im Kabinenraum + was getragen wird
     const inCab = this.items.inside((p) => this.elev.contains(p));
     const held = lost ? [] : [this.inv.hands, ...this.inv.slots].filter(Boolean);
-    const brought = [...inCab, ...held];
+    const brought = [...inCab, ...held].filter(it => !it.tool);
     const outside = this.items.lying().filter(it => !this.elev.contains(it.pos));
     for (const it of outside) { this.items.remove(it.id); if (it.fixture) this.pool.remove(it.fixture); }
     const broughtValue = brought.reduce((s, i) => s + i.value, 0);
@@ -744,6 +762,7 @@ export class Game {
     const st = this.state;
     st.night += 1;
     st.stats.nights += 1;
+    if (st.buffs) st.buffs.suppe = false;
     st.stats.bestNight = Math.max(st.stats.bestNight, broughtValue);
     if (lost) { st.stats.deaths += 1; st.stats.lost += lostValue; }
     // Kabinenbeute als Fracht merken (liegt oben in der Kabine)
@@ -753,7 +772,7 @@ export class Game {
       this.items.drop(it, p.x, 0, p.z, Math.random() * 6);
     }
     this.inv.removeAll();
-    st.cargo = this.items.lying().filter(it => this.elev.contains(it.pos)).map(it => ({ id: it.id, type: it.type, value: it.value, x: it.pos.x, y: it.pos.y, z: it.pos.z }));
+    st.cargo = this.items.lying().filter(it => this.elev.contains(it.pos)).map(it => ({ id: it.id, type: it.type, value: it.value, x: it.pos.x, y: it.pos.y, z: it.pos.z, data: it.data }));
     const deathFee = lost ? Math.min(st.marks, Math.round(30 + st.week * 20)) : 0;
     st.marks -= deathFee;
     const tut = st.flags.tutorial;
@@ -801,8 +820,9 @@ export class Game {
     }
     const d = DIFFICULTY[st.difficulty] || DIFFICULTY.ratte;
     st.marks = Math.floor(st.marks / 2);
-    st.cargo = [];
-    for (const it of [...this.items.items.values()]) this.items.remove(it.id);
+    // Die Kantoren nehmen alles Bergegut – Werkzeug lassen sie liegen
+    st.cargo = st.cargo.filter(c => !LOOT[c.type]);
+    for (const it of [...this.items.items.values()]) if (!it.tool) this.items.remove(it.id);
     st.night = 0; st.sold = 0;
     if (d.fail === 'debt') st.quota = Math.round(st.quota * 1.1);
     saveCampaign(st);
@@ -904,6 +924,8 @@ export class Game {
       if (input.hit('KeyG')) { this._dropCurrent(); ui.hintDone('two'); }
       for (let i = 0; i < 4; i++) if (input.hit('Digit' + (i + 1))) { this.inv.select(i); ui.hintDone('slots'); }
       if (input.hit('KeyE') && this.interact.best) { this.interact.best.onUse(); ui.hintDone('use'); }
+      if (input.mouseClicked && input.locked && this.mode !== 'ride' && this.tools.use()) ui.hintDone('tool');
+      if (input.hit('KeyR') && this.tools.current?.tool === 'gun' && this.tools.reload()) ui.hintDone('reload');
       if (input.down('KeyW') || input.down('KeyA') || input.down('KeyS') || input.down('KeyD')) ui.hintDone('move');
     }
     this.scanCooldown = Math.max(0, this.scanCooldown - dt);
@@ -913,7 +935,9 @@ export class Game {
     p.slow = 1 - Math.min(0.45, w * 0.018);
     p.hideLampModel = !!this.inv.hands;
     p.update(dt);
+    this.tools.update(dt);
     this.inv.update(dt, p.moving);
+    this.inv.setFill(p.lampLevel ?? 0);
     p.shake = Math.max(p.shake, this.elev.shake * 0.6);
     this.elev.update(dt);
     // Fahrgefühl: Einsacken beim Bremsen, leichtes Rollen in den Führungen
@@ -966,7 +990,7 @@ export class Game {
     ui.setKom({ battery: p.battery, clock: this._clockText() });
     ui.setStamina(p.stamina, p.stamina < 0.98);
     ui.setNoise(p.noise);
-    ui.setHotbar?.(this.inv, this.hp);
+    ui.setHotbar?.(this.inv, this.hp, this.state.consumables?.patronen || 0);
     this._updateScanLabels();
     audio.updateListener(this.R.camera);
   }

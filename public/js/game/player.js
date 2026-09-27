@@ -241,7 +241,7 @@ export class Player {
     this.eye = damp(this.eye, targetEye, 9, dt);
 
     // Kurbeln
-    this.cranking = canMove && input.down('KeyR') && this.battery < 1;
+    this.cranking = canMove && !this.noCrank && input.down('KeyR') && this.battery < 1;
     if (this.cranking) {
       this.battery = Math.min(1, this.battery + st.crankRate * dt);
       this.crank.rotation.z += dt * 14;
