@@ -36,6 +36,8 @@ import { GoldMark } from './goldmark.js';
 import { TOOLS, buildItemModel } from './items.js';
 import * as menus from '../ui/menus.js';
 import { withLoading } from '../ui/loading.js';
+import { placeDocuments, clearDocuments } from './documents.js';
+import { openJournal } from '../ui/journal.js';
 
 export { FLOORS };
 
@@ -170,6 +172,7 @@ export class Game {
     this.director.clear();
     this.tools.clear();
     this.contracts.clear();
+    clearDocuments(this);
     if (this.world) {
       this.world.dispose(this.R.scene, this.col);
       this.world = null;
@@ -583,6 +586,7 @@ export class Game {
     this._startEmitters(level);
     this._spawnLoot(level, theme);
     this.contracts.setup(level, this.nightInfo, this.state);
+    placeDocuments(this, level, this.nightInfo);   // Fundstücke (Dokumente) an ruhigen Stellen
     this.mode = 'night';
   }
 
@@ -1059,6 +1063,7 @@ export class Game {
     if (!this.busy && input.enabled) {
       if (input.hit('KeyF')) { if (p.toggleLamp()) audio.play('lampClick', { on: p.lampOn }); ui.hintDone('lamp'); }
       if (input.hit('KeyQ') && this.mode !== 'ride') { this._scan(); ui.hintDone('scan'); }
+      if (input.hit('Tab') && this.mode !== 'ride') { ui.hintDone('journal'); this._openPanel(() => openJournal(this)); }
       if (input.hit('KeyG')) { this._dropCurrent(); ui.hintDone('two'); }
       for (let i = 0; i < 4; i++) if (input.hit('Digit' + (i + 1))) { this.inv.select(i); ui.hintDone('slots'); }
       if (input.hit('KeyE') && this.interact.best) { this.interact.best.onUse(); ui.hintDone('use'); }

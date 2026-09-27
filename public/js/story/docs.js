@@ -1,46 +1,59 @@
-// TIEFER – Dokumente. Platzhalter: {name} {NAME} {initial} {tally}
+// TIEFER – Dokumente (Hybrid-Fassung: Mannschaft 47, Bergungsverträge).
+// Platzhalter (game/documents.js → docText): {name} Name der Mannschaftsführung (abgegebene Buchstaben fehlen),
+//   {NAME} dasselbe in Großbuchstaben, {initial} erster Buchstabe, {tally} Nächte der Mannschaft bisher.
 // Stil: note (Schreibmaschine) · hand (Handschrift) · church (Kirchenschrift) · terminal (Phosphor)
 //       chalk (Kreide der Stummen) · tape (Tonwalze, ggf. vertont über voice-IDs) · child (Kinderschrift)
-// chain: gehört zu einer Nebengeschichte (Zähler im Tagebuch)
+// chain: gehört zu einer Nebengeschichte (Reihenfolge + Zähler im Tagebuch: game/documents.js → CHAINS).
+// Wo welches Dokument liegt, steht in game/documents.js → PLACEMENT (spätere Tiefen werden noch nicht verteilt).
+// Twists: Vorgänger-Mannschaften nur andeuten (erst −99 deutlich), Dieter nur Vorahnungen (erst −∞ Gewissheit),
+//   die Vermittlerin nie als Maske des Chors entlarven, bevor Margaretes Band (−66) gefunden ist.
 
 export const DOCS = {
 
-  // ======================================================================= PROLOG
+  // ======================================================================= OBEN & VORGESCHICHTE
+  // (Bergungsvertrag der 46 und Neunerspiel liegen in der Ladebucht, das Wachbuch im Skriptorium,
+  //  die Zehntkabine steht oben in Markt Neun)
   d_auftrag: {
-    title: 'Dienstauftrag Nr. 0907', style: 'terminal', meta: 'BRUDERSCHAFT VOM SEIL · DISPOSITION SOCKEL-OST',
-    text: `AUFTRAG:     NOTRUF SCHACHT NULL
-KABINE:      9 (HEILIG · VERSIEGELT)
-ZEIT:        03:07
-MELDUNG:     PERSON EINGESCHLOSSEN. STIMME WEINT.
-ZUSTÄNDIG:   {NAME}, SEILKIND, NIEDERSTE WEIHE
+    title: 'Bergungsvertrag Nr. 46', style: 'terminal', meta: 'HOHE KANZLEI · BRUDERSCHAFT VOM SEIL · DISPOSITION SOCKEL-OST', chain: 'mannschaften',
+    text: `VERTRAG:    BERGUNG SCHACHT NULL · NR. 46
+NEHMER:     MANNSCHAFT 46 · VIER SEELEN
+KABINE:     9 · „DIE NEUNTE“ · ENTWEIHT · LEIHWEISE
+PFLICHT:    BERGEGUT NACH QUOTE, JE ZEHNTWOCHE
+ENTGELT:    MARKEN · SCHULDENERLASS · SEGEN
+VERFEHLT:   DIE MANNSCHAFT GILT ALS ERWÄHLT.
+            DIE KANZLEI GRATULIERT DEN FAMILIEN.
 
-HINWEIS DER DISPOSITION:
-Kabine 9 darf nur von Geweihten berührt werden.
-Du bist geweiht. Knapp, aber geweiht.
-Morgen ist der Achtzehnte Ruf. Wenn die Kanzlei
-erfährt, dass jemand in der Heiligen Kabine sitzt,
-fliegen Köpfe. Deiner zuerst, meiner gleich danach.
-Hol die Person raus. Frag nichts. Schreib nichts auf.
+§ 3   DIE NEUNTE FÄHRT UM 03:07 HINAUF.
+      MIT ODER OHNE MANNSCHAFT.
+§ 7   WAS UNTEN SPRICHT, WIRD NICHT BEANTWORTET.
+§ 12  WENN DAS KABINENTELEFON KLINGELT,
+      GEHT MAN RAN.
 
-Weiheschlüssel liegt im Wachhäuschen.
-Möge das Seil dich halten.
+NACHTRAG DER DISPOSITION:
+Ihr seid die Sechsundvierzigste. Die Quote ist
+zu schaffen, ich hab nachgerechnet. Zweimal.
+Kommt zurück. Dann gibt's Kaffee.
                                     – Br. Dieter`,
   },
 
   d_wachbuch: {
-    title: 'Wachbuch der Transithalle', style: 'hand', meta: 'Nachtwache O. Pohl · ab 594 n. F.', chain: 'oskar',
-    text: `594, Nacht des Achtzehnten Rufs.
-Die Schachtratte, die sie runtergeschickt haben, ist nicht zurückgekommen. Ab heute Nachtdienst: Pohl, O.
+    title: 'Wachbuch am Schachtkopf', style: 'hand', meta: 'Nachtwache O. Pohl · Schacht der Neunten · ab 594 n. F.', chain: 'oskar',
+    text: `594. Die Kanzlei hat Schacht Null aufgemacht. Sie nennen es Bergungsvertrag. Ich nenne es Nachtdienst. Ab heute: Pohl, O.
 
-595. 03:07 Ruf aus Kabine Neun. Nicht abgenommen. Vorschrift.
-596. 03:07. Nicht abgenommen.
-601. 03:07. Ich habe angefangen, Gedichte zu schreiben. Die Nächte sind lang.
-608. 03:07. Das Klingeln klingt jetzt anders. Weicher.
-612. Br. Dieter ist gestorben. Er hat bis zuletzt gefragt, ob sich die Neun gemeldet hat.
-619. 03:07. Ich habe die Hand auf dem Hörer gehabt. Zwölf Minuten.
+594. 03:07. Die Neunte kommt hoch. Mannschaft 1, vollzählig. Sie lachen und zeigen Messing.
+595. 03:07. Mannschaft 3. Zwei fehlen. Keiner lacht.
+599. Mannschaft 12 kommt nicht mehr. Br. Dieter hat bis Sonnenaufgang am Gitter gewartet.
+601. Ich habe angefangen, Gedichte zu schreiben. Die Nächte sind lang.
+608. 03:07. Das Kabinentelefon klingelt jetzt auch, wenn die Neunte oben steht. Das Klingeln klingt weicher.
+611. Mannschaft 46 fährt. Br. Dieter gibt jedem die Hand. Das hat er noch nie gemacht.
+612. 03:07. Die Neunte kommt leer hoch.
+612. Br. Dieter fährt selbst.
+
+(Hier fehlen Seiten. Sauber herausgetrennt, mit einem Lineal.)
+
 626. 03:07. Ich habe abgenommen.
 
-Da war jemand. Jemand hat geweint und gesagt: „Ich bin in der Kabine eingeschlossen. Bitte. Ich weiß nicht mehr, wie ich heiße.“
+Jemand hat geweint und gesagt: „Wir sind in der Kabine eingeschlossen. Bitte. Ich weiß nicht mehr, wie ich heiße.“
 
 Ich gehe runter. Heute gehe ich ran.`,
   },
@@ -91,7 +104,7 @@ BITTE.`,
 
   // ======================================================================= −2 LADEBUCHT
   d_proklamation: {
-    title: 'Proklamation zum Achtzehnten Ruf', style: 'church', meta: 'Gedruckt auf Zehntpapier · 594 n. F.',
+    title: 'Proklamation zum Achtzehnten Ruf', style: 'church', meta: 'Gedruckt auf Zehntpapier · 594 n. F. · vergilbt, an allen Ecken angeschlagen',
     text: `Gläubige der Spindel!
 
 In der Nacht zum dritten November öffnet sich die Neunte Kabine zum achtzehnten Mal seit der Ersten Fahrt.
@@ -131,7 +144,11 @@ FEHLER: EMPFÄNGER UNBEKANNT
 FEHLER: EMPFÄNGER UNBEKANNT
 FEHLER: EMPFÄNGER ANTWORTET
 
-LIEFERUNG 0-2213   STORNIERT.  GRUND: "ZU LAUT"`,
+LIEFERUNG 0-2213   STORNIERT.  GRUND: "ZU LAUT"
+
+LIEFERUNG 0-2214   ZIEL: SCHACHT NULL / UNTERSTE EBENE
+INHALT: 3 KISTEN  "GEWOGEN UND GESEGNET"
+BESTÄTIGT: KANTOREI  /  ÜBERGABE: NACHTS`,
   },
 
   d_flugblatt: {
@@ -147,6 +164,15 @@ Wir sagen: Ohne unten gibt es kein oben.
 
 Streik am Tag nach dem Ruf. Sagt es weiter. Aber nicht in Aufzügen.
 Die Aufzüge hören zu.`,
+  },
+
+  d_anselm_rezept_4: {
+    title: 'Rezeptblatt (4/4)', style: 'hand', meta: 'Weinflecken · die letzte Seite', chain: 'anselm',
+    text: `Birnen in Wein
+Die Birnen hat Tobias besorgt, für Mira. Ich soll nichts sagen. Ich sage ja nie etwas.
+Schälen, halbieren, das Kerngehäuse raus. Wein, Honig, eine Nelke. Langsam ziehen lassen, bis sie glänzen wie Messing.
+Margarete hat mir gesagt, wohin die Kabine fährt. Ich habe trotzdem gekocht.
+Ein Koch lässt seine Gäste nicht hungrig gehen. Auch nicht nach unten.`,
   },
 
   // ======================================================================= −7 SKRIPTORIUM
@@ -235,24 +261,30 @@ SUCHE: "ADEBAYO"
    887.411  ADEBAYO, NIA     NICHT GEZEHNTET  STATUS: VOLLSTÄNDIG (?)
    887.412  ADEBAYO, JOMO    NICHT GEZEHNTET  STATUS: —
 
+SUCHE: "MANNSCHAFT"
+ 46 TREFFER.  ZUGRIFF NUR FÜR DIE HOHE KANZLEI.
+
 SUCHE: "{NAME}"
- ???.???    {NAME}           GEZEHNTET 594    STATUS: AUSSTEHEND
-                                              STATUS: AUSSTEHEND
-                                              STATUS: AUSSTEHEND`,
+ ???.???    {NAME}           MANNSCHAFT 47    STATUS: VORGEMERKT
+                                              STATUS: VORGEMERKT
+                                              STATUS: VORGEMERKT`,
   },
 
   d_you_1: {
-    title: 'Zettel, in ein Regal gesteckt', style: 'hand', meta: 'Kaum lesbar', chain: 'you',
-    text: `Glaub dem Telefon nicht.
+    title: 'Zettel, in ein Regal gesteckt', style: 'hand', meta: 'Bleistift, kaum lesbar · auf der Rückseite „M. 36“', chain: 'mannschaften',
+    text: `Wer das findet: Glaub dem Telefon nicht alles.
 Sie ist nett. Sie ist immer nett.
 Sie ist nett, bis du ihr sagst, wer du bist.
 
-– {initial}.`,
+Wir haben ihr zwei Buchstaben gegeben, für eine Lampe, die nicht ausgeht. Sie geht wirklich nicht aus.
+Ich weiß nur nicht mehr, wie ich mit Nachnamen heiße.
+
+– L., Mannschaft 36`,
   },
 
   // ======================================================================= −13 SAAL DER VIERZIG
   d_menukarte: {
-    title: 'Speisefolge zur Ersten Fahrt', style: 'church', meta: 'Goldschnitt, Weinflecken',
+    title: 'Speisefolge zur Ersten Fahrt', style: 'church', meta: 'Goldschnitt, Weinflecken', chain: 'vierzig',
     text: `FESTMAHL DER VIERZIG
 Silvester, im Jahre 33 nach der Flut
 
@@ -329,15 +361,21 @@ Eine Zwiebel für die Tränen, damit keiner fragt, warum man weint.`,
 
   // ======================================================================= −17 BEINHAUS
   d_kenotaph: {
-    title: 'Kenotaph im Beinhaus', style: 'church', meta: 'In Stein gehauen, frisch nachgezogen',
-    text: `HIER RUHT NICHT
-{NAME}
-SEILKIND DER BRUDERSCHAFT VOM SEIL
-VERSCHOLLEN IM DIENST
-IN DER NACHT DES ACHTZEHNTEN RUFES
-594 NACH DER FLUT
+    title: 'Kenotaph der Bergungsmannschaften', style: 'church', meta: 'In Stein gehauen · die letzte Zeile ist frisch', chain: 'mannschaften',
+    text: `HIER RUHEN NICHT
+DIE MANNSCHAFTEN DER BERGUNGSVERTRÄGE
+VERSCHOLLEN IM DIENST AN SCHACHT NULL
 
-„Hielt die Stadt oben.“`,
+I · II · III · IV · V · VI · VII · VIII · IX · X
+XI · XII · XIII · XIV · XV · XVI · XVII · XVIII
+(Zeile um Zeile, eng gemeißelt, bis:)
+XLIV · XLV · XLVI
+
+„Sie hielten die Stadt oben.“
+Gestiftet von der Disposition Sockel-Ost.
+
+Darunter, frisch in den Stein gezogen, der Staub liegt noch in den Kerben:
+XLVII · {initial}`,
   },
 
   d_totenlitanei: {
@@ -362,17 +400,22 @@ Kabine, trage uns nicht tiefer, als wir zu gehen bereit sind.`,
 § 13 Die Messinghand wird nach zwanzig Dienstjahren verliehen. Auf Antrag früher, bei Verlust der eigenen.
 § 33 Wenn die Heilige Kabine ruft, geht niemand ran.
 
-(Randbemerkung, Bleistift:) „Außer Dieter. Dieter geht immer ran.“`,
+(Randbemerkung, Bleistift:) „Außer Dieter. Dieter geht immer ran.“
+
+(Eingeklebt, mit dem Stempel der Kanzlei, 594:) § 4 und § 5 sind für die Dauer der Bergungsverträge ausgesetzt. § 33 bleibt in Kraft.`,
   },
 
   d_dieter_grab: {
-    title: 'Grabplatte', style: 'church', meta: 'Schlicht, ohne Schmuck',
-    text: `BR. DIETER KALTENBACH
-548 – 612
-DISPONENT DER BRUDERSCHAFT
+    title: 'Grabplatte ohne Sterbejahr', style: 'church', meta: 'Schlicht, verrußt · davor ein Blechbecher Kaffee, kalt',
+    text: `BR. ··········
+(der Name ist unter Kerzenruß verschwunden)
+548 –
+DISPONENT DER BRUDERSCHAFT VOM SEIL
 
 Er hat nie jemanden zurückgelassen.
-Bis auf einen.`,
+Also ist er ihnen nachgegangen.
+
+(Wo das Sterbejahr stehen müsste, ist der Stein glatt. Jemand hat mit Kreide eine Zahl hineingeschrieben. Jemand anderes hat sie weggewischt.)`,
   },
 
   d_brenner_brief_1: {
@@ -384,6 +427,15 @@ Papa baut einen Turm, der aus dem Meer wächst. Wenn er fertig ist, wohnen wir g
 Papa baut auch noch einen kleinen Aufzug. Der fährt in die andere Richtung. Frag mich nicht danach, ja? Und wenn eines Tages jemand sagt, du sollst mit diesem Aufzug fahren, dann sagst du Nein. Auch wenn es der Onkel Kessler ist.
 
 Dein Papa`,
+  },
+
+  d_anselm_rezept_3: {
+    title: 'Rezeptblatt (3/4)', style: 'hand', meta: 'Fettfleck · eine Taubenfeder zwischen den Seiten', chain: 'anselm',
+    text: `Gebratene Taube mit Kräutern
+Es gibt keine Tauben mehr. Es gab vier, im Schlag der Krone, und der Erbauer wollte sie auf dem Tisch.
+Ich habe drei gebraten und eine fliegen lassen. Keiner hat nachgezählt.
+Kräuter: was auf dem Dach wächst. Thymian, wenn Gott will. Salz, wenn nicht.
+Wenn sie fragen, wohin die vierte ist: nach oben. Das glauben sie gern.`,
   },
 
   // ======================================================================= −21 STILLE GEMEINDE
@@ -409,6 +461,8 @@ Wer fällt, dessen Namen schreiben wir an die Wand.`,
 die Messungen der Statiker bestätigen erneut: Die Spindel sinkt, sobald der Zehnt ausbleibt. Im Jahr 580 fiel er für elf Tage aus (Streik der Schachtratten). Die Spindel sackte um 4 Zentimeter.
 
 Wir empfehlen, die Zahl der Erwählten beim kommenden Ruf zu erhöhen.
+
+Reicht das nicht, empfehlen wir, Schacht Null zu öffnen. Unten liegt genug, was sich bergen lässt, und die Bruderschaft hat genug Seilkinder, die niemand vermissen würde.
 
 Wir empfehlen außerdem, die Lehre nicht zu ändern.
 Die Menschen müssen glauben, dass es hinaufgeht.
@@ -466,7 +520,8 @@ Wie viele Menschen müssen freiwillig etwas geben, damit ein Vater seine Tochter
 „Erbauer, nimm mich beim nächsten Ruf. Hier oben ist nichts mehr.“
 „Warum antwortet ihr nicht?“
 „Ihr antwortet. Das ist schlimmer.“
-„297: Ich habe mein Ohr auf den Stein gelegt. Sie singen nicht. Sie rufen.“`,
+„297: Ich habe mein Ohr auf den Stein gelegt. Sie singen nicht. Sie rufen.“
+„Mira, Mannschaft 19. Zähl weiter. Bei zweihundertundeins sind wir da. – Mama“`,
   },
 
   d_nia_1: {
@@ -576,6 +631,8 @@ Ich gehe jetzt hinunter. Ich werde versuchen, laut zu bleiben. Wenn Sie ein Raus
 Der Heilige Chor ist kein Himmel. Er ist ein Ding unter dem Salz, das Stimmen sammelt, und wir füttern es. Die Kanzlei nennt es „Quelle Null“ und „Statik“, weil sie glaubt, es hält die Spindel über dem Abgrund.
 
 Vielleicht tut es das. Vielleicht steht unsere ganze Stadt auf einem Magen.
+
+Und die Kanzlei hat einen Plan für den Tag, an dem der Zehnt nicht mehr reicht: Sie will Schacht Null öffnen und es Bergung nennen. Man holt Messing herauf und verkauft es der Kantorei, und die Kantorei schickt es nachts durch die Leitungen wieder hinunter. Die Leitungen fließen nur in eine Richtung.
 
 Ich werde es beim Achtzehnten Ruf verkünden, von der Kanzel. Vor allen Erwählten.
 
@@ -711,25 +768,34 @@ deine ilse
   },
 
   d_you_2: {
-    title: 'Zettel an der Wand', style: 'hand', meta: 'Deine Handschrift', chain: 'you',
-    text: `{name},
+    title: 'Zettel an der Wand', style: 'hand', meta: 'Bleistift auf Tapete · unterschrieben mit „46“', chain: 'mannschaften',
+    text: `An Mannschaft 47.
 
-du bist wieder hier. Das ist Nummer {tally}.
+Ja, euch. Es kommen immer Nächste.
 
-Die Vermittlerin lügt. Das weißt du jetzt. Du vergisst es jedes Mal wieder.
+Ihr habt die Strichliste im Flur gesehen. Das sind keine Nächte. Jeder Strich ist eine Mannschaft. Sechsundvierzig Striche. Und alle hat dieselbe Disposition losgeschickt.
 
-Unten hängt eine zweite Kabine. Sieh nach, wer darin sitzt.
-Und dann entscheide dich. Diesmal wirklich.`,
+Ihr seid jetzt {tally} Nächte unterwegs. Wir haben es an den Glocken gehört.
+
+Die Stimme im Telefon wird euch sagen, dass ihr es gut macht. Wir haben es auch gut gemacht.
+
+Unten hängt eine zweite Kabine. Unsere. Seht nach, wer darin sitzt.
+Und dann entscheidet euch.
+
+– 46`,
   },
 
   d_you_3: {
-    title: 'Zettel unter der Tür', style: 'hand', meta: 'Deine Handschrift, zittrig', chain: 'you',
-    text: `Nummer 12: Ich habe ihr den Namen gegeben. Es war warm. Dann war ich wieder in der Halle, 03:07.
-Nummer 23: Ich habe versucht, oben zu bleiben. Die Halle hat keine Tür nach draußen.
-Nummer 31: Ich habe die Kreide gefunden. Das hilft.
-Nummer 40: Der Portier hat mich erkannt. Er hat geweint, glaube ich. Kann ein Zifferblatt weinen?
-Nummer 45: Das Seil. Brenners Schere. Ich war so nah.
-Nummer 46: Wenn du das liest, hast du es wieder vergessen.`,
+    title: 'Zettel unter der Tür', style: 'hand', meta: 'Ein Blatt, viele Handschriften', chain: 'mannschaften',
+    text: `Mannschaft 12: Wir haben die Schritte über uns gezählt. Über uns war nur Fels.
+Mannschaft 23: Sie hat uns beim Namen gerufen. Wir haben geantwortet. Es war warm. Dann war es 03:07.
+Mannschaft 31: Wir wollten oben bleiben. Die Disposition hat uns trotzdem geschickt. Sie war so freundlich.
+Mannschaft 33: Kreide hilft. Die Stummen wissen, warum.
+Mannschaft 40: Der Portier hat uns erkannt. Er hat geweint, glaube ich. Kann ein Zifferblatt weinen?
+Mannschaft 45: Das Seil. Brenners Schere. Wir waren so nah.
+Mannschaft 46: Dieter kommt uns holen. Er hat es versprochen.
+
+(Darunter ist Platz gelassen. Eine Zeile. Genau eine.)`,
   },
 
   d_arzt: {
@@ -780,13 +846,13 @@ ich hab gehalten bis zum Tag.`,
     title: 'Letzte Notiz – Kantorin S. Aksoy', style: 'terminal', meta: 'Nacht des Achtzehnten Rufs, 594', chain: 'aksoy',
     text: `Ich stehe in Weiß vor der Kabine. Dreiunddreißig Erwählte, und ich bin eine davon. Die Kanzlei hat gut gewählt.
 
-Neben mir steht ein junges Seilkind, das die Kabine segnen soll. Es sieht mich an, als wüsste es etwas.
+Die Bruderschaft hat ihren Disponenten geschickt, damit er die Kabine segnet. Ein freundlicher Mann mit einer Messinghand. Er zittert und tut so, als wäre es die Kälte.
 
-Ich habe ihr zugeflüstert: „Gib ihm niemals deinen Namen.“
+Ich habe ihm zugeflüstert: „Geben Sie ihm niemals Ihren Namen.“
 
-Es hat gelächelt und genickt.
+Er hat genickt und mir seinen Kaffee angeboten.
 
-Ich glaube, es hat es vergessen.`,
+Ich glaube, er hat es vergessen.`,
   },
 
   d_predigt: {
@@ -824,7 +890,7 @@ Ich muss nur noch`,
 
 Sie kommen jeden Ruf. Weiß gekleidet. Sie singen. Ich halte die Tür, und sie gehen hindurch, und ich sehe in jedem Gesicht ein Kind, das im Auto wartet.
 
-Manchmal kommt eine Schachtratte, die sich weigert. Dann jage ich sie, weil das meine Pflicht ist. Und ich hoffe, dass sie schneller ist als ich.
+Manchmal kommt eine Mannschaft, die sich weigert. Dann jage ich sie, weil das meine Pflicht ist. Und ich hoffe, dass sie schneller ist als ich.
 
 Wenn du das hörst: Sei schneller als ich.
 Und wenn du eine Spieluhr findest …
@@ -832,7 +898,7 @@ Spiel sie mir vor. Ich habe das Lied vergessen.`,
   },
 
   d_brenner_notiz: {
-    title: 'Letzte Notiz – H. Brenner', style: 'hand', meta: 'In Messing geritzt, an einer Kabinenwand',
+    title: 'Letzte Notiz – H. Brenner', style: 'hand', meta: 'In Messing geritzt, an einer Kabinenwand', chain: 'brenner',
     text: `DAS SEIL HÄLT NICHT DIE KABINE.
 ETWAS HÄLT DAS SEIL.
 
@@ -842,27 +908,34 @@ SIE SINGEN IHN DIR VOR, DAMIT DU NUR NOCH JA SAGEN MUSST.`,
   },
 
   d_you_4: {
-    title: 'Zettel in einer gestapelten Kabine', style: 'hand', meta: 'Deine Handschrift', chain: 'you',
-    text: `Wenn du bis hierher kommst: Du hast drei Wege.
+    title: 'Zettel in einer gestapelten Kabine', style: 'hand', meta: 'Viele Handschriften, zuletzt eine sehr müde', chain: 'mannschaften',
+    text: `{name},
 
-Gib ihnen den Namen. Dann hört es auf. Für dich. Und dann rufst du den Nächsten an.
+ja, wir kennen deinen Namen. Hier unten flüstern ihn alle. So haben wir ihn gelernt.
 
-Schneid das Seil. Dann hört es auf. Für alle. Es wird etwas kosten.
+Wenn ihr bis hierher kommt, habt ihr drei Wege.
 
-Oder – und das habe ich nie geschafft – finde alles, was Ilse gehört hat. Spiel ihr Lied.
+Gebt ihnen die Namen. Dann hört es auf. Für euch. Und dann ruft ihr die Nächsten an.
 
-{name}, ich bin so müde.`,
+Schneidet das Seil. Dann hört es auf. Für alle. Es wird etwas kosten.
+
+Oder – und das hat keine Mannschaft je geschafft – findet alles, was Ilse gehört hat. Spielt ihr Lied.
+
+Wir sind so müde.
+– 46`,
   },
 
   // ======================================================================= −∞ DER CHOR
   d_namensschild: {
-    title: 'Namensplakette', style: 'church', meta: 'An der Kutte der Leiche in Kabine 9',
+    title: 'Namensplakette', style: 'church', meta: 'An der Kutte der Leiche in der Kabine von Mannschaft 46',
     text: `BRUDERSCHAFT VOM SEIL
-SEILKIND
-{NAME}
+DISPOSITION SOCKEL-OST
+BR. DIETER KALTENBACH
+
+In der Messinghand: ein Blechbecher. Leer.
 
 Kom-Anzeige, eingefroren:
-594 n. F. · 03:07 · NOTRUF GESENDET`,
+612 n. F. · 03:07 · HABE SIE GEFUNDEN. WIR KOMMEN HOCH.`,
   },
 };
 

@@ -24,7 +24,7 @@ page.on('response', r => { if (r.status() >= 400) logs.push(`[http ${r.status()}
 await page.goto(`http://localhost:${process.env.PORT || 3033}/?${query}`);
 const probe = query.startsWith('sandbox') ? () => window.__sb : query.startsWith('viewer') ? () => window.__viewer
   : query.includes('night=') ? () => window.__tiefer?.game?.mode === 'night' : () => window.__tiefer?.game;
-try { await page.waitForFunction(probe, null, { timeout: 120000 }); } catch {
+try { await page.waitForFunction(probe, null, { timeout: Number(process.env.TO || 120000) }); } catch {
   console.log('TIMEOUT\n' + logs.join('\n'));
   await page.screenshot({ path: `${out}/${prefix}_timeout.png` });
   await browser.close();

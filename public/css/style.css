@@ -227,41 +227,117 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px;
 /* ---------------------------------------------------------------- Dokumente */
 #doc { display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.82); }
 #doc.active { display: flex; }
-#doc .paper { position: relative; width: min(640px, 90vw); max-height: 84vh; overflow-y: auto; padding: 46px 52px 40px; color: #231710; background: linear-gradient(180deg, #d9c9a4, #c8b48a); box-shadow: 0 20px 60px rgba(0,0,0,0.9), inset 0 0 70px rgba(80,50,20,0.35); transform: rotate(-0.6deg); }
-#doc .paper::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.12), transparent 60%), radial-gradient(ellipse at 80% 90%, rgba(60,30,10,0.18), transparent 50%); pointer-events: none; }
-#doc .paper h3 { font-family: var(--serif); font-weight: 700; font-size: 26px; margin-bottom: 4px; }
-#doc .paper .meta { font-family: var(--type); font-size: 14px; color: #5a4230; margin-bottom: 22px; letter-spacing: 0.05em; }
-#doc .paper .body { font-family: var(--type); font-size: 18px; line-height: 1.55; white-space: pre-wrap; }
-#doc .paper.hand .body { font-family: var(--hand); font-size: 27px; line-height: 1.25; color: #1a1410; }
-#doc .paper.church { background: linear-gradient(180deg, #e2d4b2, #cbb58a); }
-#doc .paper.church .body { font-family: var(--serif); font-size: 21px; }
-#doc .paper.terminal { background: #030a05; color: var(--kom); box-shadow: 0 0 60px rgba(0,0,0,0.9), inset 0 0 50px rgba(141,255,168,0.08); transform: none; }
-#doc .paper.terminal h3, #doc .paper.terminal .meta { color: var(--kom); font-family: var(--mono); font-weight: 400; }
-#doc .paper.terminal .body { font-family: var(--mono); font-size: 21px; text-shadow: 0 0 5px rgba(141,255,168,0.4); }
-#doc .paper.chalk { background: #1b1f1d; color: #eeeee6; transform: none; box-shadow: inset 0 0 90px rgba(0,0,0,0.8); }
-#doc .paper.chalk .body { font-family: var(--hand); font-size: 30px; }
-#doc .paper.chalk h3, #doc .paper.chalk .meta { color: #b8b8b0; }
-#doc .paper.tape { background: #111; color: var(--bone); transform: none; border: 1px solid #333; }
-#doc .paper.tape .body { font-family: var(--serif); font-size: 21px; font-style: italic; }
-#doc .paper.tape h3, #doc .paper.tape .meta { color: var(--gold); }
+#doc .paper { width: min(640px, 90vw); max-height: 84vh; overflow-y: auto; }
+:is(#doc, #journal) .paper { position: relative; padding: 46px 52px 40px; color: #231710; background: linear-gradient(180deg, #d9c9a4, #c8b48a); box-shadow: 0 20px 60px rgba(0,0,0,0.9), inset 0 0 70px rgba(80,50,20,0.35); transform: rotate(-0.6deg); }
+:is(#doc, #journal) .paper::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.12), transparent 60%), radial-gradient(ellipse at 80% 90%, rgba(60,30,10,0.18), transparent 50%); pointer-events: none; }
+:is(#doc, #journal) .paper h3 { font-family: var(--serif); font-weight: 700; font-size: 26px; margin-bottom: 4px; }
+:is(#doc, #journal) .paper .meta { font-family: var(--type); font-size: 14px; color: #5a4230; margin-bottom: 22px; letter-spacing: 0.05em; }
+:is(#doc, #journal) .paper .body { font-family: var(--type); font-size: 18px; line-height: 1.55; white-space: pre-wrap; }
+:is(#doc, #journal) .paper.hand .body { font-family: var(--hand); font-size: 27px; line-height: 1.25; color: #1a1410; }
+:is(#doc, #journal) .paper.church { background: linear-gradient(180deg, #e2d4b2, #cbb58a); }
+:is(#doc, #journal) .paper.church .body { font-family: var(--serif); font-size: 21px; }
+:is(#doc, #journal) .paper.terminal { background: #030a05; color: var(--kom); box-shadow: 0 0 60px rgba(0,0,0,0.9), inset 0 0 50px rgba(141,255,168,0.08); transform: none; }
+:is(#doc, #journal) .paper.terminal h3, :is(#doc, #journal) .paper.terminal .meta { color: var(--kom); font-family: var(--mono); font-weight: 400; }
+:is(#doc, #journal) .paper.terminal .body { font-family: var(--mono); font-size: 21px; text-shadow: 0 0 5px rgba(141,255,168,0.4); }
+:is(#doc, #journal) .paper.chalk { background: #1b1f1d; color: #eeeee6; transform: none; box-shadow: inset 0 0 90px rgba(0,0,0,0.8); }
+:is(#doc, #journal) .paper.chalk .body { font-family: var(--hand); font-size: 30px; }
+:is(#doc, #journal) .paper.chalk h3, :is(#doc, #journal) .paper.chalk .meta { color: #b8b8b0; }
+:is(#doc, #journal) .paper.tape { background: #111; color: var(--bone); transform: none; border: 1px solid #333; }
+:is(#doc, #journal) .paper.tape .body { font-family: var(--serif); font-size: 21px; font-style: italic; }
+:is(#doc, #journal) .paper.tape h3, :is(#doc, #journal) .paper.tape .meta { color: var(--gold); }
+:is(#doc, #journal) .paper.child { background: linear-gradient(180deg, #efe6cf, #ddd0ae); }
+:is(#doc, #journal) .paper.child .body { font-family: var(--hand); font-weight: 700; font-size: 30px; line-height: 1.25; color: #2d46a8; text-transform: lowercase; }
+:is(#doc, #journal) .paper .walze { width: 170px; height: 26px; margin: 0 0 16px; border-radius: 13px; border-left: 7px solid #b8923a; border-right: 7px solid #b8923a; background: repeating-linear-gradient(90deg, #3a2414 0 2px, #22150b 2px 4px); box-shadow: inset 0 6px 8px rgba(255,200,140,0.2), inset 0 -6px 9px rgba(0,0,0,0.65); }
 #doc .close { position: absolute; right: 30px; bottom: 26px; font-family: var(--mono); font-size: 18px; letter-spacing: 0.2em; color: var(--bone-dim); }
 
-/* ---------------------------------------------------------------- Tagebuch */
-#journal .panel { width: min(1100px, 94vw); height: 84vh; display: grid; grid-template-rows: auto 1fr; padding: 28px 34px; }
-#journal .tabs { display: flex; gap: 22px; border-bottom: 1px solid rgba(201,160,80,0.2); padding-bottom: 10px; margin-bottom: 14px; }
-#journal .tabs button { font-family: var(--mono); font-size: 20px; letter-spacing: 0.25em; color: var(--bone-dim); }
-#journal .tabs button.sel { color: var(--gold-hi); }
-#journal .cols { display: grid; grid-template-columns: 320px 1fr; gap: 26px; min-height: 0; }
-#journal .list { overflow-y: auto; border-right: 1px solid rgba(201,160,80,0.12); padding-right: 10px; }
-#journal .list button { display: block; width: 100%; text-align: left; padding: 6px 8px; font-size: 19px; color: var(--bone-dim); border-left: 2px solid transparent; }
-#journal .list button:hover, #journal .list button.sel { color: var(--bone); border-left-color: var(--gold); background: rgba(201,160,80,0.06); }
-#journal .list .grp { font-family: var(--mono); color: var(--gold); letter-spacing: 0.25em; font-size: 15px; margin: 12px 0 4px; }
-#journal .view { overflow-y: auto; padding-right: 12px; }
-#journal .view h3 { font-size: 28px; font-weight: 600; }
-#journal .view .meta { font-family: var(--mono); color: var(--gold); letter-spacing: 0.15em; font-size: 15px; margin: 4px 0 16px; }
-#journal .view .body { font-family: var(--type); font-size: 18px; line-height: 1.6; white-space: pre-wrap; color: var(--bone); }
-#journal .view .body.hand { font-family: var(--hand); font-size: 26px; }
-#journal .foot { position: absolute; right: 34px; bottom: 16px; font-family: var(--mono); color: #6a5c48; letter-spacing: 0.2em; font-size: 15px; }
+/* ---------------------------------------------------------------- Tagebuch (Kontorbuch in Leder, Papierseiten) */
+#journal .panel.book { width: min(1180px, 95vw); height: min(86vh, 860px); max-height: none; overflow: hidden; display: grid; grid-template-rows: auto 1fr auto; padding: 22px 30px 12px;
+  background: radial-gradient(ellipse at 28% 18%, rgba(110,62,30,0.32), transparent 62%), repeating-linear-gradient(33deg, rgba(0,0,0,0.06) 0 2px, transparent 2px 5px), linear-gradient(180deg, #24160e, #120a06);
+  border: 1px solid rgba(201,160,80,0.45);
+  box-shadow: 0 0 90px rgba(0,0,0,0.9), inset 0 0 0 6px rgba(18,10,5,0.9), inset 0 0 0 7px rgba(201,160,80,0.22), inset 0 0 90px rgba(0,0,0,0.75); }
+#journal .panel.book::before { content: ''; position: absolute; inset: -1px; pointer-events: none; opacity: 0.7;
+  background: linear-gradient(135deg, #c9a050 0 16px, #5a4020 16px 18px, transparent 18px) top left / 36px 36px no-repeat,
+              linear-gradient(225deg, #c9a050 0 16px, #5a4020 16px 18px, transparent 18px) top right / 36px 36px no-repeat,
+              linear-gradient(45deg, #c9a050 0 16px, #5a4020 16px 18px, transparent 18px) bottom left / 36px 36px no-repeat,
+              linear-gradient(315deg, #c9a050 0 16px, #5a4020 16px 18px, transparent 18px) bottom right / 36px 36px no-repeat; }
+#journal .jhead { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; border-bottom: 1px solid rgba(201,160,80,0.28); padding: 0 4px 0 8px; margin-bottom: 14px; }
+#journal .jhead .ttl { padding-bottom: 10px; }
+#journal .jhead h2 { font-weight: 300; letter-spacing: 0.38em; font-size: 30px; color: var(--bone); text-shadow: 0 0 18px rgba(255,190,120,0.18); }
+#journal .jhead .who { font-family: var(--mono); color: var(--gold); letter-spacing: 0.16em; font-size: 16px; margin-top: 2px; }
+#journal .tabs { display: flex; gap: 5px; border: none; padding: 0; margin: 0; }
+#journal .tabs button { position: relative; font-family: var(--mono); font-size: 19px; letter-spacing: 0.18em; color: var(--bone-dim); padding: 7px 14px 6px; border: 1px solid rgba(201,160,80,0.18); border-bottom: none; background: linear-gradient(180deg, rgba(201,160,80,0.07), rgba(0,0,0,0)); transition: color 0.2s, background 0.2s; }
+#journal .tabs button i { font-style: normal; font-family: var(--serif); letter-spacing: 0; color: #7a6440; margin-right: 8px; }
+#journal .tabs button:hover { color: var(--bone); }
+#journal .tabs button.sel { color: var(--gold-hi); border-color: rgba(240,210,138,0.55); background: linear-gradient(180deg, rgba(201,160,80,0.26), rgba(201,160,80,0.03)); text-shadow: 0 0 10px rgba(240,210,138,0.45); }
+#journal .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--blood-hi); box-shadow: 0 0 8px var(--blood-hi); margin-left: 8px; vertical-align: middle; }
+#journal .cols { display: grid; grid-template-columns: 330px 1fr; gap: 24px; min-height: 0; }
+#journal .cols.single { grid-template-columns: 1fr; }
+#journal .list { overflow-y: auto; min-height: 0; padding-right: 8px; border-right: 1px solid rgba(201,160,80,0.14); }
+#journal .list .grp { display: flex; justify-content: space-between; font-family: var(--mono); color: var(--gold); letter-spacing: 0.2em; font-size: 15px; margin: 14px 0 4px; padding: 0 4px 2px 8px; border-bottom: 1px dashed rgba(201,160,80,0.2); }
+#journal .list .grp:first-child { margin-top: 2px; }
+#journal .list .grp em { font-style: normal; color: var(--bone-dim); letter-spacing: 0.08em; }
+#journal .list button { display: flex; gap: 8px; align-items: baseline; width: 100%; text-align: left; padding: 5px 8px; font-size: 19px; line-height: 1.2; color: var(--bone-dim); border-left: 2px solid transparent; }
+#journal .list button .mk { flex: none; width: 14px; font-family: var(--mono); color: var(--gold); }
+#journal .list button .lb { flex: 1; }
+#journal .list button small { flex: none; font-family: var(--mono); font-size: 14px; letter-spacing: 0.04em; color: #7a6c58; white-space: nowrap; }
+#journal .list button.ok .mk { color: #9fe0a8; }
+#journal .list button.no .mk { color: var(--blood-hi); }
+#journal .list button.no .lb { opacity: 0.7; }
+#journal .list button.gold .lb { color: #ffd98a; }
+#journal .list button:hover, #journal .list button.sel { color: var(--bone); border-left-color: var(--gold); background: rgba(201,160,80,0.08); }
+#journal .list button:disabled { opacity: 0.3; cursor: default; letter-spacing: 0.25em; }
+#journal .list button:disabled:hover { background: none; border-left-color: transparent; }
+#journal .view { overflow-y: auto; min-height: 0; padding: 6px 12px 12px 4px; }
+#journal .view.single { padding: 2px 6px 10px; }
+#journal .foot { font-family: var(--mono); color: #6a5c48; letter-spacing: 0.2em; font-size: 15px; text-align: right; padding-top: 8px; }
+#journal .hintline { padding: 8px; }
+
+/* Seite (Pergament) für Kodex & Aufträge */
+#journal .page { position: relative; min-height: 100%; padding: 34px 42px 30px; color: #231710; background: linear-gradient(180deg, #dccca6, #c4ae84); box-shadow: 0 14px 40px rgba(0,0,0,0.7), inset 0 0 80px rgba(80,50,20,0.38); }
+#journal .page::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 30% 15%, rgba(255,255,255,0.14), transparent 60%), radial-gradient(ellipse at 85% 95%, rgba(60,30,10,0.2), transparent 50%); }
+#journal .page.goldline { box-shadow: 0 14px 40px rgba(0,0,0,0.7), inset 0 0 0 3px rgba(184,146,58,0.7), inset 0 0 80px rgba(80,50,20,0.38); }
+#journal .page .kicker { font-family: var(--type); font-size: 14px; letter-spacing: 0.22em; color: #7a1a10; }
+#journal .page h3 { font-family: var(--serif); font-weight: 700; font-size: 34px; line-height: 1.1; margin: 6px 0 4px; max-width: 78%; }
+#journal .page h4 { font-family: var(--type); font-weight: 400; font-size: 14px; letter-spacing: 0.25em; color: #6a4a30; margin: 22px 0 6px; border-bottom: 1px solid rgba(60,40,20,0.3); padding-bottom: 3px; }
+#journal .page .meta { font-family: var(--type); font-size: 15px; color: #5a4230; margin-bottom: 16px; }
+#journal .page .txt { font-family: var(--serif); font-size: 23px; line-height: 1.5; }
+#journal .page .txt.drop::first-letter { float: left; font-size: 68px; line-height: 0.8; padding: 8px 10px 0 0; color: #8a1a10; font-weight: 700; }
+#journal .page .typed { font-family: var(--type); font-size: 17px; line-height: 1.6; white-space: pre-wrap; }
+#journal .page .margin { margin-top: 22px; font-family: var(--hand); font-size: 27px; color: #2a2a4a; transform: rotate(-1deg); }
+#journal .page .dial { width: 58px; display: block; margin: 4px 0 12px; opacity: 0.75; }
+#journal .page ul.lines { list-style: none; }
+#journal .page ul.lines li { display: flex; justify-content: space-between; gap: 16px; font-family: var(--type); font-size: 17px; padding: 4px 0; border-bottom: 1px dotted rgba(60,40,20,0.35); }
+#journal .page .quota { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; font-family: var(--type); font-size: 15px; letter-spacing: 0.1em; margin-top: 6px; }
+#journal .page .quota .bar { height: 8px; background: rgba(60,40,20,0.2); position: relative; border: 1px solid rgba(60,40,20,0.35); }
+#journal .page .quota .bar i { position: absolute; left: 0; top: 0; bottom: 0; background: #7a1a10; }
+#journal .page .quota b { font-family: var(--mono); font-weight: 400; font-size: 22px; }
+#journal .stamp { position: absolute; right: 30px; top: 28px; transform: rotate(-9deg); font-family: var(--type); font-size: 19px; letter-spacing: 0.22em; padding: 5px 12px 3px; border: 3px double currentColor; color: rgba(150,22,12,0.72); mix-blend-mode: multiply; }
+#journal .stamp.ok { color: rgba(30,110,50,0.75); }
+#journal .stamp.gold { color: rgba(140,100,24,0.85); }
+#journal .stamp.grey { color: rgba(60,50,40,0.55); }
+#journal .docwrap { padding: 2px 4px; }
+#journal .chainline { font-family: var(--mono); color: var(--gold); letter-spacing: 0.16em; font-size: 15px; margin: 0 0 8px 4px; }
+#journal .paper { max-width: 720px; margin: 4px auto 22px; }
+#journal .page h3, #journal .paper h3 { color: #231710; letter-spacing: 0.01em; border: none; padding: 0; }   /* .panel h3 nicht durchschlagen lassen */
+#journal .paper.terminal .body { font-size: 20px; }
+
+/* Strichliste */
+#journal .sheet { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; align-items: start; }
+#journal .tallypage { position: relative; padding: 28px 34px 26px; color: #231710; background: linear-gradient(180deg, #dccca6, #c6b187); box-shadow: 0 14px 40px rgba(0,0,0,0.7), inset 0 0 80px rgba(80,50,20,0.38); transform: rotate(-0.5deg); }
+#journal .tallypage .crew { font-family: var(--hand); font-weight: 700; font-size: 48px; line-height: 1; color: #2b2320; margin-bottom: 10px; }
+#journal .tallypage .tally svg { display: block; width: 100%; height: auto; }
+#journal .tallypage .sum { margin-top: 10px; font-family: var(--type); font-size: 16px; color: #4a3424; }
+#journal .tallypage .sig { margin-top: 22px; font-family: var(--hand); font-size: 30px; color: #2a2a4a; border-top: 1px solid rgba(40,30,20,0.45); display: inline-block; min-width: 62%; padding-top: 2px; }
+#journal .ledger { color: var(--bone); padding-top: 4px; }
+#journal .ledger h4 { font-family: var(--mono); font-weight: 400; color: var(--gold); letter-spacing: 0.3em; font-size: 17px; margin: 4px 0 8px; border-bottom: 1px solid rgba(201,160,80,0.22); padding-bottom: 3px; }
+#journal .ledger h4:not(:first-child) { margin-top: 22px; }
+#journal .ledger .row2 { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; font-family: var(--type); font-size: 16px; color: var(--bone-dim); border-bottom: 1px dotted rgba(201,160,80,0.14); }
+#journal .ledger .row2 b { font-family: var(--mono); font-weight: 400; font-size: 21px; color: var(--gold-hi); }
+#journal .ledger .q { display: grid; grid-template-columns: 90px 1fr 110px; gap: 12px; align-items: center; padding: 5px 0; font-family: var(--mono); font-size: 17px; color: var(--bone-dim); letter-spacing: 0.1em; }
+#journal .ledger .q b { font-weight: 400; color: var(--gold-hi); text-align: right; }
+#journal .ledger .q .bar { height: 6px; background: rgba(233,220,194,0.1); position: relative; }
+#journal .ledger .q .bar i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--gold); box-shadow: 0 0 8px rgba(201,160,80,0.5); }
+#journal .ledger .q.done .bar i { background: #6fa878; box-shadow: none; }
 
 /* ---------------------------------------------------------------- Pause / Tod */
 #pause .menu { position: absolute; left: 7vw; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; }
@@ -392,4 +468,9 @@ ul.contracts li.no { opacity: 0.6; }
   #title .menu { bottom: 6vh; }
   .menu-btn { font-size: 22px; padding-top: 2px; padding-bottom: 2px; }
   #title .quote { display: none; }
+  #journal .panel.book { height: 94vh; padding: 12px 18px 6px; }
+  #journal .cols { grid-template-columns: 280px 1fr; }
+  #journal .page { padding: 22px 26px; }
+  #journal .page .txt { font-size: 19px; }
+  #journal .page h3 { font-size: 27px; }
 }

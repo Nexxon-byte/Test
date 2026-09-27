@@ -36,7 +36,9 @@ git merge --ff-only origin/claude/sharp-clarke-xzck72
 | Tutorial (D2) | `game/game.js` (`_tutNight`, `_updateTutorial`) | Stromausfall-Zeile, finden → tragen (Pfeil zur Kabine) → weiter bergen → genug (v_tut_5) → aufwärts; oben Überleitung zum Brett |
 | Story-Kapitel (D3) | `story/chapters.js`, `story/scenes/index.js`, `story/scenes/saal13.js` | **Erweiterbar:** neues Kapitel = Eintrag in `CHAPTERS` + Szene (Vorlage `saal13.js`). −13 Saal der Vierzig: Schrein in Samtnische neben der Bühne, leere Reliquie (Twist 1), Anselm folgt → Garküche; Entscheidung Reliquie Veit/Hanne |
 | Gaben (D5) | `ui/shop.js` (`openGifts`), `GIFTS` in `game/state.js` | Kabinentelefon oben: 6 Gnaden je 1 Buchstabe; Voss kauft Buchstaben; Flags lettersVoss/lettersVermittlerin/nameGiven |
-| Tagebuch + Dokumente (D4/D6) | siehe unten (Subagent) | |
+| Tagebuch (D4) | `ui/journal.js` | Tab (oder Pausenmenü): Lederbuch mit Reitern Aufträge (mit Stempeln), Kodex (Wesen nach der Begegnung), Dokumente (nach Nebengeschichte, Zähler, Papierstil), Strichliste (Fünferbündel, Bilanz, Quote je Woche, 46 radierte Striche als leise Andeutung) |
+| Dokumente im Level (D6) | `game/documents.js` | 1–2 ungefundene je Nacht an ruhigen Stellen (Tische, Wände, Pulte), 16 Code-Modelle (Blatt, Buch, Endlospapier, Tonwalze, Kreide, Grabplatte …), Kettenreihenfolge, reservierte Story-Dokumente; `docs.js` an Twists v2 angepasst (Kette „Die Sechsundvierzig“ statt „you“, Kenotaph der Mannschaften I–XLVI, Dieters Grab ohne Sterbejahr, Wachbuch zählt Mannschaften, Anselm-Rezepte 3/4 und 4/4 neu) |
+| Ladebildschirme | `ui/loading.js`, `ui/loading-art.js`, `ui/loading-worker.js`, `story/tips.js`, `css/loading.css` | Blick in den Schacht der Neunten (Seile, Käfiglampen, vorbeiziehende Etagentore, manchmal eine Gestalt im Türspalt), Messing-Zifferblatt mit echtem Ladefortschritt, Nixie-Absatzzähler, wechselnde Tipps + Zitate, eigene Ladestimmung (Drone, Motor, Schienenstöße, ferne Spieluhr). Beim Start, Titel → Spiel, Aufstieg, Direktsprung, „Zum Titel“. Zeichnet in einem Worker weiter, auch wenn das Spiel beim Bauen blockiert. Achtung: nach „Zum Titel“ kommen Warnhinweis/Studio/Helligkeit nicht erneut |
 
 ### Leistung
 - Nacht: ~3,9 → ~0,76 Mio. Dreiecke/Bild. Ratten Low-Poly (Code), Lampenschatten nur bei Licht, kleine Beute ohne Schatten, Shader-Vorkompilierung bei der Ankunft (`game.prewarm`).
@@ -61,6 +63,8 @@ git merge --ff-only origin/claude/sharp-clarke-xzck72
 - **Ratten:** Das Low-Poly-Modell ist Code (`rats.js` `ratProto`). Ein echtes, schlankes Rattenmodell (≤ 800 Dreiecke) aus Blender wäre schöner.
 
 ## Offen / bekannt
+- **Zeitlinie klären (GAME_DESIGN §3.1):** „Heute“ = 594, aber Dieter ist seit 612 tot und Oskars Wachbuch reicht bis 626. Die Dokumente nennen deshalb kein Gegenwartsjahr – bitte festlegen (z. B. Heute = 627+).
+- Dokumente späterer Tiefen stehen in `documents.js` → `LATER` und werden verteilt, sobald es die Themen gibt (dann in `PLACEMENT` eintragen). Der Scan (Q) zeigt Dokumente nicht an.
 - Sandkasten (`?sandbox`) hat keine Monster – dafür gibt es `?skip&night=…` (siehe `docs/WERKZEUGE.md`).
 - „Tür am Ende des Gangs steht plötzlich offen“: Die Ebenen haben keine Türen – kommt, sobald es Türen gibt.
 - Das Thema `banquet` (mit Stühlen) ist in keiner Tiefenstufe eingetragen (`FLOORS`) – wird für −13 „Saal der Vierzig“ gebraucht (Sprint D).

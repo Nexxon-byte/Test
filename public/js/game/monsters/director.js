@@ -17,6 +17,7 @@ import { Scares } from './scares.js';
 import { voice } from '../../audio/voice.js';
 import { ui } from '../../ui/ui.js';
 import { KOM } from '../../story/lines.js';
+import { unlockCodexForSight } from '../documents.js';
 
 export const MONSTER_CHARS = ['gast_m', 'gast_f', 'hoerer'];
 
@@ -430,6 +431,7 @@ export class Director {
 
   // Erste Begegnung mit einer Art (einmal pro Kampagne): Kom-Zeile von Dieter, Warnung der Vermittlerin
   firstSight(kind) {
+    unlockCodexForSight(this.state, kind);   // Kodex-Eintrag (auch für ältere Spielstände nachgereicht)
     const flags = this.state?.flags;
     if (!flags || flags['met_' + kind]) return;
     flags['met_' + kind] = true;

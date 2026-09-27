@@ -199,7 +199,7 @@ export function pause({ where = '', coop = false }) {
         <button class="menu-btn" data-a="quit">ZUM TITEL</button>
       </div>
       <div class="where">${where}</div>`);
-    s.querySelectorAll('[data-a]').forEach(b => b.addEventListener('click', () => { close('pause'); resolve(b.dataset.a); }));
+    s.querySelectorAll('[data-a]').forEach(b => b.addEventListener('click', () => { window.removeEventListener('keydown', esc); close('pause'); resolve(b.dataset.a); }));
     const esc = (e) => { if (e.code === 'Escape') { window.removeEventListener('keydown', esc); close('pause'); resolve('resume'); } };
     setTimeout(() => window.addEventListener('keydown', esc), 200);
   });
