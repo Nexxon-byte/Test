@@ -7,11 +7,14 @@ Recherche zu weiteren Quellen/Werkzeugen mit Lizenzprüfung: [RECHERCHE_WERKZEUG
 | Befehl | Zweck | Wo |
 |---|---|---|
 | `node tools/test/shot-local.mjs "<query>" <präfix> '<views>' [ordner]` | Screenshots mit lokalem Chrome (echte GPU). views: `[{name, js, tp:[x,z,yaw,pitch], wait}]` | L |
-| `node tools/test/shot.mjs …` | dasselbe mit Software-WebGL (Swiftshader) | C |
+| `node tools/test/shot.mjs …` | dasselbe mit Software-WebGL (Swiftshader), auch fürs echte Spiel (`skip…`); Qualität per `Q=retro` (Standard), meldet HTTP-Fehler | C |
 | `node tools/test/eval.mjs "<query>" "<js>" [ms]` | Seite öffnen, JS auswerten, Konsolenfehler zeigen | L |
 | `node tools/test/placecheck.mjs "<query>"` | meldet **schwebende** und **ineinandersteckende** Objekte (Hub/Sandbox) | L/C |
 | `node tools/test/check-levelgen.mjs` | Generator-Test | C |
 | Queries | `skip` (ohne Vorspann; Titel weg: `g.titleMode=false; #title ausblenden`), `sandbox&theme=dock&seed=3&modules=all&stufe=4`, `viewer&set=npcs&only=dieter&clips=Idle_Loop,Walk_Loop`, `viewer&set=models&group=city`, `&placecheck`, `&fast` (schnelle Uhr) | |
+| Nacht direkt | `skip&night=ossuary&seed=7` springt ohne Titel/Fahrt in eine Nacht (Themen aus `FLOORS`). Zusätze: `&monsters=passenger,listener,rats` (sofort statt Spawnplan), `&nomonsters`, `&tools=brechstange,hammer,flinte,fackel,klapper,salzsack,verband` (gleich in den Taschen), `&patronen=6`, `&modules=flutlicht,salzkanone,panzergitter:2`, `&stufe=2`, `&tutorial`, `&diff=pilger` | C |
+| Monster-Stand | im Spiel `__tiefer.game.director.debug()` → Phase, Spannung, Spawnplan, Zustände; Schrecken auslösen: `…director.scares.trigger('apparition'|'gate'|'phone'|'lamp'|'steps'|'whisper'|'strobe')` | C |
+| Schrittweise testen (Cloud) | Swiftshader schafft ~2 Bilder/s → Logik ohne Rendern vorspulen: `for (let t=0;t<sec;t+=0.05){ g.R.camera.updateMatrixWorld(true); g.update(0.05); }` (in `shot.mjs`-Ansichten als `js`) | C |
 | Blickrichtung `yaw` | Kamera schaut nach (−sin yaw, −cos yaw): 0 = −Z, π = +Z (in den Markt), π/2 = −X, −π/2 = +X | |
 
 ## 2. Assets holen & ansehen

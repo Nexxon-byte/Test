@@ -38,11 +38,24 @@ class Voice {
 
   attach(subsEl) { this.subsEl = subsEl; }
 
+  // Welche Zeilen sind vertont? (Liste vom Server; ohne Liste wird einfach versucht)
+  available() {
+    if (!this._avail) {
+      this._avail = fetch('/audio/voice/index.json')
+        .then(r => r.ok ? r.json() : null)
+        .then(list => Array.isArray(list) ? new Set(list) : null)
+        .catch(() => null);
+    }
+    return this._avail;
+  }
+
   async load(id) {
     if (this.cache.has(id)) return this.cache.get(id);
     const p = (async () => {
       if (!A.ready) return null;
       try {
+        const have = await this.available();
+        if (have && !have.has(id)) return null;   // noch nicht vertont → nur Untertitel
         const r = await fetch(`/audio/voice/${id}.ogg`);
         if (!r.ok) return null;
         const ab = await r.arrayBuffer();

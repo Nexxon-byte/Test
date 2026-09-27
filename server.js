@@ -53,6 +53,15 @@ function resolveStatic(urlPath) {
 
 const server = http.createServer((req, res) => {
   const urlPath = (req.url || '/').split('?')[0];
+  // Liste der vorhandenen Stimmdateien – das Spiel lädt nur, was es gibt (keine 404 für noch nicht vertonte Zeilen)
+  if (urlPath === '/audio/voice/index.json') {
+    fs.readdir(path.join(ROOT, 'public/audio/voice'), (err, names) => {
+      const ids = err ? [] : names.filter(n => n.endsWith('.ogg')).map(n => n.slice(0, -4));
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-cache' });
+      res.end(JSON.stringify(ids));
+    });
+    return;
+  }
   const file = resolveStatic(urlPath);
   if (!file) { res.writeHead(403); res.end('Verboten'); return; }
   fs.stat(file, (err, st) => {

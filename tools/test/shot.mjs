@@ -20,6 +20,7 @@ await page.addInitScript((q) => { try { const k = 'tiefer.settings.v1'; const s 
 const logs = [];
 page.on('console', m => { if (m.type() !== 'debug') logs.push(`[${m.type()}] ${m.text()}`); });
 page.on('pageerror', e => logs.push(`[pageerror] ${e.message}`));
+page.on('response', r => { if (r.status() >= 400) logs.push(`[http ${r.status()}] ${r.url().replace(/^https?:\/\/[^/]+/, '')}`); });
 await page.goto(`http://localhost:${process.env.PORT || 3033}/?${query}`);
 const probe = query.startsWith('sandbox') ? () => window.__sb : query.startsWith('viewer') ? () => window.__viewer
   : query.includes('night=') ? () => window.__tiefer?.game?.mode === 'night' : () => window.__tiefer?.game;
