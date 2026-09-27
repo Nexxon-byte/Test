@@ -374,6 +374,7 @@ export class Game {
     this.inv.add(it);
     this._removeCargo(it.id);
     audio.play('pickup');
+    if (this.tut?.step === 'find' && !it.tool) this._tutNight('carry');
     if (it.two) ui.hint('two', 'G', 'Schweres fallen lassen');
     else if (it.tool) ui.hint('tool', 'LMT', it.tool === 'gun' ? 'Schießen · R: nachladen' : it.tool === 'heal' ? 'Verband anlegen' : ['flare', 'decoy'].includes(it.tool) ? 'Werfen' : it.tool === 'salt' ? 'Salzlinie streuen' : 'Zuschlagen', 8);
     else ui.hint('slots', '1–4', 'Taschen wechseln · G: fallen lassen · Q: Scannen', 8);
@@ -419,6 +420,13 @@ export class Game {
     audio.play('ding', { vol: 0.35, pitch: 1.5 });
     if (it.type !== 'reliquie' && Math.random() < 0.35) voice.say(Math.random() < 0.8 ? 've_sell' : 've_doubt');
     ui.toast(`+${it.value} M · ${it.def.name} der Kantorei übergeben`);
+    if (this.state.flags.tutorialSell) {
+      this.state.flags.tutorialSell = false;
+      setTimeout(() => {
+        ui.setObjective('Morgen Nacht: Aufträge am Brett bei Bruder Dieter');
+        ui.komMessage('GUT GEMACHT, KINDER. AB JETZT GANZ STUFE I: LADEBUCHT, SKRIPTORIUM, BEINHAUS. AUFTRÄGE AM BRETT. – D.');
+      }, 1500);
+    }
     saveCampaign(this.state);
     this._updateKom();
   }
@@ -519,9 +527,10 @@ export class Game {
     audio.play('jolt', { vol: 0.7 });
     this.player.shake = 1.0;
     this.elev.arrive();
-    // Ankunft: Stromausfall-Ritual
+    // Ankunft: Stromausfall-Ritual (in der ersten Nacht erklärt es die Vermittlerin)
     this.elev.lightMode = 'off';
-    await this._wait(1.2);
+    if (st.flags.tutorial) voice.say('v_e1_power', { interrupt: true });
+    await this._wait(st.flags.tutorial ? 2.6 : 1.2);
     this._enterLevel(level, theme, depth, name);
     this.elev.lightMode = 'normal';
     this.elev.light = 0.55;
@@ -615,6 +624,7 @@ export class Game {
     this.player.toggleLamp(true);
     audio.play('lampClick', { on: true });
     const st = this.state;
+    this.tut = st.flags.tutorial ? { step: 'find', t: 0 } : null;
     if (st.flags.tutorial) {
       voice.sequence(['v_tut_1', 'v_tut_2', 'v_tut_3', 'v_tut_4'], 0.5);
       ui.setObjective('Beute finden (Q scannen) und in die Kabine bringen');
@@ -630,7 +640,47 @@ export class Game {
     this._updateKom();
   }
 
+  // Geführte erste Nacht: finden → tragen → weiter bergen → genug → aufwärts
+  _tutNight(step) {
+    const t = this.tut;
+    if (!t || t.step === step) return;
+    t.step = step;
+    if (step === 'carry') {
+      ui.setObjective('Zur Neunten tragen. Nur was IN der Kabine liegt, zählt.');
+      ui.hint('drop', 'G', 'In der Kabine fallen lassen', 10);
+    } else if (step === 'more') {
+      ui.setObjective('Weiter bergen. Die Kabine zählt mit.');
+      ui.toast(`Die Neunte zählt: ${this._cabValue()} M`);
+      audio.play('ding', { vol: 0.25, pitch: 1.3 });
+    } else if (step === 'return') {
+      voice.say('v_tut_5', { interrupt: true });
+      ui.setObjective('Zurück in die Neunte und AUFWÄRTS drücken.');
+    }
+  }
+
+  _updateTutorial(dt) {
+    const t = this.tut;
+    if (!t || this.busy || this.player.dead) return;
+    t.t += dt;
+    const cab = this._cabValue();
+    if (t.step === 'carry' && cab > 0) this._tutNight('more');
+    if ((t.step === 'more' && (cab >= 80 || this.clock >= 100)) || (t.step !== 'return' && this.clock >= 140)) this._tutNight('return');
+  }
+
+  // Kom-Zeile der ersten Nacht: Pfeil zur Kabine, sobald man etwas trägt oder heim soll
+  _tutKomLine() {
+    const t = this.tut, p = this.player;
+    if (!t || !['carry', 'return'].includes(t.step) || this.elev.contains(p.pos)) return '';
+    const d = Math.hypot(p.pos.x, p.pos.z);
+    let a = Math.atan2(p.pos.x, p.pos.z) - p.yaw;
+    while (a > Math.PI) a -= Math.PI * 2;
+    while (a < -Math.PI) a += Math.PI * 2;
+    const arrow = ['↑', '↖', '←', '↙', '↓', '↘', '→', '↗'][(Math.round(a / (Math.PI / 4)) + 8) % 8];
+    return `<span class="c">◆ Die Neunte</span><span class="dir">${arrow} ${Math.round(d)} m</span>`;
+  }
+
   _updateNight(dt) {
+    this._updateTutorial(dt);
     // Als Echo vergeht die Nacht schneller; Leertaste ruft die Neunte sofort
     this.clock += (dt * 1000) / MS_PER_MIN * (this.echo ? 15 : 1);
     if (this.echo && input.hit('Space')) { this.ascend('tod'); return; }
@@ -826,8 +876,10 @@ export class Game {
     this.busy = false;
     // Nachwirkungen der Nacht (Story-Szenen), erst nach der Abrechnung
     for (const fn of (this.afterReport || []).splice(0)) fn();
+    this.tut = null;
     if (tut) {
       voice.say('v_tut_6');
+      st.flags.tutorialSell = true;
       ui.setObjective('Beute aus der Kabine zur Waage der Kantorei tragen und verkaufen');
     } else if (st.night >= 3) {
       ui.setObjective('Zehntwoche um: Bei Kantor Veit die Quote abrechnen');
@@ -937,7 +989,7 @@ export class Game {
       ? `<span>TRAGE <b>${carried} M</b></span><span>KABINE <b>${this._cabValue()} M</b></span>`
       : `<span>MARKEN <b>${st.marks}</b></span><span>QUOTE <b>${st.sold}/${st.quota}</b></span><span>NACHT <b>${Math.min(3, st.night + 1)}/3</b></span>`;
     ui.setKom({ name: `MANNSCHAFT 47 · ${name}`, res });
-    ui.setContracts(this.mode === 'night' ? this.contracts.komLine() : '');
+    ui.setContracts(this.mode === 'night' ? (this.tut ? this._tutKomLine() : this.contracts.komLine()) : '');
   }
 
   _cabValue() { return this.items.inside((p) => this.elev.contains(p)).reduce((s, i) => s + i.value, 0); }
