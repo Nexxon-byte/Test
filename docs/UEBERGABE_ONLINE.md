@@ -29,6 +29,19 @@ git merge --ff-only origin/claude/sharp-clarke-xzck72
 | Audio | `audio/audio.js` | neu: saltShot, shotgun, reload, swing, hitMetal, hitFlesh, bite, hurt, bandage, ratSqueak, ratScurry, fluorescentPing, flareIgnite, rattle, saltPour, Schleife flareBurn |
 | Stimmen | `server.js`, `audio/voice.js` | Server listet vorhandene Stimmdateien, das Spiel lädt nur diese (keine 404, Untertitel bleiben) |
 
+### Sprint D – Story, Aufträge, Tutorial
+| Teil | Datei | Stand |
+|---|---|---|
+| Aufträge (D1) | `game/contracts.js`, `game/goldmark.js`, `game/floors.js`, Brett in `ui/shop.js` | 3–4 Angebote je Nacht (Bergung, Siegelgut, Vermisst, Wartung, Kirchenauftrag, Schwarzmarkt, Goldener Auftrag), bis 2 annehmen (gleiche Tiefe); goldene Markierung, Kom-Liste + Richtungspfeil; Vermisste = gestürzte Mannschaftsfigur mit Marke + letzter Kom-Meldung; Relais 4 s neu setzen (laut); Abrechnung mit Belohnung |
+| Tutorial (D2) | `game/game.js` (`_tutNight`, `_updateTutorial`) | Stromausfall-Zeile, finden → tragen (Pfeil zur Kabine) → weiter bergen → genug (v_tut_5) → aufwärts; oben Überleitung zum Brett |
+| Story-Kapitel (D3) | `story/chapters.js`, `story/scenes/index.js`, `story/scenes/saal13.js` | **Erweiterbar:** neues Kapitel = Eintrag in `CHAPTERS` + Szene (Vorlage `saal13.js`). −13 Saal der Vierzig: Schrein in Samtnische neben der Bühne, leere Reliquie (Twist 1), Anselm folgt → Garküche; Entscheidung Reliquie Veit/Hanne |
+| Gaben (D5) | `ui/shop.js` (`openGifts`), `GIFTS` in `game/state.js` | Kabinentelefon oben: 6 Gnaden je 1 Buchstabe; Voss kauft Buchstaben; Flags lettersVoss/lettersVermittlerin/nameGiven |
+| Tagebuch + Dokumente (D4/D6) | siehe unten (Subagent) | |
+
+### Leistung
+- Nacht: ~3,9 → ~0,76 Mio. Dreiecke/Bild. Ratten Low-Poly (Code), Lampenschatten nur bei Licht, kleine Beute ohne Schatten, Shader-Vorkompilierung bei der Ankunft (`game.prewarm`).
+- Markt Neun: ~2,2 Mio. Dreiecke sichtbar (Fassaden-Baukasten + Poly-Haven-Modelle). Das ist Modellarbeit → siehe Wünsche.
+
 ## Neue Sprechtext-IDs (bitte lokal vertonen)
 | ID | Sprecher | Text |
 |---|---|---|
@@ -43,6 +56,9 @@ git merge --ff-only origin/claude/sharp-clarke-xzck72
 - **Ego-Hände:** Werkzeuge schweben ohne Hand vor der Kamera – mit Ego-Armen (lokal geplant) an `inv.view` hängen.
 - **Grafik-Endkontrolle mit GPU:** Blutrand-Stärke, Fackellicht (rot, 16 cd), Mündungsblitz, Rattenaugen, Streulicht auf Werkzeugen.
 - **Ratten:** `street_rat` hat 14 k Dreiecke je Ratte – bei Leistungsproblemen eine vereinfachte Fassung erzeugen.
+
+- **Leistung – Modelle vereinfachen (Blender „Decimate“, Ziel ≤ 10–15 k Dreiecke):** modular_factory_facade (175k), modular_urban_apartments_facade (118k), treasure_chest (103k), overhead_crane (89k), modular_chainlink_fence (89k), fire_hydrant (86k), concrete_road_barrier (80k), chess_set (76k), book_encyclopedia_set_01 (67k), drill_press_01 (58k), old_bed_frame (49k), korean_public_payphone_01 (48k), vintage_radio_transceiver (42k). Die MakeHuman-Figuren haben je ~85k Dreiecke (gast_f: Körper **und** „low-poly“-Proxy im Modell – prüfen, ob beide nötig sind).
+- **Ratten:** Das Low-Poly-Modell ist Code (`rats.js` `ratProto`). Ein echtes, schlankes Rattenmodell (≤ 800 Dreiecke) aus Blender wäre schöner.
 
 ## Offen / bekannt
 - Sandkasten (`?sandbox`) hat keine Monster – dafür gibt es `?skip&night=…` (siehe `docs/WERKZEUGE.md`).
