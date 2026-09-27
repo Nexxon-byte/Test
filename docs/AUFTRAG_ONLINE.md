@@ -1,8 +1,17 @@
-# Arbeitsauftrag für die Online-Sitzung (Stand 27.09.2026, Commit „Auftrag Online“)
+# Arbeitsauftrag für die Online-Sitzung (Stand 27.09.2026 abends)
 
 Du arbeitest in einer Cloud-Umgebung **ohne Grafikkarte, ohne Blender, ohne Stimmen-Erzeugung**. Die lokale Sitzung auf Julians PC übernimmt Figuren/Kleidung (Blender + MakeHuman), Stimmen (Chatterbox) und die Grafik-Endkontrolle. Du baust alles, was **Code** ist – und davon fehlt noch extrem viel. Arbeite die Sprints der Reihe nach ab, so weit du kommst. Qualität vor Menge, aber das Spiel soll fertig werden.
 
-**Zuerst lesen:** `CLAUDE.md` (Regeln, Stolperfallen), `docs/GAME_DESIGN.md` (Spezifikation v2 Hybrid). Antworten an Julian auf Deutsch, locker.
+**Zuerst lesen:** `CLAUDE.md` (Regeln, Stolperfallen), `docs/GAME_DESIGN.md` (Spezifikation v2 Hybrid), **`docs/WERKZEUGE.md`** (alle Werkzeuge & Code-Bausteine), `docs/RECHERCHE_WERKZEUGE.md` (geprüfte Asset-Quellen + Lizenzwarnungen). Antworten an Julian auf Deutsch, locker.
+
+## Neu seit dem letzten Auftrag (lokal erledigt – nicht nochmal machen)
+- **Oberstadt „Markt Neun“ neu gestaltet:** offener Hof statt Halle, Häuserzeilen aus dem Poly-Haven-Baukasten (`world/facade.js` → `buildRow`), Fenster mit Innenräumen (teils beleuchtet), Himmelskuppel mit Smog, Hochhaus-Silhouetten mit Warnlichtern, Schachtturm mit Krone, echte Straßen-/Wandlaternen, LED-Werbetafel mit Rahmen, Garküche mit Vordach, Zehntkabine (Glas + Münztelefon), Markise bei Voss, Tresen mit Füllungen, Kantorei/Kapelle mit Pfeilern und Gesimsen, Pfützen, **Regen nur zeitweise** (Wetter-Zyklus in `hub.update`).
+- **Figuren neu eingekleidet** (Roben, Overalls, Zweireiher …) – `npc_*.glb`. Echte Taschenlampe in der Hand (`vintage_flashlight`, dunkel lackiert).
+- **Erstes Monster-Modell:** `public/assets/chars/npc_hoerer.glb` (ausgemergelt, blind, Robe; Clip-Satz „monster“: Crouch_Idle_Loop, Crouch_Fwd_Loop, Sprint_Loop, Jog_Fwd_Loop, Walk_Loop, Idle_Loop, Zombie_*, Punch_Cross, Death01, Hit_Chest, Hit_Knockback, LayToIdle, Spell_Simple_Idle_Loop).
+- **Monster-Verformung:** `gfx/monsterize.js` → `monsterize(character, 'hoerer'|'fahrgast')` streckt Glieder/Hals, krümmt den Rücken, lässt den Kopf zucken; jedes Frame nach `character.update(dt)` → `m.update(dt)`. Vorschau: `?viewer&set=npcs&only=hoerer&clips=Crouch_Fwd_Loop&monster=hoerer`.
+- **Prüfwerkzeug:** `node tools/test/placecheck.mjs "skip"` meldet Schwebendes/Ineinandersteckendes (in der Cloud ggf. `channel: 'chrome'` → Chromium/Swiftshader anpassen). Bekannte Fehlalarme: Glas im Fensterrahmen, sich kreuzende Kabel, gewollte Gesimse, Figur ↔ eigenes Requisit. **Bekannter echter Fehler:** `props.js truck()` – Räder schweben 0,14 m.
+- **Fahrstuhlfahrt** wurde (evtl. teilweise) überarbeitet – siehe Commit-Log/`world/elevator.js`; offene Punkte stehen im Commit.
+
 
 ## 0. Einrichtung
 ```
@@ -37,8 +46,8 @@ node tools/test/shot.mjs "<query>" <präfix> '<views-json>'   # Screenshots (Sof
 
 ### Sprint C – Monster, Gefahr, Waffen (höchste Priorität – Julian vermisst das am meisten)
 1. **`game/monsters/`**: `director.js` (Spannungskurve pro Nacht: ruhig → unruhig ab 02:50 → Jagd ab 03:00; Spawns je Tiefe/Thema aus der Tabelle in GAME_DESIGN §6; Scare-Takt ohne Jumpscare-Spam), `base.js` (Zustände idle/wander/stalk/hunt/attack/flee/freeze, Wegfindung über das Level-Raster mit A*, Sicht über `collision.los`, Gehör über Lärm-Ereignisse vom Spieler/Items/Glocke/Flinte).
-2. **Fahrgäste** (`gast_m/gast_f`): bewegen sich **nur, wenn sie niemand ansieht ODER sie im Dunkeln stehen** – im Blick *und* im Licht erstarren sie mitten in der Bewegung (`mixer.timeScale = 0`). Kommen bei jedem Wegsehen näher, Kopf ruckartig schief, stehen plötzlich im Kabinenspiegel oder hinter dem Scherengitter. Griff = 40 LP. Konter: Hinsehen + Lampe, Fackeln, Flutlicht, Salzflinte (zerschmettert sie für eine Weile).
-3. **Der Hörer** (aus `crew_m` mit verformten Knochen, Haut/Kleidung per Materialkopie dunkel/bleich, Kopf ohne Augen – z. B. Kopf-Knochen stauchen + eigene Maskengeometrie): blind, jagt Geräusche, kriecht (`Crouch_Fwd_Loop`), sprintet bei lautem Lärm (`Sprint_Loop`). Biss = 60 LP. Konter: Stille, Ducken, Klapper als Köder, Flinte (kurz). Ab Tiefenstufe II, als Test auch in −17.
+2. **Fahrgäste** (`gast_m/gast_f` + `monsterize(ch, 'fahrgast')`): bewegen sich **nur, wenn sie niemand ansieht ODER sie im Dunkeln stehen** – im Blick *und* im Licht erstarren sie mitten in der Bewegung (`mixer.timeScale = 0`). Kommen bei jedem Wegsehen näher, Kopf ruckartig schief, stehen plötzlich im Kabinenspiegel oder hinter dem Scherengitter. Griff = 40 LP. Konter: Hinsehen + Lampe, Fackeln, Flutlicht, Salzflinte (zerschmettert sie für eine Weile).
+3. **Der Hörer** (Modell `hoerer` fertig + `monsterize(ch, 'hoerer')`; Feinschliff am Modell macht die lokale Sitzung): blind, jagt Geräusche, kriecht (`Crouch_Fwd_Loop`), sprintet bei lautem Lärm (`Sprint_Loop`). Biss = 60 LP. Konter: Stille, Ducken, Klapper als Köder, Flinte (kurz). Ab Tiefenstufe II, als Test auch in −17.
 4. **Rattenschwarm** (`street_rat`, InstancedMesh + Schwarmverhalten): messingfarbene Augen (Glüh-Sprites), fressen Kabel (Licht flackert), beißen (5 LP), fliehen vor Licht/Salz.
 5. **LP & Tod**: `game/player.js`/`game.js` – Schaden mit Bildschirmrand-Blut, Kameraruck, Herzschlag, Keuchen; 0 LP → Tod: Echo-Zuschauer (`ui.setEcho`), Beute in der Hand verloren, Bestattungsgebühr oben. Heilung: Weihöl-Station, Verbände (neuer Gegenstand), Garküche.
 6. **Waffen bei Voss** (Shop-Einträge „BALD“ entfernen): Brechstange (`crowbar_01`, Schlag, LMB), Salzflinte (`bolt_action_rifle_7_62` umgedeutet, 2 Schuss, laut, Nachladen), Leuchtfackel (werfbar, Fahrgäste erstarren im Umkreis, eigene Leuchte im Lichtpool), Klapper (Köder), Salzsack (Barriere), Vorschlaghammer (`sledgehammer_01`, langsam, stark). Ansichtsmodell in der Hand, Treffererkennung per Strahl, Geräusche, Munition im Inventar.
@@ -72,3 +81,9 @@ Abnahme: In der Sandbox und im echten Spiel eine Nacht auf −2/−7/−17 spiel
 
 ## 4. Übergabe zurück
 Am Ende (oder wenn das Guthaben knapp wird): `docs/UEBERGABE_ONLINE.md` schreiben – was fertig ist, was offen/kaputt ist, **neue Sprechtext-IDs** (für die lokale Vertonung), Wünsche an die lokale Sitzung (z. B. „Hörer braucht eigenes Modell“, „Fahrgast-Kleidung“). Dann den ganzen Ordner **inklusive `.git`** (ohne `node_modules`) als ZIP an Julian geben.
+
+## 5. Aufgaben, die NUR lokal gehen (nicht selbst versuchen – in der Übergabe als Wunsch notieren)
+- Neue Figuren/Kleidung/Monster-Modelle (Blender + MPFB): Portier, Ertrunkene, Nachsprecher, Fahrgast-Varianten, Ego-Arme/Hände.
+- Stimmen für neue Sprechtexte (Chatterbox, lokal).
+- Grafik-Endkontrolle mit echter GPU, Licht-Backen in Blender (Lightmaps für Hub/Kabine).
+- Große Asset-Downloads, falls das Cloud-Netz Poly Haven/MakeHuman nicht erreicht.

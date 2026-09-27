@@ -23,6 +23,8 @@ CLIPSETS = {
     'crew': ['Idle_Loop', 'Idle_Torch_Loop', 'Idle_Lantern_Loop', 'Walk_Loop', 'Jog_Fwd_Loop', 'Sprint_Loop', 'Crouch_Idle_Loop', 'Crouch_Fwd_Loop',
              'Walk_Carry_Loop', 'Interact', 'PickUp_Table', 'OverhandThrow', 'Death01', 'Hit_Chest', 'Hit_Knockback', 'LayToIdle', 'Punch_Cross',
              'Sword_Attack', 'Pistol_Idle_Loop', 'Pistol_Aim_Neutral', 'Pistol_Shoot', 'Yes', 'Idle_No_Loop', 'Sitting_Idle_Loop'],
+    'monster': ['Crouch_Idle_Loop', 'Crouch_Fwd_Loop', 'Sprint_Loop', 'Jog_Fwd_Loop', 'Walk_Loop', 'Idle_Loop', 'Zombie_Idle_Loop', 'Zombie_Walk_Fwd_Loop',
+                'Zombie_Scratch', 'Punch_Cross', 'Death01', 'Hit_Chest', 'Hit_Knockback', 'LayToIdle', 'Spell_Simple_Idle_Loop'],
     'gast': ['Zombie_Idle_Loop', 'Zombie_Walk_Fwd_Loop', 'Zombie_Scratch', 'Dance_Loop', 'Idle_Loop', 'Sitting_Idle_Loop', 'Death01', 'Punch_Cross',
              'Crouch_Idle_Loop', 'Spell_Simple_Idle_Loop', 'Walk_Formal_Loop', 'Idle_FoldArms_Loop'],
 }
@@ -100,9 +102,9 @@ def build(cid, spec):
         else:
             ph[k] = v
     info['rig'] = 'game_engine'
-    info['eyes'] = 'low-poly/low-poly.mhclo'
+    info['eyes'] = spec.get('eyes', 'low-poly/low-poly.mhclo')
     info['eyes_material_type'] = 'MAKESKIN'
-    info['eyelashes'] = 'eyelashes01/eyelashes01.mhclo'
+    info['eyelashes'] = spec.get('eyelashes', 'eyelashes01/eyelashes01.mhclo')
     info['eyebrows'] = spec.get('eyebrows', '')
     info['teeth'] = 'teeth_base/teeth_base.mhclo'
     info['hair'] = spec.get('hair', '')
@@ -119,6 +121,9 @@ def build(cid, spec):
     nclips = bake_clips(arm, spec.get('role', 'merchant'))
     meshes = [o for o in bpy.context.scene.objects if o.type == 'MESH']
     tint_materials(meshes, spec.get('tint', {}))
+    # Hautton der Figur (z. B. bleich/grau für Monster): nur das Grundnetz
+    if spec.get('skin_tint'):
+        tint_materials([basemesh], {'': spec['skin_tint']})
     # Unterteilungs-Modifikatoren entfernen (Leistung); Maske/Armature bleiben
     for o in meshes:
         for mod in list(o.modifiers):

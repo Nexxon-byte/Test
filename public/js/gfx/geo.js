@@ -111,7 +111,7 @@ export class Builder {
     this.colliders = [];
   }
 
-  add(material, geo, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0, sx = 1, sy = 1, sz = 1) {
+  add(material, geo, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0, sx = 1, sy = 1, sz = 1, kind = 'geo') {
     _e.set(rx, ry, rz, 'YXZ');
     _q.setFromEuler(_e);
     _p.set(x, y, z);
@@ -121,19 +121,34 @@ export class Builder {
     g.applyMatrix4(_m);
     if (!this.buckets.has(material)) this.buckets.set(material, []);
     this.buckets.get(material).push(g);
+    if (globalThis.__placeDebug) this._trackDebug(material, g, kind);
     return g;
   }
 
-  addMatrix(material, geo, matrix) {
+  addMatrix(material, geo, matrix, kind = 'geo') {
     const g = geo.index ? geo.toNonIndexed() : geo.clone();
     g.applyMatrix4(matrix);
     if (!this.buckets.has(material)) this.buckets.set(material, []);
     this.buckets.get(material).push(g);
+    if (globalThis.__placeDebug) this._trackDebug(material, g, kind);
+  }
+
+  // Nur für die Platzierungsprüfung (?placecheck): Weltraum-AABB + Beschriftung merken.
+  // Wird ausschließlich aufgerufen, wenn globalThis.__placeDebug wahr ist – sonst keine Kosten.
+  _trackDebug(material, g, kind) {
+    if (!this.debugBoxes) this.debugBoxes = [];
+    g.computeBoundingBox();
+    const box = g.boundingBox;
+    if (!box || !isFinite(box.min.x)) return;
+    const c = box.getCenter(new THREE.Vector3());
+    const rx = Math.round(c.x * 100) / 100, ry = Math.round(c.y * 100) / 100, rz = Math.round(c.z * 100) / 100;
+    const name = (material && material.name) || 'mat';
+    this.debugBoxes.push({ box: box.clone(), label: `${name}:${kind}@(${rx},${ry},${rz})` });
   }
 
   // Quader: Position = Mittelpunkt
   box(material, x, y, z, sx, sy, sz, { ry = 0, rx = 0, rz = 0, collide = false } = {}) {
-    this.add(material, boxGeometry(sx, sy, sz), x, y, z, rx, ry, rz);
+    this.add(material, boxGeometry(sx, sy, sz), x, y, z, rx, ry, rz, 1, 1, 1, 'box');
     if (collide) this.colliderRotated(x, z, sx, sz, ry, y - sy / 2, y + sy / 2);
   }
 
@@ -143,12 +158,12 @@ export class Builder {
   }
 
   cyl(material, x, y, z, rt, rb, h, seg = 12, { collide = false, rx = 0, rz = 0, ry = 0 } = {}) {
-    this.add(material, cylGeometry(rt, rb, h, seg), x, y + h / 2, z, rx, ry, rz);
+    this.add(material, cylGeometry(rt, rb, h, seg), x, y + h / 2, z, rx, ry, rz, 1, 1, 1, 'cyl');
     if (collide) { const r = Math.max(rt, rb); this.collider(x - r, z - r, x + r, z + r, y, y + h); }
   }
 
   sphere(material, x, y, z, r, ws = 10, hs = 8, sx = 1, sy = 1, sz = 1) {
-    this.add(material, sphereGeometry(r, ws, hs), x, y, z, 0, 0, 0, sx, sy, sz);
+    this.add(material, sphereGeometry(r, ws, hs), x, y, z, 0, 0, 0, sx, sy, sz, 'sphere');
   }
 
   collider(minX, minZ, maxX, maxZ, minY = -1, maxY = 50) {
@@ -174,6 +189,7 @@ export class Builder {
       mesh.receiveShadow = receiveShadow;
       mesh.matrixAutoUpdate = false;
       mesh.updateMatrix();
+      mesh.userData.builder = true; // Prüfwerkzeug (?placecheck): verschmolzene Meshes überspringen
       group.add(mesh);
       for (const g of geos) if (g !== merged) g.dispose();
     }

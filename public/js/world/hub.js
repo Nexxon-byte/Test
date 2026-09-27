@@ -14,6 +14,7 @@ import { NPC } from './npc.js';
 import { hasCharacter } from '../gfx/characters.js';
 import { cloneModel, hasModel } from '../gfx/models.js';
 import { bus } from '../core/bus.js';
+import { buildRow } from './facade.js';
 
 // Besetzung des Markts: Figur (MPFB), Grundhaltung, Requisit
 const CAST = {
@@ -37,7 +38,7 @@ export const HUB_CHARACTERS = [...new Set(Object.values(CAST).map(c => c.char))]
 export const HUB_THEME = {
   name: 'Markt Neun',
   height: 12, wall: 'stoneDark', portal: 'brassDark', surface: 'stone',
-  fog: { color: 0x07050c, density: 0.032 },
+  fog: { color: 0x120d18, density: 0.03 },
   ambient: { sky: 0x5a4a78, ground: 0x1a1216, intensity: 0.95 },
   grade: { saturation: 1.0, contrast: 1.08, exposure: 1.3, shadowTint: [0.012, 0.0, 0.03], highlightTint: [1.0, 0.93, 0.96] },
   music: 'lobby', reverb: [3.6, 0.45], reverbMix: 0.35,
@@ -75,6 +76,7 @@ export class Hub {
 
   _build() {
     const b = new Builder();
+    this._debugBuilder = b; // Prüfwerkzeug (?placecheck): Builder für builder.debugBoxes merken
     const stubGrid = { rooms: [], w: 0, h: 0, isFloor: () => false, get: () => 0, idx: () => 0, room: [], dist: [], block: [] };
     const ctx = makeCtx(this.R, b, stubGrid, this.theme, this, this.rng);
     this.ctx = ctx;
@@ -91,6 +93,7 @@ export class Hub {
     this._garkueche(b, ctx);
     this._plaza(b, ctx);
     this._rain();
+    this._skyline();
 
     this.group.add(b.build());
     this.R.scene.add(this.group);
@@ -102,51 +105,56 @@ export class Hub {
     const floor = mat('stoneWet'), wall = mat('stoneDark'), brick = mat('brick'), plaster = mat('plaster');
     // Boden
     b.add(floor, quadGeometry([X0, 0, Z1], [X1, 0, Z1], [X1, 0, Z0], [X0, 0, Z0], X1 - X0, Z1 - Z0, X0, -Z1));
-    // Gewölbe
-    b.add(wall, quadGeometry([X0, H, Z0], [X1, H, Z0], [X1, H, Z1], [X0, H, Z1], X1 - X0, Z1 - Z0, X0, Z0));
-    for (let z = Z0 + 3; z < Z1; z += 4.5) {
-      b.box(mat('stone'), 0, H - 0.3, z, X1 - X0, 0.6, 0.5);
-      b.box(mat('stone'), 0, H - 0.3, z, 0.5, 0.6, 4.5);
-    }
+    // Offener Hof: kein Gewölbe mehr – darüber nur Nacht, Dunst und Regen
     // Fassade am Schachtkopf (links/rechts vom Portal)
     const half = CAB.CELLS_X * 2.5 / 2;
     for (const s of [-1, 1]) {
       const xa = s < 0 ? X0 : half, xb = s < 0 ? -half : X1;
       b.add(wall, quadGeometry([xa, 0, Z0], [xb, 0, Z0], [xb, H, Z0], [xa, H, Z0], xb - xa, H, xa, 0));
     }
-    // Seitenwände (Häuserfronten)
-    b.add(brick, quadGeometry([X0, 0, Z1], [X0, 0, Z0], [X0, H, Z0], [X0, H, Z1], Z1 - Z0, H, -Z1, 0));
-    b.add(brick, quadGeometry([X1, 0, Z0], [X1, 0, Z1], [X1, H, Z1], [X1, H, Z0], Z1 - Z0, H, Z0, 0));
-    b.add(plaster, quadGeometry([X1, 0, Z1], [X0, 0, Z1], [X0, H, Z1], [X1, H, Z1], X1 - X0, H, -X1, 0));
+    // Häuserfronten (Poly-Haven-Baukasten „modular_urban_apartments_facade“)
+    this._facades();
     // Randkollision
     b.collider(X0 - 1, Z0 - 1, X0 + 0.2, Z1 + 1);
     b.collider(X1 - 0.2, Z0 - 1, X1 + 1, Z1 + 1);
     b.collider(X0 - 1, Z1 - 0.2, X1 + 1, Z1 + 1);
     b.collider(X0, Z0 - 1, -half, Z0 + 0.05);
     b.collider(half, Z0 - 1, X1, Z0 + 0.05);
-    // Gotische Säulen entlang der Fassade und des Platzes
+    // Gotische Pfeiler am Schachtturm
     for (const x of [-3.6, 3.6, -9, 9]) P.pillarRound(b, x, Z0 + 0.6, 0, this.rng, { h: H, r: 0.45, m: 'stoneDark', cap: 'stone' });
-    for (const z of [12.5, 21.5]) for (const x of [-7.6, 7.6]) P.pillarRound(b, x, z, 0, this.rng, { h: H, r: 0.4, m: 'stoneDark', cap: 'stone' });
-    // Obere Galerien mit dunklen Fenstern (Wohnungen des Sockels)
-    for (const s of [-1, 1]) {
-      const x = s * (X1 - 0.05);
-      for (let z = 5; z < Z1 - 2; z += 3.2) for (const y of [6.2, 9]) {
-        const lit = this.rng.chance(0.3);
-        const col = lit ? this.rng.pick([0xffb060, 0x60e0ff, 0xff4a9a]) : 0x05070a;
-        const m = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.4), glowMat(col, lit ? 0.9 : 0.02, 'hubWin' + col + lit));
-        m.position.set(x, y, z);
-        m.rotation.y = s > 0 ? -Math.PI / 2 : Math.PI / 2;
-        this.group.add(m);
-        b.box(mat('stoneDark'), x - s * 0.05, y - 0.8, z, 0.2, 0.12, 1.4);
-      }
-    }
-    // Rohre & Kabel unter dem Gewölbe
-    for (let i = 0; i < 4; i++) P.pipeRun(b, X0 + 1, Z0 + 3 + i * 7, X1 - 1, Z0 + 3 + i * 7, H - 1.2 - (i % 2) * 0.5, 0.12, 'rust');
-    for (let i = 0; i < 6; i++) P.cables(b, this.rng.float(-10, 10), this.rng.float(4, 28), this.rng.float(-10, 10), this.rng.float(4, 28), H - 2.5, 3, this.rng);
+    // Stromkabel quer über den Hof, zwischen den Häusern gespannt
+    for (let i = 0; i < 5; i++) P.cables(b, X0 + 0.04, this.rng.float(6, 29), X1 - 0.04, this.rng.float(6, 29), this.rng.float(8.5, 11.5), 3, this.rng);
+  }
+
+  // Häuserzeilen links, rechts, hinten. Erdgeschoss passt zu den Ständen davor.
+  _facades() {
+    const K = 'modular_urban_apartments_facade';
+    const rng = this.rng;
+    const WIN = ['wall_window_centered_large_01', 'wall_window_centered_large_02', 'wall_window_centered_double_01', 'wall_window_centered_double_02',
+      'wall_window_centered_small_01', 'wall_window_centered_small_02', 'wall_window_offset_small_01', 'wall_window_offset_small_03'];
+    const TOP = ['wall_window_centered_large_03', 'wall_window_centered_double_03', 'wall_window_centered_small_03', 'wall_window_offset_small_05'];
+    const upper = (i, f) => rng.chance(0.12) ? 'wall_standard_standard_01' : rng.pick(f === 3 ? TOP : WIN);
+    const PLAIN = 'wall_standard_standard_01', DOOR = 'wall_door_centered_small_01', DOOR2 = 'wall_door_centered_large_01', SHOP = 'wall_window_centered_double_01';
+    const L = Z1 - Z0;
+    // links (Stille Ecke · frei · Voss · frei · Dispo), läuft von hinten nach vorn
+    const left = [PLAIN, PLAIN, DOOR, SHOP, PLAIN, DOOR2, DOOR, PLAIN, PLAIN];
+    buildRow(this.group, K, { start: [X0, Z1], dir: [0, -1], length: L, floors: 4, rng, ground: (i) => left[i] ?? PLAIN, upper, lit: 0.22 });
+    // rechts (Kantorei · frei · Ada · frei · Kapelle), von vorn nach hinten
+    const right = [PLAIN, PLAIN, PLAIN, DOOR, PLAIN, PLAIN, DOOR2, SHOP, PLAIN];
+    buildRow(this.group, K, { start: [X1, Z0], dir: [0, 1], length: L, floors: 4, rng, ground: (i) => right[i] ?? PLAIN, upper, lit: 0.22 });
+    // hinten (Kapelle-Ecke · Garküche · Quartier · Stille-Ecke), von rechts nach links
+    const back = [PLAIN, SHOP, DOOR, PLAIN, PLAIN, PLAIN, DOOR, SHOP, PLAIN];
+    buildRow(this.group, K, { start: [X1, Z1], dir: [-1, 0], length: X1 - X0, floors: 4, rng, ground: (i) => back[i] ?? PLAIN, upper, lit: 0.25 });
   }
 
   // ---------------------------------------------------------------- Schachtkopf
   _shaftHead(b, ctx) {
+    // Turmkrone: Gesims auf der Fassade, darüber zurückgesetzter Aufsatz bis 20 m
+    const half = CAB.CELLS_X * 2.5 / 2;
+    b.box(mat('stone'), 0, H + 0.2, Z0 + 0.25, X1 - X0, 0.4, 0.6);
+    b.box(mat('stoneDark'), 0, H + 4.4, Z0 - 1.5, half * 2 + 6, 8, 3);
+    b.box(mat('stone'), 0, H + 8.5, Z0 - 1.3, half * 2 + 6.4, 0.3, 3.4);
+    for (const x of [-(half + 3), half + 3]) ctx.fixture({ x, y: H + 8.9, z: Z0 - 0.2, type: 'none', color: 0xff2010, intensity: 4, distance: 6, mode: 'neon', flicker: 0.5 });
     // riesiges Zifferblatt über dem Tor
     const dial = textTexture(512, 300, (g, w, h) => { g.clearRect(0, 0, w, h); drawDialSymbol(g, w / 2, h - 30, 220, '#ffcf7a', -0.9, 9); });
     const dm = ctx.decal(dial, 0, 6.3, Z0 + 0.06, 0, 5.2, 3.05, { emissive: 1.6 });
@@ -162,9 +170,20 @@ export class Hub {
 
   // ---------------------------------------------------------------- Stände
   _counter(b, x, z, len, face, m = 'walnut') {
-    // Theke entlang Z bei x, Vorderseite zeigt in Richtung face (±1 in X)
-    b.box(mat(m), x, 0.55, z, 0.7, 1.1, len, { collide: true });
-    b.box(mat('brassDark'), x + face * 0.36, 1.1, z, 0.06, 0.04, len);
+    // Tresen entlang Z bei x, Vorderseite zeigt in Richtung face (±1 in X)
+    const metal = /steel|rust/.test(m);
+    const top = metal ? 'steel' : 'walnut', trim = metal ? 'steel' : 'brassDark';
+    b.box(mat(m), x - face * 0.03, 0.53, z, 0.6, 0.96, len - 0.06, { collide: true });
+    b.box(mat(top), x + face * 0.02, 1.03, z, 0.76, 0.06, len);
+    b.box(mat(trim), x + face * 0.4, 1.0, z, 0.02, 0.03, len);
+    b.box(mat('rubber'), x + face * 0.26, 0.06, z, 0.02, 0.12, len - 0.1);
+    // Füllungen auf der Vorderseite
+    const n = Math.max(2, Math.round(len / 1.1)), pw = (len - 0.2) / n;
+    for (let i = 0; i < n; i++) {
+      const pz = z - len / 2 + 0.1 + pw * (i + 0.5);
+      b.box(mat(metal ? 'steelPanel' : 'woodPanel'), x + face * 0.275, 0.56, pz, 0.02, 0.72, pw - 0.1);
+      b.box(mat(trim), x + face * 0.288, 0.56, pz, 0.008, 0.76, 0.02, {});
+    }
   }
 
   // Figur aufstellen; seat = Höhe der Sitzfläche (dann ist x/z die Sitzmitte)
@@ -196,6 +215,20 @@ export class Hub {
     const h = this.rng.float(0.05, 0.2), r = this.rng.float(0.016, 0.028);
     b.cyl(mat('bone'), x, y, z, r, r * 1.1, h, 6);
     return ctx.candle(x, y + h + 0.03, z, light);
+  }
+
+  // Wandlaterne (Poly Haven street_lamp_02) an einer Hauswand; ry = Blickrichtung von der Wand weg
+  _wallLamp(ctx, x, z, ry, { color = 0xffc070, intensity = 7, mode = 'steady' } = {}) {
+    this._model('street_lamp_02', x, z, ry, { y: 2.0 });
+    ctx.fixture({ x: x + Math.sin(ry) * 0.62, y: 2.5, z: z + Math.cos(ry) * 0.62, type: 'none', color, intensity, distance: 7, mode, priority: 1.2 });
+  }
+
+  _glass(x, y, z, w, h, ry) {
+    this._glassMat ||= new THREE.MeshStandardMaterial({ color: 0x9ab0b8, roughness: 0.05, metalness: 0, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide });
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), this._glassMat);
+    m.position.set(x, y, z); m.rotation.y = ry;
+    this.group.add(m);
+    return m;
   }
 
   // Fertiges Modell (Poly Haven) aufstellen; y = Unterkante
@@ -251,7 +284,7 @@ export class Hub {
     b.cyl(mat('brassDark'), -9.4, 1.1, z + 1.6, 0.08, 0.1, 0.04, 8);
     b.cyl(mat('brassDark'), -9.4, 1.14, z + 1.6, 0.012, 0.012, 0.4, 6);
     ctx.fixture({ x: -9.4, y: 1.55, z: z + 1.6, type: 'sconce', color: 0xffd08a, intensity: 3.2, distance: 6, mode: 'steady', priority: 2 });
-    P.crt(b, -9.35, 1.1, z - 1.3, Math.PI / 2, { size: 0.36 });
+    this._model('Television_01', -9.4, z - 1.3, Math.PI / 2 + 0.15, { y: 1.06 });
     ctx.neon('DISPOSITION', '#39e6ff', -8.82, 3.6, z, Math.PI / 2, 2.4, { flicker: 0.2 });
     this._npc('dieter', { coat: 'coatBlue', hat: 'cap', brassHand: true, face: { age: 0.8, beard: false, scar: true }, bulk: 1.05 }, x, z, Math.PI / 2, 'counter');
     this._spot('dieter', -9.2, 1.35, z, 'Bruder Dieter · Disposition');
@@ -265,6 +298,11 @@ export class Hub {
     for (let i = 0; i < 16; i++) b.box(mat('brass'), 9.0, 2.0, z - 2.2 + i * 0.29, 0.03, 1.8, 0.03);
     b.box(mat('brass'), 9.0, 2.92, z, 0.08, 0.06, 4.6);
     b.box(mat('stoneDark'), 12.4, 3.5, z, 3.2, 7, 5.6);
+    // Eckpfeiler, Sockel und Kranzgesims – der Block wird zum Kantoreigebäude
+    for (const dz of [-2.72, 2.72]) b.box(mat('stone'), 10.86, 3.55, z + dz, 0.34, 7.1, 0.34);
+    b.box(mat('stone'), 10.84, 0.25, z, 0.12, 0.5, 5.5);
+    b.box(mat('stone'), 12.35, 7.12, z, 3.5, 0.26, 5.95);
+    b.box(mat('stone'), 12.35, 6.7, z, 3.36, 0.12, 5.8);
     // Regale mit Registern hinter dem Kantor
     for (const dz of [-1.6, 1.6]) {
       this._model('Shelf_01', 10.66, z + dz, -Math.PI / 2, { tint: 0x4a3222 });
@@ -294,14 +332,24 @@ export class Hub {
     // Markise
     const aw = textTexture(64, 64, (g) => { for (let i = 0; i < 8; i++) { g.fillStyle = i % 2 ? '#7a1418' : '#1a1210'; g.fillRect(i * 8, 0, 8, 64); } }, { srgb: true });
     const awm = new THREE.MeshStandardMaterial({ map: aw, roughness: 0.9, side: THREE.DoubleSide });
-    const aw1 = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 4.6), awm);
-    aw1.position.set(-9.6, 3.0, z); aw1.rotation.set(0, Math.PI / 2, 0); aw1.rotation.x = 0; aw1.rotateX(-0.9);
-    this.group.add(aw1);
-    for (let i = 0; i < 4; i++) P.crate(b, -12.6 + (i % 2) * 0.9, z - 2 + i * 1.1, this.rng.float(0, 1), this.rng, { s: 0.8 });
-    for (let i = 0; i < 3; i++) P.crt(b, -9.4, 1.1, z - 1.4 + i * 0.7, Math.PI / 2, { size: 0.32 });
+    const aw1 = new THREE.Mesh(new THREE.BoxGeometry(4.9, 0.03, 4.6), awm);
+    aw1.position.set(-11.5, 2.62, z); aw1.rotation.z = -0.09;
+    const val = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.32, 4.6), awm);
+    val.position.set(-9.06, 2.25, z);
+    aw1.castShadow = val.castShadow = true;
+    this.group.add(aw1, val);
+    for (const dz of [-2.25, 2.25]) b.cyl(mat('steel'), -9.08, 0, z + dz, 0.035, 0.035, 4.3, 8, { collide: true });
+    b.box(mat('steel'), -9.08, 4.25, z, 0.06, 0.06, 4.56);
+    // Heißware: Militärkisten gestapelt, Fernseher auf dem Tresen
+    const crates = ['old_military_crate', 'wooden_military_crate', 'wooden_crate_02', 'wooden_crate_01'];
+    for (let i = 0; i < 4; i++) {
+      const o = this._model(crates[i], -12.9 + (i % 2) * 0.35, z - 1.8 + i * 1.15, Math.PI / 2 + this.rng.float(-0.15, 0.15), { collide: true });
+      if (o && i % 2 === 0) { o.updateMatrixWorld(true); const top = new THREE.Box3().setFromObject(o).max.y; this._model('cardboard_box_01', -12.9, z - 1.8 + i * 1.15, this.rng.float(0, 6), { y: top }); }
+    }
+    for (let i = 0; i < 3; i++) this._model('Television_01', -9.45, z - 1.4 + i * 0.7, Math.PI / 2 + this.rng.float(-0.2, 0.2), { y: 1.06 });
     // Mikrofone
     for (let i = 0; i < 2; i++) { b.cyl(mat('steel'), -8.6, 0, z - 0.8 + i * 1.6, 0.015, 0.015, 1.5, 5); b.sphere(mat('rubber'), -8.6, 1.55, z - 0.8 + i * 1.6, 0.05, 6, 5); }
-    ctx.neon('STIMMANKAUF · BARGELD SOFORT', '#ff3a8c', -9.0, 3.9, z, Math.PI / 2, 3.6, { flicker: 0.6, font: '600 54px "Cormorant Garamond", serif' });
+    ctx.neon('STIMMANKAUF · BARGELD SOFORT', '#ff3a8c', -9.02, 3.86, z, Math.PI / 2, 3.6, { flicker: 0.6, font: '600 54px "Cormorant Garamond", serif' });
     ctx.fixture({ x: -9.5, y: 2.4, z, type: 'bulb', color: 0xff5aa0, intensity: 3.5, distance: 7, mode: 'dying', priority: 2 });
     this._npc('voss', { coat: 'leather', hat: null, hair: 'fabricBlack', face: { age: 0.4 }, bulk: 0.95 }, x, z, Math.PI / 2 - 0.3, 'counter');
     this._spot('voss', -9.2, 1.4, z, 'Voss · Schwarzmarkt');
@@ -320,7 +368,7 @@ export class Hub {
     // Kettenzug
     b.cyl(mat('steel'), 11, H - 3, z - 1, 0.02, 0.02, 3, 4);
     b.box(mat('rust'), 11, 5.8, z - 1, 0.3, 0.3, 0.3);
-    ctx.neon('WERKSTATT BRENNER', '#ffb040', 9.0, 4.6, z, -Math.PI / 2, 3, { flicker: 0.2 });
+    ctx.neon('WERKSTATT BRENNER', '#ffb040', 9.0, 4.42, z, -Math.PI / 2, 3, { flicker: 0.2 });
     ctx.fixture({ x: 11.2, y: 1.3, z: z + 0.6, type: 'none', color: 0xb8d8ff, intensity: 5, distance: 7, mode: 'strobe', priority: 2 });
     ctx.fixture({ x: 11, y: 3.4, z, type: 'bulb', color: 0xffd090, intensity: 3.5, distance: 8, mode: 'steady', priority: 2 });
     const ada = this._npc('ada', { coat: 'coatGreen', apron: true, hat: 'goggles', hair: 'coatBrown', skin: '#a07a60', face: { age: 0.35 }, height: 1.68 }, 10.75, z + 0.6, -Math.PI / 2, 'work');
@@ -360,6 +408,8 @@ export class Hub {
   _kapelle(b, ctx) {
     const z = 27;
     b.box(mat('stoneDark'), 13.3, 3, z, 1.2, 6, 5.6, { collide: true });
+    for (const dz of [-2.72, 2.72]) b.box(mat('stone'), 12.72, 3.05, z + dz, 0.3, 6.1, 0.3);
+    b.box(mat('stone'), 13.25, 6.1, z, 1.45, 0.24, 5.9);
     const icon = ctx.decal(iconTexture('ilse'), 12.68, 2.3, z, -Math.PI / 2, 1.2, 1.8, { emissive: 0.9, transparent: false });
     ctx.fixture({ x: 12, y: 2.2, z, type: 'none', color: 0xffd8a0, intensity: 3, distance: 6, mode: 'candle', priority: 2 });
     for (let i = 0; i < 3; i++) {
@@ -375,24 +425,31 @@ export class Hub {
 
   _garkueche(b, ctx) {
     const z = Z1 - 0.8;
-    b.box(mat('walnut'), 0, 0.55, z - 0.5, 5, 1.1, 0.8, { collide: true });
-    b.box(mat('steelPanel'), 0, 2.2, z + 0.3, 5.4, 4.4, 0.3);
     const open = !!this.state?.flags?.anselm;
+    // Tresen vor dem Ladenfenster
+    b.box(mat('walnut'), 0, 0.5, z - 0.48, 3.34, 0.96, 0.62, { collide: true });
+    b.box(mat('steel'), 0, 1.01, z - 0.5, 3.5, 0.04, 0.8);
+    b.box(mat('rubber'), 0, 0.06, z - 0.8, 3.24, 0.12, 0.02);
+    for (let i = 0; i < 3; i++) { b.box(mat('woodPanel'), -1.1 + i * 1.1, 0.56, z - 0.8, 0.95, 0.72, 0.02); b.box(mat('brassDark'), -1.1 + i * 1.1 + 0.55, 0.56, z - 0.81, 0.02, 0.76, 0.01); }
+    // Vordach aus Wellblech auf zwei Stützen, an der Hauswand verankert
+    b.box(mat('rust'), 0, 2.75, z - 0.75, 3.8, 0.04, 2.2, { rx: -0.12 });
+    for (const sx of [-1.8, 1.8]) b.cyl(mat('steel'), sx, 0, z - 1.75, 0.035, 0.035, 2.62, 8, { collide: true });
+    b.box(mat('steel'), 0, 2.6, z - 1.75, 3.7, 0.06, 0.06);
     if (!open) {
-      b.box(mat('rust'), 0, 1.7, z - 0.95, 5, 1.3, 0.05);
-      for (let i = 0; i < 9; i++) b.box(mat('steel'), 0, 1.1 + i * 0.14, z - 0.97, 5, 0.02, 0.02);
+      for (let i = 0; i < 3; i++) this._model('metal_stool_01', -1.1 + i * 1.1, z - 1.35, this.rng.float(0, 6));
     } else {
-      for (let i = 0; i < 3; i++) { b.cyl(mat('steel'), -1.4 + i * 1.4, 1.1, z - 0.4, 0.25, 0.22, 0.4, 12); }
-      this._npc('anselm', { coat: 'fabricWhite', apron: true, face: { age: 0.7, beard: true } }, 0, z + 0.05, Math.PI, 'counter');
-      ctx.fixture({ x: 0, y: 2.3, z: z - 1, type: 'bulb', color: 0xffc070, intensity: 4, distance: 8, mode: 'steady', priority: 2 });
+      this._model('electric_stove', -0.9, z - 0.4, Math.PI, { y: 0 });
+      for (let i = 0; i < 3; i++) this._model('pot_enamel_01', -0.6 + i * 0.5, z - 0.5, 0, { y: 1.04 - 0.13 });
+      for (let i = 0; i < 3; i++) this._model('metal_stool_01', -1.1 + i * 1.1, z - 1.35, this.rng.float(0, 6));
+      this._npc('anselm', { coat: 'fabricWhite', apron: true, face: { age: 0.7, beard: true } }, 0, z + 0.25, Math.PI, 'counter');
+      ctx.fixture({ x: 0, y: 2.35, z: z - 0.9, type: 'none', color: 0xffc070, intensity: 5, distance: 8, mode: 'steady', priority: 2 });
     }
-    ctx.neon('GARKÜCHE', open ? '#ffb040' : '#301808', 0, 3.4, z - 1.02, Math.PI, 2.4, { flicker: open ? 0.2 : 0, intensity: open ? 3 : 0 });
+    for (const sx of [-1, 1]) this._model('pull_chain_light_socket', sx, z - 1.1, 0, { y: 2.5 });
+    ctx.neon('GARKÜCHE', open ? '#ffb040' : '#4a2410', 0, 3.2, z - 1.82, Math.PI, 2.0, { flicker: open ? 0.2 : 0, intensity: open ? 3 : 0 });
     this._spot('anselm', 0, 1.3, z - 1.0, open ? 'Anselm · Garküche' : 'Garküche (geschlossen)', 0.8);
     // Quartier
-    b.box(mat('walnut'), -6, 1.2, Z1 - 0.1, 1.3, 2.4, 0.1);
-    b.box(mat('brassDark'), -6, 2.5, Z1 - 0.15, 1.5, 0.15, 0.1);
-    ctx.fixture({ x: -6, y: 2.8, z: Z1 - 0.5, type: 'sconce', color: 0xffc080, intensity: 2, distance: 5, mode: 'steady' });
-    ctx.neon('QUARTIER 47', '#8dffa8', -6, 3.1, Z1 - 0.12, Math.PI, 1.6, { flicker: 0.3 });
+    this._wallLamp(ctx, -6 - 1.05, Z1, Math.PI);
+    ctx.neon('QUARTIER 47', '#8dffa8', -6, 3.6, Z1 - 0.1, Math.PI, 1.6, { flicker: 0.3 });
     this._spot('quartier', -6, 1.3, Z1 - 0.4, 'Quartier · Schlafen & Speichern', 0.7);
   }
 
@@ -402,20 +459,28 @@ export class Hub {
     P.pew(b, -3.5, 16, Math.PI / 2, this.rng, { l: 2.6 });
     this._npc('schlaefer', { coat: 'coatBrown', hat: 'hood', face: { eyes: 'closed' } }, -3.5, 16, Math.PI / 2, 'sit', 0.48);
     for (const [x, z] of [[-5.5, 9], [5.5, 9], [-5.5, 22], [5.5, 22]]) {
-      b.cyl(mat('steel'), x, 0, z, 0.06, 0.09, 4.2, 8, { collide: true });
-      b.box(mat('steel'), x, 4.2, z, 0.5, 0.12, 0.25);
-      ctx.fixture({ x, y: 4.05, z, type: 'sodium', color: 0xff9038, intensity: 90, distance: 22, priority: 1.5, mode: this.rng.chance(0.3) ? 'dying' : 'steady' });
+      this._model('street_lamp_01', x, z, this.rng.float(0, 6), { collide: true, pad: 0 });
+      ctx.fixture({ x, y: 3.62, z, type: 'none', color: 0xff9038, intensity: 90, distance: 22, priority: 1.5, mode: this.rng.chance(0.3) ? 'dying' : 'steady' });
     }
+    // Wandlaternen neben den Haustüren (Positionen = Türmodule der Häuserzeilen)
+    for (const zc of [22.625, 13.625, 10.625]) this._wallLamp(ctx, X0, zc - 1.0, Math.PI / 2);
+    for (const zc of [13.625, 22.625]) this._wallLamp(ctx, X1, zc + 1.0, -Math.PI / 2);
+    this._wallLamp(ctx, 6 + 1.0, Z1, Math.PI);
     // Zehntkabine
-    b.box(mat('walnut'), 5.2, 1.2, 14, 1.2, 2.4, 1.1, { collide: true });
-    b.box(mat('gold'), 5.2, 2.5, 14, 1.3, 0.12, 1.2);
+    b.box(mat('steelPanel'), 5.2, 0.04, 14, 1.3, 0.08, 1.2);
+    for (const [dx, dz] of [[-0.6, -0.55], [-0.6, 0.55], [0.6, -0.55], [0.6, 0.55]]) b.box(mat('brassDark'), 5.2 + dx, 1.25, 14 + dz, 0.06, 2.5, 0.06, { collide: true });
+    b.box(mat('brassDark'), 5.2, 2.55, 14, 1.36, 0.1, 1.26);
+    b.box(mat('walnut'), 5.78, 1.25, 14, 0.04, 2.4, 1.1, { collide: true });
+    for (const dz of [-0.57, 0.57]) this._glass(5.2, 1.3, 14 + dz, 1.14, 2.2, 0);
+    this._model('korean_public_payphone_01', 5.72, 14 + 0.25, -Math.PI / 2, { y: 0.95 });
+    ctx.neon('ZEHNT', '#8dffa8', 4.55, 2.8, 14, -Math.PI / 2, 1.1, { flicker: 0.15, intensity: 1.5 });
     const scr = textTexture(128, 96, (g, w, h) => { g.fillStyle = '#021006'; g.fillRect(0, 0, w, h); g.fillStyle = '#8dffa8'; g.font = '14px "VT323", monospace'; g.textAlign = 'center'; ['SPRICH', 'DEINEN', 'NAMEN'].forEach((t, i) => g.fillText(t, w / 2, 30 + i * 18)); });
-    ctx.decal(scr, 4.59, 1.5, 14, -Math.PI / 2, 0.36, 0.27, { emissive: 1.2, transparent: false });
+    ctx.decal(scr, 5.75, 1.55, 14 - 0.25, -Math.PI / 2, 0.36, 0.27, { emissive: 1.2, transparent: false });
     this._spot('zehnt', 4.5, 1.4, 14, 'Zehntkabine', 0.5);
     // Pfützen
-    const pm = new THREE.MeshStandardMaterial({ color: 0x05070a, roughness: 0.03, metalness: 0.6 });
+    const pm = new THREE.MeshStandardMaterial({ color: 0x0b0d11, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.75, alphaMap: puddleTexture(), depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
     for (let i = 0; i < 14; i++) {
-      const p = new THREE.Mesh(new THREE.CircleGeometry(1, 16), pm);
+      const p = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), pm);
       p.rotation.x = -Math.PI / 2;
       p.position.set(this.rng.float(-11, 11), 0.004, this.rng.float(5, 29));
       p.scale.set(this.rng.float(0.5, 1.6), this.rng.float(0.4, 1.1), 1);
@@ -426,14 +491,16 @@ export class Hub {
     this.holoCanvas = mkCanvas(512, 256);
     this.holoTex = new THREE.CanvasTexture(this.holoCanvas);
     this.holoTex.colorSpace = THREE.SRGBColorSpace;
-    const hm = new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffff, emissiveMap: this.holoTex, emissiveIntensity: 1.5, transparent: true, opacity: 0.92, map: this.holoTex, depthWrite: false });
+    const hm = new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffff, emissiveMap: this.holoTex, emissiveIntensity: 1.3, map: this.holoTex, roughness: 0.4 });
+    b.box(mat('steel'), 0, 7.6, Z1 - 0.12, 8.4, 4.4, 0.2);
+    for (const bx of [-3, 3]) { b.box(mat('rust'), bx, 5.3, Z1 - 0.25, 0.12, 0.12, 0.5); b.box(mat('rust'), bx, 9.9, Z1 - 0.25, 0.12, 0.12, 0.5); }
     const holo = new THREE.Mesh(new THREE.PlaneGeometry(8, 4), hm);
-    holo.position.set(0, 7.6, Z1 - 0.15);
+    holo.position.set(0, 7.6, Z1 - 0.225);
     holo.rotation.y = Math.PI;
     this.group.add(holo);
     this._drawHolo(0);
     // Füll-Licht der Holo-Tafel und des Schachtkopfs
-    ctx.fixture({ x: 0, y: 7, z: Z1 - 2.5, type: 'none', color: 0x50d8ff, intensity: 140, distance: 32, mode: 'neon', flicker: 0.2, priority: 3 });
+    ctx.fixture({ x: 0, y: 7, z: Z1 - 2.5, type: 'none', color: 0x50d8ff, intensity: 60, distance: 32, mode: 'neon', flicker: 0.2, priority: 3 });
     ctx.fixture({ x: 0, y: 8, z: 12, type: 'none', color: 0x7a5aa0, intensity: 110, distance: 30, mode: 'steady', priority: 3 });
     this.emitters.push({ loop: 'city', pos: new THREE.Vector3(0, 6, 16), opts: { vol: 0.35 } });
     this.emitters.push({ loop: 'rain', pos: null, opts: { vol: 0.35, indoor: false } });
@@ -462,6 +529,65 @@ export class Hub {
     this.holoTex.needsUpdate = true;
   }
 
+  _skyline() {
+    const rng = this.rng;
+    const g = new THREE.Group();
+    g.name = 'Skyline';
+    // Himmelskuppel: Smog, von unten vom Stadtlicht angestrahlt (orange-violett am Horizont, oben fast schwarz)
+    const c = mkCanvas(4, 256), cg = c.getContext('2d');
+    const grd = cg.createLinearGradient(0, 0, 0, 256);
+    grd.addColorStop(0, '#0c0911'); grd.addColorStop(0.3, '#1b1121'); grd.addColorStop(0.55, '#34192b'); grd.addColorStop(0.78, '#522832'); grd.addColorStop(1, '#5a2c30');
+    cg.fillStyle = grd; cg.fillRect(0, 0, 4, 256);
+    const skyTex = new THREE.CanvasTexture(c); skyTex.colorSpace = THREE.SRGBColorSpace;
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(140, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2 + 0.25),
+      new THREE.MeshBasicMaterial({ map: skyTex, color: new THREE.Color(1.6, 1.6, 1.6), side: THREE.BackSide, fog: false, depthWrite: false }));
+    dome.position.set(0, -10, 16);
+    dome.renderOrder = -10;
+    g.add(dome);
+    // Türme hinter den Häusern: schwarze Silhouetten, Fenster im Stockwerk-Raster, rote Warnlichter oben
+    const dark = new THREE.MeshBasicMaterial({ color: 0x020103, fog: false });
+    const win = new THREE.InstancedMesh(new THREE.PlaneGeometry(1.1, 1.5), new THREE.MeshBasicMaterial({ color: 0xffffff, fog: false }), 900);
+    const red = new THREE.SpriteMaterial({ map: glowTexture(), color: 0xff2a14, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false });
+    const col = new THREE.Color(), q = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0);
+    this.warnLights = [];
+    let n = 0;
+    for (let i = 0; i < 22; i++) {
+      const a = (i / 22) * Math.PI * 2 + rng.float(-0.1, 0.1);
+      const r = rng.float(38, 70);
+      const x = Math.sin(a) * r, z = 16 + Math.cos(a) * r;
+      const w = rng.float(10, 20), h = rng.float(30, 78);
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, w), dark);
+      const ry = Math.atan2(-x, -(z - 16));           // eine Seite zeigt zum Markt
+      m.position.set(x, h / 2 - 2, z); m.rotation.y = ry;
+      g.add(m);
+      // Fenster: Raster auf der Marktseite, nur ein Teil beleuchtet
+      q.setFromAxisAngle(up, ry);
+      const face = new THREE.Vector3(0, 0, w / 2 + 0.03).applyQuaternion(q).add(m.position);
+      const right = new THREE.Vector3(1, 0, 0).applyQuaternion(q);
+      const cols = Math.floor(w / 3), rows = Math.floor((h - 16) / 3.6);
+      for (let rI = 0; rI < rows && n < 900; rI++) for (let cI = 0; cI < cols && n < 900; cI++) {
+        if (!rng.chance(0.13)) continue;
+        const p = face.clone().addScaledVector(right, (cI - (cols - 1) / 2) * 3).setY(14 + rI * 3.6 - 2);
+        win.setMatrixAt(n, new THREE.Matrix4().compose(p, q, new THREE.Vector3(1, 1, 1)));
+        col.setHex(rng.pick([0xffb060, 0xffd6a0, 0xffb060, 0x70d8ff, 0xff4a8a])).multiplyScalar(rng.float(0.15, 0.45));
+        win.setColorAt(n, col);
+        n++;
+      }
+      if (rng.chance(0.7)) {
+        const sp = new THREE.Sprite(red);
+        sp.position.set(x, h - 1.6, z);
+        sp.scale.setScalar(2.2);
+        sp.userData.phase = rng.float(0, 6);
+        g.add(sp);
+        this.warnLights.push(sp);
+      }
+    }
+    win.count = n;
+    g.add(win);
+    g.traverse(o => { o.userData.noCheck = true; });
+    this.group.add(g);
+  }
+
   _rain() {
     const n = 1400;
     const pos = new Float32Array(n * 6);
@@ -477,9 +603,21 @@ export class Hub {
     this.rain = new THREE.LineSegments(g, m);
     this.rain.frustumCulled = false;
     this.group.add(this.rain);
+    // Wetter: Regen kommt und geht (ca. ein Drittel der Zeit), weich ein- und ausgeblendet
+    const wet = Math.random() < 0.35;
+    this.weather = { rain: wet ? 1 : 0, target: wet ? 1 : 0, timer: 60 + Math.random() * 120 };
   }
 
   update(dt, time) {
+    const w = this.weather;
+    w.timer -= dt;
+    if (w.timer <= 0) { w.target = Math.random() < 0.3 ? 1 : 0; w.timer = 90 + Math.random() * 150; }
+    w.rain += Math.sign(w.target - w.rain) * Math.min(Math.abs(w.target - w.rain), dt / 40);
+    this.rain.visible = w.rain > 0.01;
+    this.rain.material.opacity = 0.28 * w.rain;
+    this.rain.geometry.setDrawRange(0, Math.floor(this.rainSpeed.length * w.rain) * 2);
+    const rainLoop = this.emitters.find(e => e.loop === 'rain');
+    rainLoop?.handle?.setVol?.(0.35 * w.rain, 1.5);
     // Regen fällt
     const p = this.rain.geometry.attributes.position.array;
     for (let i = 0; i < this.rainSpeed.length; i++) {
@@ -489,6 +627,7 @@ export class Hub {
       p[o + 1] = y; p[o + 4] = y - 0.35;
     }
     this.rain.geometry.attributes.position.needsUpdate = true;
+    for (const sp of this.warnLights || []) sp.visible = Math.sin(time * 1.3 + sp.userData.phase) > 0.2;
     this._holoT = (this._holoT ?? 0) + dt;
     if (this._holoT > 0.12) { this._drawHolo(time); this._holoT = 0; }
     const eye = this.R.camera.position;
@@ -507,4 +646,21 @@ export class Hub {
     for (const c of this.colliders) collision.remove(c);
     for (const e of this.emitters) e.handle?.stop(0.4);
   }
+}
+
+// Pfützenform: weiche, unregelmäßige Kleckse (Alpha)
+let _puddle = null;
+function puddleTexture() {
+  if (_puddle) return _puddle;
+  const c = mkCanvas(128, 128), g = c.getContext('2d');
+  g.fillStyle = '#000'; g.fillRect(0, 0, 128, 128);
+  g.filter = 'blur(5px)';
+  g.fillStyle = '#fff';
+  for (let i = 0; i < 9; i++) {
+    const a = i / 9 * Math.PI * 2, r = 20 + Math.sin(i * 2.7) * 9;
+    g.beginPath(); g.ellipse(64 + Math.cos(a) * r, 64 + Math.sin(a) * r * 0.7, 18 + (i % 3) * 6, 12 + (i % 2) * 5, a, 0, Math.PI * 2); g.fill();
+  }
+  g.beginPath(); g.ellipse(64, 64, 32, 22, 0.3, 0, Math.PI * 2); g.fill();
+  _puddle = new THREE.CanvasTexture(c);
+  return _puddle;
 }

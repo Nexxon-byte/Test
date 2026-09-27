@@ -183,11 +183,11 @@ export const P = {
     return { candles };
   },
 
-  pew(b, x, z, ry, rng, { l = 3.2 } = {}) {
-    part(b, 'wood', x, z, ry, 0, 0.45, 0, l, 0.06, 0.45, { collide: true });
-    part(b, 'wood', x, z, ry, 0, 0.8, -0.24, l, 0.7, 0.05);
-    for (const s of [-1, 1]) part(b, 'wood', x, z, ry, s * l / 2, 0.5, 0, 0.06, 1.0, 0.55);
-    part(b, 'wood', x, z, ry, 0, 0.22, 0.12, l, 0.05, 0.12);
+  pew(b, x, z, ry, rng, { l = 3.2, m = 'walnut' } = {}) {
+    part(b, m, x, z, ry, 0, 0.45, 0, l, 0.06, 0.45, { collide: true });
+    part(b, m, x, z, ry, 0, 0.8, -0.24, l, 0.7, 0.05);
+    for (const s of [-1, 1]) part(b, m, x, z, ry, s * l / 2, 0.5, 0, 0.06, 1.0, 0.55);
+    part(b, m, x, z, ry, 0, 0.22, 0.12, l, 0.05, 0.12);
   },
 
   statue(b, x, z, ry, rng, { h = 3.2, m = 'stone', dial = true } = {}) {

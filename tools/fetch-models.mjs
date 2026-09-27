@@ -26,6 +26,14 @@ const LIST = {
     'chess_set', 'cigarette_case', 'seadogs_compass', 'retro_multimeter', 'vintage_lighter', 'magnifying_glass_01', 'oil_tin', 'wine_bottles_01',
     'medical_box', 'ammo_box', 'vintage_suitcase', 'horse_statue_01', 'carved_wooden_elephant', 'round_spectacles', 'vintage_microscope',
     'circuit_board', 'Megaphone_01', 'filmstrip_projector_8mm', 'vintage_binocular', 'bronze_ray_statue'],
+  // Oberstadt: Poly-Haven-Sammlung „Hidden Alley“ + Markt-Kram
+  city: ['modular_urban_apartments_facade', 'modular_factory_facade', 'modular_fire_escape', 'modular_metal_gutter', 'modular_airduct_circular_01',
+    'modular_airduct_rectangular_01', 'modular_electric_cables', 'modular_industrial_pipes_01', 'modular_chainlink_fence', 'rollershutter_window_01',
+    'rollershutter_window_02', 'rollershutter_window_03', 'water_manhole_cover', 'concrete_road_barrier', 'barrel_stove', 'trashbag', 'plastic_crate_01',
+    'wooden_crate_01', 'wine_barrel_01', 'painted_wooden_bench', 'hanging_industrial_lamp', 'industrial_wall_lamp', 'industrial_wall_sconce',
+    'pull_chain_light_socket', 'security_camera_02', 'utility_box_02', 'large_iron_gate', 'large_castle_door', 'standing_chalkboard_01',
+    'wooden_display_shelves_01', 'wicker_basket_01', 'russian_food_cans_01', 'CoffeeCart_01', 'metal_stool_01', 'pot_enamel_01', 'electric_stove',
+    'brass_candleholders', 'wooden_candlestick', 'Chandelier_01', 'marble_bust_01', 'hanging_picture_frame_01', 'vintage_grandfather_clock_01', 'cement_bag'],
   tool: ['crowbar_01', 'sledgehammer_01', 'bolt_cutters_01', 'stick_grenade', 'machete', 'vintage_flashlight', 'signal_flashlight',
     'portable_searchlight', 'bolt_action_rifle_7_62', 'service_pistol', 'propane_torch', 'pipe_wrench'],
 };

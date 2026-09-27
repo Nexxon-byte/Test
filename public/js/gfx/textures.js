@@ -586,6 +586,8 @@ export function neonSign(text, { color = '#ff3a8c', w = 512, h = 128, font = '60
   return textTexture(w, h, (g) => {
     if (bg) { g.fillStyle = bg; g.fillRect(0, 0, w, h); }
     g.font = font; g.textAlign = 'center'; g.textBaseline = 'middle';
+    const tw = g.measureText(text).width;
+    if (tw > w * 0.9) g.font = font.replace(/(\d+)px/, (_, n) => Math.floor(n * w * 0.9 / tw) + 'px');
     g.shadowColor = color; g.shadowBlur = 18;
     g.fillStyle = color;
     g.fillText(text, w / 2, h / 2);

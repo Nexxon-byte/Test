@@ -27,6 +27,15 @@ Texturen von Poly Haven (https://polyhaven.com), Lizenz CC0 1.0.
 - grate: „Metal Grate Rusty“ (metal_grate_rusty) von Rob Tuytel, Dimitrios Savva · polyhaven.com · CC0
 - brassBase: „Metal Plate 02“ (metal_plate_02) von Rob Tuytel · polyhaven.com · CC0
 
+## Kleidung der Figuren (MakeHuman Community Asset Packs)
+- CC0: suits01 (Margaret Toigo), suits02 (u. a. Mönchsroben von Donitz), gloves01 (Margaret Toigo u. a.), hats01/02, makehuman_system_assets
+- **CC-BY 4.0** (Namensnennung):
+  - „Male Coveralls 1“, „Hooded Sweat Jacket 1“, „Male Trouser“ – **Elvaerwyn** (Pakete suits03, shirts02, pants02)
+  - „Knitted Sweater 01“, „Biker Boots (male/female)“ – **Mindfront** (shirts02, shoes03)
+  - „Leather Boots“ – **MaciekG** (shoes03)
+  - „Winter Boots“ – **punkduck** (shoes03)
+- Quelle: https://static.makehumancommunity.org/assets/assetpacks.html
+
 ## Modelle (Poly Haven, CC0)
 
 - „Alarm Clock 01“ (alarm_clock_01) von Yann Kervran, James Ray Cock · polyhaven.com · CC0
@@ -34,12 +43,14 @@ Texturen von Poly Haven (https://polyhaven.com), Lizenz CC0 1.0.
 - „Barber Shop Chair 01“ (BarberShopChair_01) von Fernando Quinn · polyhaven.com · CC0
 - „Barrel 02“ (Barrel_02) von Jorge Camacho · polyhaven.com · CC0
 - „Barrel 03“ (barrel_03) von Serhii Khromov · polyhaven.com · CC0
+- „Barrel Stove“ (barrel_stove) von MP · polyhaven.com · CC0
 - „Barrel_01“ (Barrel_01) von Jorge Camacho · polyhaven.com · CC0
 - „Bench Vice 01“ (bench_vice_01) von Yann Kervran, Antanas Kep · polyhaven.com · CC0
 - „Binoculars“ (binoculars) von Derek Wight · polyhaven.com · CC0
 - „Bolt Action Rifle 7.62“ (bolt_action_rifle_7_62) von Mateusz Sadek · polyhaven.com · CC0
 - „Bolt Cutters 01“ (bolt_cutters_01) von Yann Kervran, Antanas Kep · polyhaven.com · CC0
 - „Book Encyclopedia Set 01“ (book_encyclopedia_set_01) von John Malcolm · polyhaven.com · CC0
+- „Brass Candleholders“ (brass_candleholders) von Tina · polyhaven.com · CC0
 - „Brass Goblets“ (brass_goblets) von Tina · polyhaven.com · CC0
 - „Brass Pot 01“ (brass_pot_01) von Rico Cilliers · polyhaven.com · CC0
 - „Brass Vase 03“ (brass_vase_03) von Rico Cilliers · polyhaven.com · CC0
@@ -51,11 +62,16 @@ Texturen von Poly Haven (https://polyhaven.com), Lizenz CC0 1.0.
 - „Carved Wooden Elephant“ (carved_wooden_elephant) von Greg Zaal · polyhaven.com · CC0
 - „Cash Register 01“ (CashRegister_01) von Joe Seabuhr · polyhaven.com · CC0
 - „Cassette Player“ (cassette_player) von Oday Abuzaeed · polyhaven.com · CC0
+- „Cement Bag“ (cement_bag) von PierreB3D · polyhaven.com · CC0
+- „Chandelier 01“ (Chandelier_01) von Kirill Sannikov · polyhaven.com · CC0
 - „Chess Set“ (chess_set) von Riley Queen · polyhaven.com · CC0
 - „Cigarette Case“ (cigarette_case) von Michał Wiśniewski · polyhaven.com · CC0
 - „Circuit Board“ (circuit_board) von Benny Weimer · polyhaven.com · CC0
+- „Coffee Cart 01“ (CoffeeCart_01) von Joe Seabuhr · polyhaven.com · CC0
+- „Concrete Road Barrier“ (concrete_road_barrier) von Amal Kumar · polyhaven.com · CC0
 - „Crowbar 01“ (crowbar_01) von Alexander Otterbeck · polyhaven.com · CC0
 - „Drill Press 01“ (drill_press_01) von Viktor · polyhaven.com · CC0
+- „Electric Stove“ (electric_stove) von Kuutti Siitonen · polyhaven.com · CC0
 - „Exterior Aircon Unit“ (exterior_aircon_unit) von Monsta3D · polyhaven.com · CC0
 - „Filmstrip Projector 8mm“ (filmstrip_projector_8mm) von PeterM · polyhaven.com · CC0
 - „Fire Hydrant“ (fire_hydrant) von Gonçalo Felício · polyhaven.com · CC0
@@ -64,20 +80,37 @@ Texturen von Poly Haven (https://polyhaven.com), Lizenz CC0 1.0.
 - „Gothic Commode 01“ (GothicCommode_01) von Kirill Sannikov · polyhaven.com · CC0
 - „Gothic Statue“ (gothic_statue) von Benny Weimer · polyhaven.com · CC0
 - „Hand Truck“ (hand_truck) von Mutanzom3D · polyhaven.com · CC0
+- „Hanging Industrial Lamp“ (hanging_industrial_lamp) von Kuutti Siitonen · polyhaven.com · CC0
+- „Hanging Picture Frame 01“ (hanging_picture_frame_01) von James Ray Cock · polyhaven.com · CC0
 - „Horse Statue 01“ (horse_statue_01) von Rico Cilliers · polyhaven.com · CC0
 - „Industrial Caged Sconce“ (industrial_caged_sconce) von Ulan Cabanilla · polyhaven.com · CC0
 - „Industrial Pipe Lamp“ (industrial_pipe_lamp) von Mateusz Sadek · polyhaven.com · CC0
+- „Industrial Wall Lamp“ (industrial_wall_lamp) von Kuutti Siitonen · polyhaven.com · CC0
+- „Industrial Wall Sconce“ (industrial_wall_sconce) von Ulan Cabanilla · polyhaven.com · CC0
 - „Korean Public Payphone 01“ (korean_public_payphone_01) von UM JOORIN · polyhaven.com · CC0
 - „Lantern 01“ (Lantern_01) von Rajil Jose Macatangay · polyhaven.com · CC0
+- „Large Castle Door“ (large_castle_door) von Tina · polyhaven.com · CC0
+- „Large Iron Gate“ (large_iron_gate) von Josh Dean · polyhaven.com · CC0
 - „Machete“ (machete) von Ulan Cabanilla · polyhaven.com · CC0
 - „Magnifying Glass 01“ (magnifying_glass_01) von Nazar Borodavka · polyhaven.com · CC0
+- „Marble Bust 01“ (marble_bust_01) von Rico Cilliers · polyhaven.com · CC0
 - „Medical Box“ (medical_box) von Ulan Cabanilla · polyhaven.com · CC0
 - „Megaphone 01“ (Megaphone_01) von Ethan Simon-Law · polyhaven.com · CC0
 - „Metal Jerrycan“ (metal_jerrycan) von Sean Buckley · polyhaven.com · CC0
 - „Metal Office Desk“ (metal_office_desk) von Ulan Cabanilla · polyhaven.com · CC0
+- „Metal Stool 01“ (metal_stool_01) von Ulan Cabanilla · polyhaven.com · CC0
 - „Metal Tool Chest“ (metal_tool_chest) von Yann Kervran, John Hutcheson · polyhaven.com · CC0
 - „Metal Toolbox“ (metal_toolbox) von Mateusz Sadek · polyhaven.com · CC0
 - „Metal Trash Can“ (metal_trash_can) von GurJas Studios · polyhaven.com · CC0
+- „Modular Airduct Circular 01“ (modular_airduct_circular_01) von Riley Queen · polyhaven.com · CC0
+- „Modular Airduct Rectangular 01“ (modular_airduct_rectangular_01) von James Ray Cock · polyhaven.com · CC0
+- „Modular Chainlink Fence“ (modular_chainlink_fence) von James Ray Cock, Amal Kumar · polyhaven.com · CC0
+- „Modular Electric Cables“ (modular_electric_cables) von Kuutti Siitonen · polyhaven.com · CC0
+- „Modular Factory Facade“ (modular_factory_facade) von James Ray Cock · polyhaven.com · CC0
+- „Modular Fire Escape“ (modular_fire_escape) von Juniix · polyhaven.com · CC0
+- „Modular Industrial Pipes 01“ (modular_industrial_pipes_01) von Jorge Camacho · polyhaven.com · CC0
+- „Modular Metal Gutter“ (modular_metal_gutter) von Maxim Domnin · polyhaven.com · CC0
+- „Modular Urban Apartments Facade“ (modular_urban_apartments_facade) von James Ray Cock · polyhaven.com · CC0
 - „Mounted Fluorescent Lights“ (mounted_fluorescent_lights) von Ulan Cabanilla · polyhaven.com · CC0
 - „Oil Tin“ (oil_tin) von Niklas · polyhaven.com · CC0
 - „Old Bed Frame“ (old_bed_frame) von Luca B · polyhaven.com · CC0
@@ -85,27 +118,37 @@ Texturen von Poly Haven (https://polyhaven.com), Lizenz CC0 1.0.
 - „Old Military Crate“ (old_military_crate) von Jack Mava · polyhaven.com · CC0
 - „Old Tyre“ (old_tyre) von MP · polyhaven.com · CC0
 - „Overhead Crane“ (overhead_crane) von Timothy3D · polyhaven.com · CC0
+- „Painted Wooden Bench“ (painted_wooden_bench) von Kirill Sannikov · polyhaven.com · CC0
 - „Pipe Wrench“ (pipe_wrench) von Will Evarts · polyhaven.com · CC0
+- „Plastic Crate 01“ (plastic_crate_01) von PierreB3D · polyhaven.com · CC0
 - „Pocket Watch“ (pocket_watch) von PierreB3D · polyhaven.com · CC0
 - „Portable Cassette Player“ (portable_cassette_player) von Mateusz Sadek · polyhaven.com · CC0
 - „Portable Generator“ (portable_generator) von James Ray Cock · polyhaven.com · CC0
 - „Portable Searchlight“ (portable_searchlight) von Elijah Cragg · polyhaven.com · CC0
 - „Portable Welding Cart“ (portable_welding_cart) von Georgii Gorbunov · polyhaven.com · CC0
+- „Pot Enamel 01“ (pot_enamel_01) von Kuutti Siitonen · polyhaven.com · CC0
 - „Power Box 01“ (power_box_01) von Rico Cilliers, Yann Kervran · polyhaven.com · CC0
 - „Propane Tank“ (propane_tank) von Slinc · polyhaven.com · CC0
 - „Propane Torch“ (propane_torch) von Jan W · polyhaven.com · CC0
+- „Pull Chain Light Socket“ (pull_chain_light_socket) von Josh Dean · polyhaven.com · CC0
 - „Retro Multimeter“ (retro_multimeter) von elli moeller · polyhaven.com · CC0
 - „Rockingchair 01“ (Rockingchair_01) von Jorge Camacho · polyhaven.com · CC0
 - „Rollershutter Door“ (rollershutter_door) von MP · polyhaven.com · CC0
+- „Rollershutter Window 01“ (rollershutter_window_01) von MP · polyhaven.com · CC0
+- „Rollershutter Window 02“ (rollershutter_window_02) von MP · polyhaven.com · CC0
+- „Rollershutter Window 03“ (rollershutter_window_03) von MP · polyhaven.com · CC0
 - „Round Spectacles“ (round_spectacles) von Sean Buckley · polyhaven.com · CC0
+- „Russian Food Cans 01“ (russian_food_cans_01) von Kosan Aziz · polyhaven.com · CC0
 - „School Desk 01“ (SchoolDesk_01) von Ethan Place · polyhaven.com · CC0
 - „Seadogs Compass“ (seadogs_compass) von Benny Weimer · polyhaven.com · CC0
 - „Security Camera 01“ (security_camera_01) von Alexander Otterbeck, Yann Kervran · polyhaven.com · CC0
+- „Security Camera 02“ (security_camera_02) von Garrison Gager, Yann Kervran · polyhaven.com · CC0
 - „Security Light“ (security_light) von Maximilian Schuster · polyhaven.com · CC0
 - „Service Pistol“ (service_pistol) von Mateusz Sadek · polyhaven.com · CC0
 - „Shelf 01“ (Shelf_01) von Gabriel Radić · polyhaven.com · CC0
 - „Signal Flashlight“ (signal_flashlight) von Jiří Ptáček · polyhaven.com · CC0
 - „Sledgehammer 01“ (sledgehammer_01) von Dylan Guzman · polyhaven.com · CC0
+- „Standing Chalkboard 01“ (standing_chalkboard_01) von ParzivalCG · polyhaven.com · CC0
 - „Steel Frame Shelves 01“ (steel_frame_shelves_01) von James Ray Cock · polyhaven.com · CC0
 - „Steel Frame Shelves 02“ (steel_frame_shelves_02) von James Ray Cock · polyhaven.com · CC0
 - „Stick Grenade“ (stick_grenade) von singaii · polyhaven.com · CC0
@@ -114,21 +157,30 @@ Texturen von Poly Haven (https://polyhaven.com), Lizenz CC0 1.0.
 - „Street Rat“ (street_rat) von Sean Buckley · polyhaven.com · CC0
 - „Television 01“ (Television_01) von Gabriel Radić · polyhaven.com · CC0
 - „Tool Cart“ (tool_cart) von Savva Zakharov · polyhaven.com · CC0
+- „Trashbag“ (trashbag) von Benny Weimer · polyhaven.com · CC0
 - „Treasure Chest“ (treasure_chest) von Rico Cilliers · polyhaven.com · CC0
 - „Utility Box 01“ (utility_box_01) von James Ray Cock · polyhaven.com · CC0
+- „Utility Box 02“ (utility_box_02) von James Ray Cock · polyhaven.com · CC0
 - „Vintage Binoculars“ (vintage_binocular) von Luke · polyhaven.com · CC0
 - „Vintage Flashlight“ (vintage_flashlight) von Omar M. El-Safy · polyhaven.com · CC0
+- „Vintage Grandfather Clock 01“ (vintage_grandfather_clock_01) von Yann Kervran, James Ray Cock · polyhaven.com · CC0
 - „Vintage Lighter“ (vintage_lighter) von Slinc · polyhaven.com · CC0
 - „Vintage Microscope“ (vintage_microscope) von Luis José Fernández Rodríguez · polyhaven.com · CC0
 - „Vintage Pocket Watch“ (vintage_pocket_watch) von Tal Swicegood · polyhaven.com · CC0
 - „Vintage Radio Transceiver“ (vintage_radio_transceiver) von Mateusz Sadek · polyhaven.com · CC0
 - „Vintage Suitcase“ (vintage_suitcase) von Maximilian Schuster · polyhaven.com · CC0
 - „Vintage Telephone Wall Clock“ (vintage_telephone_wall_clock) von Adrian C · polyhaven.com · CC0
+- „Water Manhole Cover“ (water_manhole_cover) von Raunox · polyhaven.com · CC0
 - „Wet Floor Sign 01“ (WetFloorSign_01) von Fran Calvente · polyhaven.com · CC0
+- „Wicker Basket 01“ (wicker_basket_01) von Kuutti Siitonen · polyhaven.com · CC0
+- „Wine Barrel 01“ (wine_barrel_01) von James Ray Cock · polyhaven.com · CC0
 - „Wine Bottles 01“ (wine_bottles_01) von Rico Cilliers, Jurita Burger · polyhaven.com · CC0
 - „Wooden Barrels 01“ (wooden_barrels_01) von James Ray Cock · polyhaven.com · CC0
+- „Wooden Candlestick“ (wooden_candlestick) von Josh Dean · polyhaven.com · CC0
 - „Wooden Chair 01“ (WoodenChair_01) von Jake Mobley · polyhaven.com · CC0
+- „Wooden Crate 01“ (wooden_crate_01) von James Ray Cock · polyhaven.com · CC0
 - „Wooden Crate 02“ (wooden_crate_02) von James Ray Cock, Jurita Burger · polyhaven.com · CC0
+- „Wooden Display Shelves 01“ (wooden_display_shelves_01) von James Ray Cock · polyhaven.com · CC0
 - „Wooden Ladder“ (wooden_ladder) von Miroslav Turura · polyhaven.com · CC0
 - „Wooden Lantern 01“ (wooden_lantern_01) von James Ray Cock · polyhaven.com · CC0
 - „Wooden Military Crate“ (wooden_military_crate) von Prabhjinder Singh · polyhaven.com · CC0

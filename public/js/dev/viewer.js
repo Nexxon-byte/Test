@@ -42,7 +42,8 @@ export async function runViewer(params) {
       const ch = new C.Character(n);
       ch.play(clipName);
       ch.randomize();
-      mixers.push({ update: (dt) => ch.update(dt) });
+      const mon = params.get('monster') ? (await import('../gfx/monsterize.js')).monsterize(ch, params.get('monster')) : null;
+      mixers.push({ update: (dt) => { ch.update(dt); mon?.update(dt); } });
       items.push({ obj: ch.root, name: `${n} · ${clipName}`, w: 1.1 });
     }
     window.__clips = C.clipNames();

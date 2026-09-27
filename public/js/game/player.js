@@ -1,6 +1,7 @@
 // Spieler: Bewegung, Kollision, Kurbellampe, Ausdauer, Lärm, Angst, Verstecken, Tod.
 
 import * as THREE from 'three';
+import { cloneModel, hasModel } from '../gfx/models.js';
 import { input } from '../core/input.js';
 import { settings, QUALITY } from '../core/settings.js';
 import { clamp, damp, lerp } from '../core/rng.js';
@@ -79,15 +80,26 @@ export class Player {
 
     // Modell: Kurbellampe in Handschuh
     const lamp = new THREE.Group();
+    // Echtes Modell (Poly Haven „vintage_flashlight“, Linse am +Z-Ende → 180° gedreht); sonst Ersatz aus Grundformen
+    const real = hasModel('vintage_flashlight') ? cloneModel('vintage_flashlight') : null;
+    if (real) {
+      real.rotation.y = Math.PI;
+      real.scale.setScalar(0.62);
+      real.traverse(o => { if (o.isMesh && !/glass/i.test(o.material.name)) { o.material = o.material.clone(); o.material.color.multiplyScalar(0.22); o.material.roughness = 0.55; } });
+      real.position.set(0, -0.106 * 0.62, 0);
+      lamp.add(real);
+    }
     const b = new Builder();
+    if (!real) {
     b.cyl(mat('brassDark'), 0, 0, 0, 0.028, 0.028, 0.16, 12, { rx: Math.PI / 2 });
     b.cyl(mat('brass'), 0, 0, -0.1, 0.042, 0.03, 0.05, 12, { rx: Math.PI / 2 });
     b.cyl(mat('rubber'), 0, 0, 0.055, 0.031, 0.031, 0.04, 12, { rx: Math.PI / 2 });
     b.box(mat('fabricBlack'), 0.0, -0.04, 0.03, 0.07, 0.06, 0.12);   // Handschuh
     b.box(mat('fabricBlack'), 0.0, -0.06, 0.12, 0.06, 0.05, 0.12);
     lamp.add(b.build({ castShadow: false }));
-    const lens = new THREE.Mesh(new THREE.CircleGeometry(0.036, 16), glowMat(0xfff4dc, 1.2, 'lampLens'));
-    lens.position.z = -0.126;
+    }
+    const lens = new THREE.Mesh(new THREE.CircleGeometry(real ? 0.022 : 0.036, 16), glowMat(0xfff4dc, 1.2, 'lampLens'));
+    lens.position.z = real ? -0.097 : -0.126;
     lens.rotation.set(0, Math.PI, 0);
     lamp.add(lens);
     this.lensMat = lens.material;
@@ -98,10 +110,11 @@ export class Player {
     cb.box(mat('brass'), 0.035, 0, 0.025, 0.012, 0.05, 0.012);
     cb.cyl(mat('wood'), 0.05, 0.03, 0.025, 0.01, 0.01, 0.03, 6, { rz: Math.PI / 2 });
     crank.add(cb.build({ castShadow: false }));
-    crank.position.set(0, 0, 0.02);
+    crank.position.set(real ? 0.014 : 0, real ? -0.03 : 0, real ? 0.03 : 0.02);
+    if (real) crank.scale.setScalar(0.75);
     lamp.add(crank);
     this.crank = crank;
-    lamp.scale.setScalar(0.62);
+    lamp.scale.setScalar(real ? 1 : 0.62);
     lamp.position.set(0.15, -0.13, -0.24);
     lamp.rotation.y = 0.08;
     lamp.traverse(o => { if (o.isMesh) { o.castShadow = false; o.renderOrder = 10; } });

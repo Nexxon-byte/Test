@@ -2,6 +2,20 @@
 
 const params = new URLSearchParams(location.search);
 
+// Prüfwerkzeug (?placecheck): sehr früh setzen, bevor geo.js/app.js/sandbox.js laufen.
+if (params.has('placecheck')) {
+  globalThis.__placeDebug = true;
+  import('./dev/placecheck.js').then(({ placeCheck }) => {
+    window.__placeCheck = () => {
+      const world = window.__tiefer?.game?.world || window.__sb?.level;
+      if (!world) { console.warn('Platzierungsprüfung: keine Welt geladen (Hub/Level fehlt).'); return null; }
+      const builder = world._debugBuilder || world.builder;
+      const builderBoxes = builder?.debugBoxes || [];
+      return placeCheck(world.group, { builderBoxes });
+    };
+  });
+}
+
 if (params.has('viewer')) {
   import('./dev/viewer.js').then(m => m.runViewer(params));
 } else if (params.has('sandbox')) {

@@ -315,6 +315,7 @@ export function makeCtx(R, b, grid, theme, level, rng) {
 
     neon(text, color, x, y, z, ry, w = 2, opts = {}) {
       const tex = neonSign(text, { color, w: 512, h: 128, font: opts.font });
+      if (opts.plate !== false) b.box(mat('steel'), x - Math.sin(ry) * 0.05, y, z - Math.cos(ry) * 0.05, w * 1.02, w / 4 * 0.8, 0.06, { ry });
       const mesh = ctx.decal(tex, x, y, z, ry, w, w / 4, { emissive: 2.2 });
       const f = ctx.fixture({ x: x + Math.sin(ry) * 0.4, y, z: z + Math.cos(ry) * 0.4, type: 'none', color, intensity: opts.intensity ?? 3, distance: 6, mode: 'neon', flicker: opts.flicker ?? 0.3 });
       f.meshes = [mesh];

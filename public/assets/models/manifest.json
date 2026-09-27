@@ -1258,5 +1258,521 @@
    0.405
   ],
   "poly": 10746
+ },
+ "modular_urban_apartments_facade": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/modular_urban_apartments_facade/modular_urban_apartments_facade.gltf",
+  "name": "Modular Urban Apartments Facade",
+  "size": [
+   51.53,
+   6.665,
+   17
+  ],
+  "poly": 118215
+ },
+ "modular_factory_facade": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/modular_factory_facade/modular_factory_facade.gltf",
+  "name": "Modular Factory Facade",
+  "size": [
+   53.33,
+   5.356,
+   29
+  ],
+  "poly": 175014
+ },
+ "modular_metal_gutter": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/modular_metal_gutter/modular_metal_gutter.gltf",
+  "name": "Modular Metal Gutter",
+  "size": [
+   2.268,
+   1.515,
+   1.843
+  ],
+  "poly": 16490
+ },
+ "modular_airduct_circular_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/modular_airduct_circular_01/modular_airduct_circular_01.gltf",
+  "name": "Modular Airduct Circular 01",
+  "size": [
+   4.171,
+   1.463,
+   1.324
+  ],
+  "poly": 14280
+ },
+ "modular_fire_escape": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/modular_fire_escape/modular_fire_escape.gltf",
+  "name": "Modular Fire Escape",
+  "size": [
+   6.661,
+   1.421,
+   9.757
+  ],
+  "poly": 11322
+ },
+ "modular_airduct_rectangular_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/modular_airduct_rectangular_01/modular_airduct_rectangular_01.gltf",
+  "name": "Modular Airduct Rectangular 01",
+  "size": [
+   7.664,
+   2.587,
+   1.256
+  ],
+  "poly": 45090
+ },
+ "rollershutter_window_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/rollershutter_window_01/rollershutter_window_01.gltf",
+  "name": "Rollershutter Window 01",
+  "size": [
+   5.1,
+   0.3,
+   1.851
+  ],
+  "poly": 1104
+ },
+ "modular_industrial_pipes_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/modular_industrial_pipes_01/modular_industrial_pipes_01.gltf",
+  "name": "Modular Industrial Pipes 01",
+  "size": [
+   1.403,
+   0.308,
+   1.955
+  ],
+  "poly": 12340
+ },
+ "modular_chainlink_fence": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/modular_chainlink_fence/modular_chainlink_fence.gltf",
+  "name": "Modular Chainlink Fence",
+  "size": [
+   8.115,
+   2.149,
+   2.523
+  ],
+  "poly": 89232
+ },
+ "modular_electric_cables": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/modular_electric_cables/modular_electric_cables.gltf",
+  "name": "Modular Electric Cables",
+  "size": [
+   2.077,
+   0.215,
+   0.757
+  ],
+  "poly": 42078
+ },
+ "water_manhole_cover": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/water_manhole_cover/water_manhole_cover.gltf",
+  "name": "Water Manhole Cover",
+  "size": [
+   0.691,
+   0.691,
+   0.068
+  ],
+  "poly": 6301
+ },
+ "concrete_road_barrier": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/concrete_road_barrier/concrete_road_barrier.gltf",
+  "name": "Concrete Road Barrier",
+  "size": [
+   1.545,
+   0.641,
+   0.835
+  ],
+  "poly": 80776
+ },
+ "rollershutter_window_02": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/rollershutter_window_02/rollershutter_window_02.gltf",
+  "name": "Rollershutter Window 02",
+  "size": [
+   3.6,
+   0.168,
+   1.561
+  ],
+  "poly": 1120
+ },
+ "rollershutter_window_03": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/rollershutter_window_03/rollershutter_window_03.gltf",
+  "name": "Rollershutter Window 03",
+  "size": [
+   2.976,
+   0.153,
+   1.546
+  ],
+  "poly": 1120
+ },
+ "wooden_crate_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/wooden_crate_01/wooden_crate_01.gltf",
+  "name": "Wooden Crate 01",
+  "size": [
+   0.825,
+   0.409,
+   0.35
+  ],
+  "poly": 6576
+ },
+ "barrel_stove": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/barrel_stove/barrel_stove.gltf",
+  "name": "Barrel Stove",
+  "size": [
+   0.599,
+   0.598,
+   0.856
+  ],
+  "poly": 11404
+ },
+ "trashbag": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/trashbag/trashbag.gltf",
+  "name": "Trashbag",
+  "size": [
+   0.528,
+   0.463,
+   0.575
+  ],
+  "poly": 4482
+ },
+ "plastic_crate_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/plastic_crate_01/plastic_crate_01.gltf",
+  "name": "Plastic Crate 01",
+  "size": [
+   0.298,
+   0.408,
+   0.264
+  ],
+  "poly": 18320
+ },
+ "wine_barrel_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/wine_barrel_01/wine_barrel_01.gltf",
+  "name": "Wine Barrel 01",
+  "size": [
+   0.742,
+   0.756,
+   0.871
+  ],
+  "poly": 10820
+ },
+ "painted_wooden_bench": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/painted_wooden_bench/painted_wooden_bench.gltf",
+  "name": "Painted Wooden Bench",
+  "size": [
+   1.165,
+   0.497,
+   0.889
+  ],
+  "poly": 630
+ },
+ "industrial_wall_lamp": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/industrial_wall_lamp/industrial_wall_lamp.gltf",
+  "name": "Industrial Wall Lamp",
+  "size": [
+   0.273,
+   0.14,
+   0.43
+  ],
+  "poly": 4446
+ },
+ "hanging_industrial_lamp": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/hanging_industrial_lamp/hanging_industrial_lamp.gltf",
+  "name": "Hanging Industrial Lamp",
+  "size": [
+   0.55,
+   0.55,
+   1.355
+  ],
+  "poly": 9530
+ },
+ "industrial_wall_sconce": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/industrial_wall_sconce/industrial_wall_sconce.gltf",
+  "name": "Industrial Wall Sconce",
+  "size": [
+   0.15,
+   0.252,
+   0.342
+  ],
+  "poly": 9826
+ },
+ "utility_box_02": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/utility_box_02/utility_box_02.gltf",
+  "name": "Utility Box 02",
+  "size": [
+   0.92,
+   0.432,
+   1.12
+  ],
+  "poly": 6268
+ },
+ "pull_chain_light_socket": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/pull_chain_light_socket/pull_chain_light_socket.gltf",
+  "name": "Pull Chain Light Socket",
+  "size": [
+   0.11,
+   0.11,
+   0.165
+  ],
+  "poly": 10902
+ },
+ "security_camera_02": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/security_camera_02/security_camera_02.gltf",
+  "name": "Security Camera 02",
+  "size": [
+   0.141,
+   0.394,
+   0.209
+  ],
+  "poly": 12477
+ },
+ "wooden_display_shelves_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/wooden_display_shelves_01/wooden_display_shelves_01.gltf",
+  "name": "Wooden Display Shelves 01",
+  "size": [
+   1.078,
+   0.372,
+   1.556
+  ],
+  "poly": 3174
+ },
+ "large_castle_door": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/large_castle_door/large_castle_door.gltf",
+  "name": "Large Castle Door",
+  "size": [
+   2.012,
+   0.339,
+   2.965
+  ],
+  "poly": 12640
+ },
+ "standing_chalkboard_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/standing_chalkboard_01/standing_chalkboard_01.gltf",
+  "name": "Standing Chalkboard 01",
+  "size": [
+   0.92,
+   0.759,
+   1.509
+  ],
+  "poly": 2372
+ },
+ "large_iron_gate": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/large_iron_gate/large_iron_gate.gltf",
+  "name": "Large Iron Gate",
+  "size": [
+   2.95,
+   0.097,
+   2.929
+  ],
+  "poly": 38140
+ },
+ "metal_stool_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/metal_stool_01/metal_stool_01.gltf",
+  "name": "Metal Stool 01",
+  "size": [
+   0.352,
+   0.355,
+   0.883
+  ],
+  "poly": 8334
+ },
+ "wicker_basket_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/wicker_basket_01/wicker_basket_01.gltf",
+  "name": "Wicker Basket 01",
+  "size": [
+   0.383,
+   0.295,
+   0.117
+  ],
+  "poly": 22276
+ },
+ "CoffeeCart_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/CoffeeCart_01/CoffeeCart_01.gltf",
+  "name": "Coffee Cart 01",
+  "size": [
+   2.168,
+   1.073,
+   1.718
+  ],
+  "poly": 27659
+ },
+ "russian_food_cans_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/russian_food_cans_01/russian_food_cans_01.gltf",
+  "name": "Russian Food Cans 01",
+  "size": [
+   0.142,
+   0.046,
+   0.085
+  ],
+  "poly": 1348
+ },
+ "electric_stove": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/electric_stove/electric_stove.gltf",
+  "name": "Electric Stove",
+  "size": [
+   0.503,
+   0.648,
+   0.859
+  ],
+  "poly": 13914
+ },
+ "pot_enamel_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/pot_enamel_01/pot_enamel_01.gltf",
+  "name": "Pot Enamel 01",
+  "size": [
+   0.263,
+   0.18,
+   0.178
+  ],
+  "poly": 11416
+ },
+ "wooden_candlestick": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/wooden_candlestick/wooden_candlestick.gltf",
+  "name": "Wooden Candlestick",
+  "size": [
+   0.098,
+   0.1,
+   0.22
+  ],
+  "poly": 3328
+ },
+ "brass_candleholders": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/brass_candleholders/brass_candleholders.gltf",
+  "name": "Brass Candleholders",
+  "size": [
+   1.053,
+   0.365,
+   0.835
+  ],
+  "poly": 41936
+ },
+ "Chandelier_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/Chandelier_01/Chandelier_01.gltf",
+  "name": "Chandelier 01",
+  "size": [
+   0.746,
+   0.816,
+   0.798
+  ],
+  "poly": 26860
+ },
+ "hanging_picture_frame_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/hanging_picture_frame_01/hanging_picture_frame_01.gltf",
+  "name": "Hanging Picture Frame 01",
+  "size": [
+   0.594,
+   0.016,
+   0.841
+  ],
+  "poly": 2586
+ },
+ "vintage_grandfather_clock_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/vintage_grandfather_clock_01/vintage_grandfather_clock_01.gltf",
+  "name": "Vintage Grandfather Clock 01",
+  "size": [
+   0.997,
+   0.795,
+   2.191
+  ],
+  "poly": 12604
+ },
+ "marble_bust_01": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/marble_bust_01/marble_bust_01.gltf",
+  "name": "Marble Bust 01",
+  "size": [
+   0.272,
+   0.3,
+   0.515
+  ],
+  "poly": 17456
+ },
+ "cement_bag": {
+  "group": "city",
+  "small": false,
+  "file": "assets/models/cement_bag/cement_bag.gltf",
+  "name": "Cement Bag",
+  "size": [
+   0.462,
+   0.7,
+   0.18
+  ],
+  "poly": 844
  }
 }
