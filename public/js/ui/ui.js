@@ -27,6 +27,7 @@ class UI {
           <div class="hdr"><span>KOM · BR. v. SEIL</span><span class="clock">03:07</span></div>
           <div class="name"></div>
           <div class="obj"></div>
+          <div class="con"></div>
           <div class="bars">
             <span>LAMPE</span><div class="bar" id="bar-bat"><i></i></div>
           </div>
@@ -50,7 +51,7 @@ class UI {
     voice.attach($('#subs'));
     this.hud = {
       root: $('#hud'), prompt: $('#prompt'), cross: $('#crosshair'), noise: $('#noise'), stamina: $('#stamina'),
-      kom: $('#kom'), komName: $('#kom .name'), komObj: $('#kom .obj'), komMsg: $('#kom .msg'), komRes: $('#kom .res'), komClock: $('#kom .clock'),
+      kom: $('#kom'), komName: $('#kom .name'), komObj: $('#kom .obj'), komCon: $('#kom .con'), komMsg: $('#kom .msg'), komRes: $('#kom .res'), komClock: $('#kom .clock'),
       bat: $('#bar-bat'), hints: $('#hints'), toasts: $('#toasts'), objective: $('#objective'), floorcard: $('#floorcard'),
       slits: $('#hideslits'), echo: $('#echo-label'), chat: $('#chat'), chatin: $('#chatin'), blood: $('#blood'),
     };
@@ -108,6 +109,13 @@ class UI {
     }
     if (res !== undefined && res !== this._komRes) { this.hud.komRes.innerHTML = res; this._komRes = res; }
     if (clock !== undefined) this.hud.komClock.textContent = clock;
+  }
+
+  // Aufträge der Nacht auf dem Kom (golden), mit Richtungspfeil zum nächsten Ziel
+  setContracts(html) {
+    if (html === this._con) return;
+    this._con = html;
+    this.hud.komCon.innerHTML = html;
   }
 
   setObjective(text, banner = true) {

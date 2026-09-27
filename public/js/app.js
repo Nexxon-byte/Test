@@ -93,6 +93,13 @@ export async function boot() {
     st.flags.introDone = true;
     st.stage = Number(params.get('stufe') || 2);
     for (const m of (params.get('modules') || '').split(',').filter(Boolean)) { const [id, lv] = m.split(':'); st.modules[id] = Number(lv || 1); }
+    // &contracts=spezial,wartung,vermisst,kirche,schwarz,bergung → für diese Welt angenommen
+    if (params.get('contracts')) {
+      const { devContract } = await import('./game/contracts.js');
+      const { floorOfTheme, stageOfTheme } = await import('./game/floors.js');
+      const th = params.get('night') || 'dock';
+      st.contracts = params.get('contracts').split(',').filter(Boolean).map((k, i) => devContract(k, floorOfTheme(th), stageOfTheme(th), st, 11 + i));
+    }
     game.adoptState(st);
     game.titleMode = false;
     await game.devNight(params.get('night') || 'dock', Number(params.get('seed') || 7));

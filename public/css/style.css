@@ -160,6 +160,11 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px;
 #kom .hdr { display: flex; justify-content: space-between; font-size: 15px; color: var(--kom-dim); letter-spacing: 0.12em; }
 #kom .name { font-size: 20px; letter-spacing: 0.25em; }
 #kom .obj { margin-top: 6px; font-size: 19px; line-height: 1.15; min-height: 22px; }
+#kom .con { margin-top: 4px; display: flex; flex-direction: column; gap: 1px; }
+#kom .con:empty { display: none; }
+#kom .con .c { font-size: 16px; color: #ffcf7a; text-shadow: 0 0 6px rgba(255,180,80,0.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#kom .con .c.ok { color: #9fe0a8; text-shadow: none; }
+#kom .con .dir { font-size: 18px; color: #ffe0a0; letter-spacing: 0.1em; }
 #kom .bars { display: grid; grid-template-columns: 60px 1fr; gap: 4px 8px; margin-top: 8px; font-size: 15px; align-items: center; color: var(--kom-dim); }
 #kom .bar { height: 6px; background: rgba(141,255,168,0.12); position: relative; }
 #kom .bar i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--kom); box-shadow: 0 0 6px var(--kom); }
@@ -282,7 +287,20 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px;
 .card.gift { border-color: rgba(255,74,48,0.35); background: rgba(40,4,2,0.35); }
 .card.gift h4 { color: #ffd8cc; }
 .card.gift .cost { color: var(--blood-hi); }
-#shop .wallet { font-family: var(--mono); font-size: 20px; color: var(--gold-hi); letter-spacing: 0.15em; margin-bottom: 16px; display: flex; gap: 26px; }
+/* Auftragsbrett */
+#board .panel.board { width: min(1120px, 95vw); max-height: 92vh; overflow-y: auto; }
+#board .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin-top: 10px; }
+.card.contract .kind { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 14px; letter-spacing: 0.25em; color: var(--gold); }
+.card.contract .kind em { font-style: normal; letter-spacing: 0.05em; color: var(--bone-dim); }
+.card.contract .where { font-family: var(--mono); font-size: 15px; color: var(--bone-dim); letter-spacing: 0.08em; }
+.card.contract.gold { border-color: rgba(255,200,100,0.7); box-shadow: 0 0 18px rgba(255,180,60,0.18), inset 0 0 30px rgba(255,180,60,0.06); }
+.card.contract.gold h4 { color: #ffd98a; }
+.card.contract.taken { background: rgba(201,160,80,0.1); border-color: var(--gold); }
+#board details.howto { margin-top: 20px; }
+#board details.howto summary { cursor: pointer; font-family: var(--mono); letter-spacing: 0.3em; color: var(--gold); font-size: 16px; }
+ul.contracts li.ok span:last-child { color: #9fe0a8; }
+ul.contracts li.no { opacity: 0.6; }
+#shop .wallet, #board .wallet { font-family: var(--mono); font-size: 20px; color: var(--gold-hi); letter-spacing: 0.15em; margin-bottom: 16px; display: flex; gap: 26px; }
 .slate { font-family: var(--hand); font-size: 30px; color: #f0f0e8; background: #1c211f; border: 1px solid rgba(255,255,255,0.12); padding: 14px 18px; margin-bottom: 18px; box-shadow: inset 0 0 30px rgba(0,0,0,0.7); }
 .name-meter { font-family: var(--mono); font-size: 34px; letter-spacing: 0.4em; color: var(--kom); margin: 8px 0 18px; }
 .name-meter .gone { color: #3a2a26; text-decoration: line-through; }

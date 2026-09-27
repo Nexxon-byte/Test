@@ -13,6 +13,8 @@ import { Hub, HUB_THEME } from '../world/hub.js';
 import { Player } from './player.js';
 import { ItemManager, LOOT, SPAWN, TIER_VALUE, pickLoot } from './items.js';
 import { Tools } from './tools.js';
+import { ContractRun } from './contracts.js';
+import { FLOORS, floorsFor, floorOfTheme, stageOfTheme } from './floors.js';
 import { Inventory } from './inventory.js';
 import { Interactions } from './interact.js';
 import { saveCampaign, quotaFor, nameWithLetters, DIFFICULTY } from './state.js';
@@ -30,11 +32,7 @@ import { DEATHS } from '../story/codex.js';
 import { Director } from './monsters/director.js';
 import * as menus from '../ui/menus.js';
 
-// Welten je Tiefenstufe: [Thema, Tiefe, Name]
-export const FLOORS = {
-  1: [['dock', 2, 'Die Ladebucht'], ['scriptorium', 7, 'Das Skriptorium'], ['ossuary', 17, 'Das Beinhaus']],
-  2: [['mine', 33, 'Bohrung Null']],
-};
+export { FLOORS };
 
 const MS_PER_MIN = new URLSearchParams(location.search).has('fast') ? 400 : 4000;
 const NIGHT_END = 3 * 60 + 7;   // 03:07
@@ -73,6 +71,7 @@ export class Game {
 
     this.director = new Director(this);
     this.tools = new Tools(this);
+    this.contracts = new ContractRun(this);
     this._applyCampaignToCab();
     this._wireCabin();
     this._wireGate();
@@ -165,6 +164,7 @@ export class Game {
   _clearWorld() {
     this.director.clear();
     this.tools.clear();
+    this.contracts.clear();
     if (this.world) {
       this.world.dispose(this.R.scene, this.col);
       this.world = null;
@@ -215,7 +215,8 @@ export class Game {
     // Beute, die oben in der Kabine liegt (noch nicht verkauft)
     for (const c of this.state.cargo) {
       if (this.items.items.has(c.id)) continue;
-      this.items.spawn(c.type, c.x, c.y, c.z, { value: c.value, id: c.id, data: c.data });
+      const it = this.items.spawn(c.type, c.x, c.y, c.z, { value: c.value, id: c.id, data: c.data });
+      if (c.name && c.name !== it.def.name) it.def = { ...it.def, name: c.name };
     }
     this._wireItems();
   }
@@ -449,9 +450,11 @@ export class Game {
     this.director.preload();
     const st = this.state;
     // Welt wählen
-    const opts = FLOORS[stage] || FLOORS[1];
+    const opts = floorsFor(stage, st);
     const rng = new RNG((Date.now() & 0xffffff) ^ (st.week * 131 + st.night * 17));
-    let choice = st.contract && st.contract.stage === stage ? st.contract.floor : rng.pick(opts);
+    // angenommener Auftrag bestimmt die Welt (sonst Zufall der Stufe)
+    const bound = (st.contracts || []).find(c => c.stage === stage);
+    let choice = bound ? bound.floor : rng.pick(opts);
     if (st.flags.tutorial) choice = FLOORS[1][0];
     const [themeId, depth, name] = choice;
     const theme = THEMES[themeId] || THEMES.dock;
@@ -548,6 +551,7 @@ export class Game {
     this.elev.setNeedleDepth(depth, true);
     this._startEmitters(level);
     this._spawnLoot(level, theme);
+    this.contracts.setup(level, this.nightInfo, this.state);
     this.mode = 'night';
   }
 
@@ -720,6 +724,7 @@ export class Game {
     const outside = this.items.lying().filter(it => !this.elev.contains(it.pos));
     for (const it of outside) { this.items.remove(it.id); if (it.fixture) this.pool.remove(it.fixture); }
     const broughtValue = brought.reduce((s, i) => s + i.value, 0);
+    const contractResults = this.contracts.settle(brought, this.state, broughtValue);
     const lostValue = carried.reduce((s, i) => s + i.value, 0) + (this._deathLost || 0);
     this._deathLost = 0;
 
@@ -774,7 +779,18 @@ export class Game {
       this.items.drop(it, p.x, 0, p.z, Math.random() * 6);
     }
     this.inv.removeAll();
-    st.cargo = this.items.lying().filter(it => this.elev.contains(it.pos)).map(it => ({ id: it.id, type: it.type, value: it.value, x: it.pos.x, y: it.pos.y, z: it.pos.z, data: it.data }));
+    // Aufträge: Belohnung, Auftragsgut abholen lassen (Marke → Dieter, Schwarzmarkt → Voss' Läufer)
+    let contractPay = 0;
+    for (const r of contractResults) {
+      contractPay += r.reward;
+      for (const id of r.remove) this.items.remove(id);
+      (st.contractLog ||= []).push({ title: r.title, kind: r.kind, ok: r.ok, reward: r.reward, week: st.week, night: st.night });
+    }
+    st.marks += contractPay;
+    // Aufträge gelten eine Nacht: was nicht angetreten wurde, verfällt
+    for (const c of st.contracts || []) if (!contractResults.some(r => r.id === c.id)) (st.contractLog ||= []).push({ title: c.title, kind: c.kind, ok: false, reward: 0, week: st.week, night: st.night, skipped: true });
+    st.contracts = [];
+    st.cargo = this.items.lying().filter(it => this.elev.contains(it.pos)).map(it => ({ id: it.id, type: it.type, value: it.value, x: it.pos.x, y: it.pos.y, z: it.pos.z, data: it.data, name: it.def.name }));
     const deathFee = lost ? Math.min(st.marks, Math.round(30 + st.week * 20)) : 0;
     st.marks -= deathFee;
     const tut = st.flags.tutorial;
@@ -787,7 +803,7 @@ export class Game {
     input.unlock();
     input.enabled = false;
     await nightReport({
-      name: this.nightInfo?.name, depth, brought, broughtValue, lost, lostValue, deathFee, reason,
+      name: this.nightInfo?.name, depth, brought, broughtValue, lost, lostValue, deathFee, reason, contracts: contractResults,
       week: st.week, night: st.night, quota: st.quota, sold: st.sold, cargoValue: st.cargo.reduce((s, c) => s + c.value, 0), tutorial: tut,
     });
     input.enabled = true;
@@ -836,10 +852,9 @@ export class Game {
 
   // Direkt in eine Nacht springen (ohne Fahrt): ?skip&night=ossuary&seed=7[&monsters=passenger,listener,rats]
   async devNight(themeId = 'dock', seed = 7) {
-    const stageOf = Object.keys(FLOORS).find(k => FLOORS[k].some(f => f[0] === themeId)) || 1;
-    const [tid, depth, name] = FLOORS[stageOf].find(f => f[0] === themeId) || FLOORS[1][0];
+    const [tid, depth, name] = floorOfTheme(themeId);
     const theme = THEMES[tid] || THEMES.dock;
-    this.nightInfo = { themeId: tid, depth, name, stage: Number(stageOf), seed };
+    this.nightInfo = { themeId: tid, depth, name, stage: stageOfTheme(tid), seed };
     this._keepOnlyCabinItems();
     this._clearWorld();
     await this.director.preload();
@@ -904,6 +919,7 @@ export class Game {
       ? `<span>TRAGE <b>${carried} M</b></span><span>KABINE <b>${this._cabValue()} M</b></span>`
       : `<span>MARKEN <b>${st.marks}</b></span><span>QUOTE <b>${st.sold}/${st.quota}</b></span><span>NACHT <b>${Math.min(3, st.night + 1)}/3</b></span>`;
     ui.setKom({ name: `MANNSCHAFT 47 · ${name}`, res });
+    ui.setContracts(this.mode === 'night' ? this.contracts.komLine() : '');
   }
 
   _cabValue() { return this.items.inside((p) => this.elev.contains(p)).reduce((s, i) => s + i.value, 0); }
@@ -968,7 +984,7 @@ export class Game {
 
     // Nacht
     if (this.mode === 'night' && !this.busy) this._updateNight(dt);
-    if (this.mode === 'night') this.director.update(dt, this.clock);
+    if (this.mode === 'night') { this.director.update(dt, this.clock); this.contracts.update(dt); }
 
     // Lebenspunkte: roter Rand nach Treffern, Pochen bei wenig LP; oben heilt man langsam
     this.hurtT = Math.max(0, this.hurtT - dt);

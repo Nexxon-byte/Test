@@ -58,6 +58,9 @@ export const LOOT = {
   projektor:  { name: 'Filmprojektor', model: 'filmstrip_projector_8mm', value: [65, 130], weight: 5, desc: 'Eine Rolle ist eingelegt: „Richtfest, Jahr 20“.' },
   rochen:     { name: 'Bronzerochen', model: 'bronze_ray_statue', value: [90, 170], weight: 7, desc: 'Ein Tier aus dem Meer vor der Flut. Poliert von vielen Händen.' },
   munition:   { name: 'Munitionskiste', model: 'ammo_box', value: [30, 60], weight: 5, desc: 'Leer. Innen Salzkrümel.' },
+  // --- Auftragsgut (nicht in den Zufallstabellen)
+  marke:      { name: 'Erkennungsmarke', value: [4, 8], weight: 0.1, desc: 'Messing, an einer Kette. Eine Mannschaftsnummer, ein Name, eine Blutgruppe. Mehr bleibt nicht.' },
+  reliquie:   { name: 'Stimmreliquie', value: [140, 180], weight: 4, desc: 'Ein goldener Schrein mit Glasfenster. Darin eine Wachswalze der Ersten Fahrt. Die Rillen sind … nicht da.' },
 };
 
 // Werkzeuge & Waffen (Voss). Kein Bergegut: Wert 0, die Kantorei kauft sie nicht.
@@ -116,6 +119,25 @@ const MODELS = {
   roehre(b) { b.cyl(mat('rubber'), 0, 0, 0, 0.04, 0.04, 0.03, 10); b.cyl(glowMat(0xff7a2a, 1.6, 'nixieGlow'), 0, 0.03, 0, 0.035, 0.035, 0.1, 10); b.sphere(glowMat(0xff7a2a, 1.6, 'nixieGlow'), 0, 0.13, 0, 0.035, 8, 6); },
   salzkristall(b) { for (let i = 0; i < 5; i++) b.add(glowMat(0xa8d8ff, 0.9, 'saltGlow'), coneGeometry(0.05 + i * 0.01, 0.3 - i * 0.03, 5), Math.cos(i * 1.3) * 0.06, 0.12, Math.sin(i * 1.3) * 0.06, Math.cos(i) * 0.3, i, Math.sin(i) * 0.3); },
   handy(b) { b.box(mat('rubber'), 0, 0.006, 0, 0.075, 0.012, 0.155); b.box(glowMat(0x0a1418, 0.4, 'screenDim'), 0, 0.013, 0, 0.068, 0.002, 0.142); },
+  // --- Auftragsgut
+  marke(b) {
+    // Blechmarke mit gestanzter Nummer und Kugelkette
+    b.box(mat('brass'), 0, 0.004, 0, 0.05, 0.003, 0.032, { ry: 0.3 });
+    b.box(mat('brassDark'), 0.004, 0.0065, 0.002, 0.03, 0.0008, 0.004, { ry: 0.3 });
+    for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 1.6 + 0.8; b.sphere(mat('steel'), Math.cos(a) * 0.05 - 0.03, 0.003, Math.sin(a) * 0.04, 0.0035, 5, 4); }
+  },
+  reliquie(b, g) {
+    // goldener Schrein: Sockel, Säulen, Glasfenster, Dach mit Zifferblatt; innen eine blanke Walze
+    b.box(mat('gold'), 0, 0.03, 0, 0.3, 0.06, 0.2);
+    b.box(mat('walnut'), 0, 0.075, 0, 0.26, 0.03, 0.17);
+    for (const x of [-0.12, 0.12]) for (const z of [-0.07, 0.07]) b.cyl(mat('gold'), x, 0.09, z, 0.012, 0.012, 0.2, 8);
+    b.box(mat('gold'), 0, 0.3, 0, 0.3, 0.03, 0.2);
+    b.add(mat('gold'), coneGeometry(0.17, 0.1, 4), 0, 0.365, 0, 0, Math.PI / 4, 0);
+    b.cyl(mat('bone'), 0, 0.14, 0, 0.035, 0.035, 0.1, 14, { rz: Math.PI / 2 });
+    const glass = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.2, 0.15), new THREE.MeshStandardMaterial({ color: 0xc8d0d0, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.18, depthWrite: false }));
+    glass.position.y = 0.19;
+    g.add(glass);
+  },
   // --- Werkzeuge ohne fertiges Modell
   klapper(b) {
     // Blechdose mit Deckel, durchgebohrt, Schrauben innen, Schnurschlaufe

@@ -8,6 +8,7 @@ import { MODULES, DEPTH_STAGES } from '../world/cab.js';
 import { saveCampaign, quotaFor } from '../game/state.js';
 import { SLATE } from '../story/lines.js';
 import { TOOLS } from '../game/items.js';
+import { offersFor, canAccept, accept, drop, KINDS } from '../game/contracts.js';
 
 const host = () => ui.menus();
 
@@ -195,21 +196,64 @@ export async function openShop(kind, game) {
 
 export async function openBoard(game) {
   const st = game.state;
-  const stages = [];
-  for (let i = 1; i <= st.stage; i++) stages.push(`<li><b>Stufe ${DEPTH_STAGES[i].label}</b> · ${DEPTH_STAGES[i].sub}</li>`);
-  const s = panel('board', `<div class="panel">
-    <h2>DISPOSITION</h2><div class="sub">Bruder Dieter · Auftragsbrett der Bruderschaft vom Seil</div>
-    <div class="wallet"><span>MARKEN: ${st.marks}</span><span>QUOTE: ${st.sold} / ${st.quota}</span><span>WOCHE ${st.week} · NACHT ${Math.min(3, st.night + 1)}/3</span></div>
-    <h3>SO LÄUFT DAS</h3>
-    <p class="hintline" style="font-size:19px;font-style:normal;color:var(--bone)">
-      1. In der Neunten den <b>Telegrafen</b> auf eine freigeschaltete Tiefenstufe stellen, dann den <b>Knopf</b> drücken.<br>
-      2. Unten: Bergegut finden (<b>Q</b> scannen), in die Kabine tragen. Nur was in der Kabine liegt, zählt.<br>
-      3. Vor <b>03:07</b> zurück, <b>AUFWÄRTS</b> drücken. Um 03:07 fährt die Neunte ohne euch.<br>
-      4. Oben die Beute zur <b>Waage der Kantorei</b> tragen. Nach 3 Nächten rechnet Kantor Veit die Quote ab.</p>
-    <h3>FREIGESCHALTET</h3><ul class="players">${stages.join('')}</ul>
-    <h3>NÄCHSTE ZEHNTWOCHE</h3><p class="hintline">Woche ${st.week + 1}: Quote ${quotaFor(st.week + 1, st.difficulty)} M. Tiefere Stufen bringen mehr. Ada verkauft mehr Seil.</p>
-    <div class="btn-row"><button class="btn ghost" data-close>SCHLIESSEN [E]</button></div></div>`);
-  await waitClose(s);
+  const s = panel('board', '');
+  const render = () => {
+    const blocked = st.flags.tutorial ? 'Erste Nacht: nur bis −2 in die Ladebucht. Aufträge gibt es ab morgen.'
+      : st.night >= 3 ? 'Die Zehntwoche ist um. Erst bei Kantor Veit abrechnen, dann gibt es neue Aufträge.' : '';
+    const offers = blocked ? [] : offersFor(st);
+    const acc = st.contracts || [];
+    let cards = '';
+    for (const c of offers) {
+      const k = KINDS[c.kind];
+      const taken = acc.some(a => a.id === c.id);
+      const chk = canAccept(st, c);
+      const btn = taken ? '<button class="btn ghost" data-drop="' + c.id + '">ABLEGEN</button>'
+        : `<button class="btn" data-take="${c.id}" ${chk.ok ? '' : 'disabled'}>${chk.ok ? 'ANNEHMEN' : chk.why}</button>`;
+      cards += `<div class="card contract ${k.gold ? 'gold' : ''} ${taken ? 'taken' : ''}">
+        <div class="kind"><span>${k.label}</span><em>${escapeHtml(k.from)}</em></div>
+        <h4>${escapeHtml(c.title)}</h4><p>${escapeHtml(c.text)}</p>
+        <div class="where">−${c.floor[1]} · ${escapeHtml(c.floor[2])} · Stufe ${DEPTH_STAGES[c.stage].label}</div>
+        <div class="cost">+${c.reward} M</div>${btn}</div>`;
+    }
+    const stageHint = acc.length ? `Angenommen: ${acc.map(c => escapeHtml(c.title)).join(' · ')} — in der Neunten den Telegrafen auf <b>Stufe ${DEPTH_STAGES[acc[0].stage].label}</b> stellen.` : 'Bis zu zwei Aufträge, alle für dieselbe Tiefe. Belohnung gibt es in der Abrechnung der Nacht.';
+    const stages = [];
+    for (let i = 1; i <= st.stage; i++) stages.push(`<li><b>Stufe ${DEPTH_STAGES[i].label}</b> · ${DEPTH_STAGES[i].sub}</li>`);
+    s.innerHTML = `<div class="panel board">
+      <h2>DISPOSITION</h2><div class="sub">Bruder Dieter · Auftragsbrett der Bruderschaft vom Seil</div>
+      <div class="wallet"><span>MARKEN: ${st.marks}</span><span>QUOTE: ${st.sold} / ${st.quota}</span><span>WOCHE ${st.week} · NACHT ${Math.min(3, st.night + 1)}/3</span></div>
+      <h3>AUFTRÄGE FÜR DIESE NACHT</h3>
+      ${blocked ? `<p class="hintline">${blocked}</p>` : `<p class="hintline" style="font-style:normal;color:var(--bone)">${stageHint}</p><div class="grid">${cards}</div>`}
+      <details class="howto"><summary>SO LÄUFT DAS</summary>
+      <p class="hintline" style="font-size:19px;font-style:normal;color:var(--bone)">
+        1. In der Neunten den <b>Telegrafen</b> auf eine freigeschaltete Tiefenstufe stellen, dann den <b>Knopf</b> drücken.<br>
+        2. Unten: Bergegut finden (<b>Q</b> scannen), in die Kabine tragen. Nur was in der Kabine liegt, zählt. Aufträge sind <b>golden</b> gezeichnet, der Kom zeigt die Richtung.<br>
+        3. Vor <b>03:07</b> zurück, <b>AUFWÄRTS</b> drücken. Um 03:07 fährt die Neunte ohne euch.<br>
+        4. Oben die Beute zur <b>Waage der Kantorei</b> tragen. Nach 3 Nächten rechnet Kantor Veit die Quote ab.</p>
+      <h3>FREIGESCHALTET</h3><ul class="players">${stages.join('')}</ul>
+      <p class="hintline">Woche ${st.week + 1}: Quote ${quotaFor(st.week + 1, st.difficulty)} M. Tiefere Stufen bringen mehr. Ada verkauft mehr Seil.</p></details>
+      <div class="btn-row"><button class="btn ghost" data-close>SCHLIESSEN [E]</button></div></div>`;
+    s.querySelectorAll('[data-take]').forEach(b => b.addEventListener('click', () => {
+      const c = offers.find(o => o.id === b.dataset.take);
+      if (c && accept(st, c)) {
+        audio.play('paper'); audio.play('ding', { vol: 0.2, pitch: 1.4 });
+        if (c.line && !st.flags['told_' + c.id]) { st.flags['told_' + c.id] = true; voice.say(c.line, { interrupt: true }); }
+        saveCampaign(st); render();
+      }
+    }));
+    s.querySelectorAll('[data-drop]').forEach(b => b.addEventListener('click', () => { drop(st, b.dataset.drop); audio.play('paper'); saveCampaign(st); render(); }));
+    s.querySelectorAll('button').forEach(b => b.addEventListener('mouseenter', () => audio.play('uiHover')));
+    s.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => { audio.play('uiSelect'); done(); }));
+  };
+  let done;
+  await new Promise((resolve) => {
+    const key = (e) => { if (e.code === 'Escape' || e.code === 'KeyE' || e.code === 'Tab') { e.preventDefault(); e.stopPropagation(); done(); } };
+    done = () => { window.removeEventListener('keydown', key, true); s.remove(); input.lock(); resolve(); };
+    render();
+    // Goldener Auftrag: Dieter erzählt beim ersten Blick aufs Brett davon
+    const story = (st.offers?.list || []).find(c => c.kind === 'story');
+    if (story?.line && !st.flags['told_' + story.id]) { st.flags['told_' + story.id] = true; voice.say(story.line, { interrupt: true, delay: 0.4 }); }
+    setTimeout(() => window.addEventListener('keydown', key, true), 150);
+  });
 }
 
 // ---------------------------------------------------------------- Abrechnung der Nacht
@@ -226,6 +270,7 @@ export async function nightReport(r) {
     <div class="sub">${escapeHtml(r.name || '')} · −${r.depth} · ${r.reason === 'ruf' ? 'Die Neunte fuhr um 03:07 von selbst.' : r.reason === 'tod' ? 'Die Neunte holte, was von euch übrig war.' : 'Rechtzeitig aufwärts.'}</div>
     <h3>IN DER KABINE</h3><ul class="players">${rows}</ul>
     <div class="total"><span>SUMME</span><span>${r.broughtValue} M</span></div>
+    ${r.contracts?.length ? `<h3>AUFTRÄGE</h3><ul class="players contracts">${r.contracts.map(c => `<li class="${c.ok ? 'ok' : 'no'}"><span>${c.ok ? '✓' : '✗'} ${escapeHtml(c.title)}</span><span>${c.ok ? '+' + c.reward + ' M' : 'verfehlt'}</span></li>`).join('')}</ul>` : ''}
     ${r.lost ? `<h3 style="color:var(--blood-hi)">VERSCHOLLEN</h3><p class="hintline">${r.reason === 'tod' ? 'Du bist unten gestorben.' : 'Du bist unten geblieben.'} Getragene Beute verloren: ${r.lostValue} M. Bestattungsgebühr der Bruderschaft: −${r.deathFee} M.<br>Die Kanzlei holt dich trotzdem zurück. Sie braucht jede Hand.</p>` : ''}
     <h3>ZEHNTWOCHE ${r.week}</h3>
     <p class="hintline" style="font-style:normal;color:var(--bone)">Nacht ${r.night} von 3 · verkauft ${r.sold} / ${r.quota} M · Fracht in der Kabine: ${r.cargoValue} M</p>
