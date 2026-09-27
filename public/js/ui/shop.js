@@ -5,7 +5,7 @@ import { audio } from '../audio/audio.js';
 import { voice, escapeHtml } from '../audio/voice.js';
 import { input } from '../core/input.js';
 import { MODULES, DEPTH_STAGES } from '../world/cab.js';
-import { saveCampaign, quotaFor } from '../game/state.js';
+import { saveCampaign, quotaFor, GIFTS, letterCount, nameWithLetters } from '../game/state.js';
 import { SLATE } from '../story/lines.js';
 import { TOOLS } from '../game/items.js';
 import { offersFor, canAccept, accept, drop, KINDS } from '../game/contracts.js';
@@ -71,6 +71,9 @@ const VOSS_SHOP = {
   patronen:    { price: 30, name: 'Salzpatronen ×4', lvl: 'MUNITION', desc: 'Grobkörnig, handgestopft, ein Kreuz auf dem Boden. Für die Salzflinte.' },
 };
 
+// Voss kauft Buchstaben deines Namens – jeder weitere ist mehr wert
+function letterPrice(st) { return 100 + (st.letters || 0) * 35; }
+
 // Anselms Küche: sättigt, heilt, macht Mut
 const KITCHEN = {
   suppe: { price: 15, name: 'Kesselsuppe', desc: 'Heilt dich ganz. In der nächsten Nacht hältst du beim Rennen länger durch.' },
@@ -113,6 +116,9 @@ export async function openShop(kind, game) {
         const extra = id === 'patronen' ? `Im Beutel: ${st.consumables.patronen || 0}` : '';
         cards += card({ id: 'voss:' + id, title: w.name || def.name, lvl: [w.lvl, extra].filter(Boolean).join(' · '), desc: w.desc || def.desc, cost: `${w.price} M`, can: st.marks >= w.price });
       }
+      // Heißware der anderen Art: ein Buchstabe des Namens
+      const left = letterCount(st.name) - (st.letters || 0);
+      if (!st.flags.tutorial && left > 1) cards += card({ id: 'voss:letter', cls: 'gift', title: 'Ein Buchstabe deines Namens', lvl: `NOCH ${left} · ${nameWithLetters(st.name, st.letters)}`, desc: '„Nur einer. Du merkst es kaum. Frag nicht, wer ihn am Ende kauft.“ – Voss', cost: `+${letterPrice(st)} M`, can: true, btn: 'VERKAUFEN' });
     } else if (kind === 'veit') {
       title = 'KANTOREI-ANNAHME'; sub = 'Leg Bergegut auf die Waage, um es zu verkaufen. Hier wird die Quote abgerechnet.';
       const left = Math.max(0, st.quota - st.sold);
@@ -150,6 +156,14 @@ export async function openShop(kind, game) {
     } else if (id === 'week') {
       const r = game.closeWeek();
       ui.toast(r.ok ? `Quote erfüllt · Bonus +${r.bonus} M · Neue Quote: ${st.quota} M` : 'Quote verfehlt. Die Kantoren nehmen die Hälfte eurer Marken und alles Bergegut.');
+    } else if (id === 'voss:letter') {
+      const left = letterCount(st.name) - (st.letters || 0);
+      if (left <= 1) return;
+      st.marks += letterPrice(st);
+      st.letters = (st.letters || 0) + 1;
+      st.flags.lettersVoss = (st.flags.lettersVoss || 0) + 1;
+      voice.say('vo_name2', { interrupt: true });
+      game.R.glitchPulse(0.3);
     } else if (id.startsWith('voss:')) {
       const t = id.slice(5), w = VOSS_SHOP[t];
       if (!w || st.marks < w.price) return;
@@ -187,6 +201,72 @@ export async function openShop(kind, game) {
   await new Promise((resolve) => {
     const key = (e) => { if (e.code === 'Escape' || e.code === 'KeyE' || e.code === 'Tab') { e.preventDefault(); e.stopPropagation(); closeFn(); } };
     closeFn = () => { window.removeEventListener('keydown', key, true); shopEl?.remove(); input.lock(); resolve(); };
+    render();
+    setTimeout(() => window.addEventListener('keydown', key, true), 150);
+  });
+}
+
+// ---------------------------------------------------------------- Gaben der Vermittlerin (Kabinentelefon oben)
+
+export async function openGifts(game) {
+  const st = game.state;
+  const s = panel('gifts', '');
+  let bought = 0;
+  const first = !st.flags.giftsMet;
+  st.flags.giftsMet = true;
+  voice.say(first ? 'v_gift_offer' : 'v_gift_price', { interrupt: true });
+  if (first) setTimeout(() => voice.say('v_gift_price'), 200);
+  const render = () => {
+    const total = letterCount(st.name), given = st.letters || 0, left = total - given;
+    let cards = '';
+    for (const [id, gft] of Object.entries(GIFTS)) {
+      let why = '';
+      if (gft.night && st.nightGifts?.[id]) why = 'GEWÄHRT';
+      if (gft.once && st.flags['gift_' + id] === st.week) why = 'DIESE WOCHE';
+      if (gft.max && (st.flags['gift_' + id] || 0) >= gft.max) why = 'GEWÄHRT';
+      if (id === 'tiefe' && st.stage >= 6) why = 'GANZ UNTEN';
+      if (left <= 0) why = 'NICHTS MEHR';
+      const lvl = id === 'wiederkehr' && st.flags.wiederkehr ? `BEREIT ×${st.flags.wiederkehr}` : gft.night ? 'NÄCHSTE NACHT' : '';
+      cards += card({ id, title: gft.title, lvl, desc: gft.text, cost: '1 BUCHSTABE', can: !why, btn: why || 'ANNEHMEN', cls: 'gift' });
+    }
+    s.innerHTML = `<div class="panel gifts">
+      <h2>DIE VERMITTLERIN</h2><div class="sub">Kabinentelefon der Neunten · „Wir könnten Ihnen helfen. Es kostet so wenig.“</div>
+      <div class="name-plate"><span class="lbl">IHR NAME</span><span class="nm">${escapeHtml(nameWithLetters(st.name, given))}</span><span class="left">${left} von ${total} Buchstaben</span></div>
+      ${left <= 2 && left > 0 ? '<p class="hintline" style="color:var(--blood-hi)">Wer alle Buchstaben gibt, gibt alles.</p>' : ''}
+      <div class="grid">${cards}</div>
+      <div class="btn-row"><button class="btn ghost" data-close>AUFLEGEN [E]</button></div></div>`;
+    s.querySelectorAll('[data-buy]').forEach(b => b.addEventListener('click', () => take(b.dataset.buy)));
+    s.querySelectorAll('button').forEach(b => b.addEventListener('mouseenter', () => audio.play('uiHover')));
+    s.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => { audio.play('uiSelect'); done(); }));
+  };
+  const take = (id) => {
+    const gft = GIFTS[id];
+    const left = letterCount(st.name) - (st.letters || 0);
+    if (!gft || left <= 0) return;
+    st.letters = (st.letters || 0) + 1;
+    st.flags.lettersVermittlerin = (st.flags.lettersVermittlerin || 0) + 1;
+    if (gft.night) (st.nightGifts ||= {})[id] = true;
+    if (id === 'wiederkehr') st.flags.wiederkehr = (st.flags.wiederkehr || 0) + 1;
+    if (id === 'kanzlei') { st.flags.gift_kanzlei = st.week; st.quota = Math.round(st.quota * 0.75 / 10) * 10; }
+    if (id === 'tiefe') { st.flags.gift_tiefe = 1; st.stage = Math.min(6, st.stage + 1); game.elev.setUnlockedStages(st.stage + 1); }
+    if (st.letters >= letterCount(st.name)) st.flags.nameGiven = true;   // Ende A wird erzwungen (Finale)
+    bought++;
+    voice.say(st.letters >= 4 && !st.flags.giftsMany ? (st.flags.giftsMany = true, 'v_gift_many') : 'v_gift_taken', { interrupt: true });
+    audio.play('stinger', { kind: 'soft', vol: 0.35 });
+    game.R.glitchPulse(0.35);
+    saveCampaign(st);
+    game._updateKom();
+    render();
+  };
+  let done;
+  await new Promise((resolve) => {
+    const key = (e) => { if (e.code === 'Escape' || e.code === 'KeyE' || e.code === 'Tab') { e.preventDefault(); e.stopPropagation(); done(); } };
+    done = () => {
+      window.removeEventListener('keydown', key, true); s.remove(); input.lock();
+      if (!bought) voice.say('v_gift_refuse', { interrupt: true });
+      audio.play('phonePickup', { vol: 0.3 });
+      resolve();
+    };
     render();
     setTimeout(() => window.addEventListener('keydown', key, true), 150);
   });

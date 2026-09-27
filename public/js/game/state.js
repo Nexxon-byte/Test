@@ -56,6 +56,20 @@ export function clearCampaign() {
   try { localStorage.removeItem(KEY); } catch { /* */ }
 }
 
+// Wie viele Buchstaben hat der Name (nur Buchstaben zählen)?
+export function letterCount(name) { return [...name].filter(c => /\p{L}/u.test(c)).length; }
+
+// Gnaden der Vermittlerin – jede kostet einen Buchstaben des Namens.
+// night: gilt für die nächste Nacht · once: einmal pro Zehntwoche
+export const GIFTS = {
+  licht:      { title: 'Gnade des Lichts', text: 'Ihre Lampe verbraucht in der nächsten Nacht nichts. Kein Kurbeln. Kein Lärm.', night: true },
+  stille:     { title: 'Gnade der Stille', text: 'Ihre Schritte sind in der nächsten Nacht lautlos. Das Ohr hört nur noch, was Sie wollen.', night: true },
+  blick:      { title: 'Gnade des Blicks', text: 'Ihr Kom zeigt die ganze nächste Nacht alles Bergegut in Ihrer Nähe. Ohne zu fragen.', night: true },
+  wiederkehr: { title: 'Gnade der Wiederkehr', text: 'Einmal, wenn die Nacht Sie nehmen will, halten wir Sie fest. Bei einem Atemzug.' },
+  kanzlei:    { title: 'Gnade der Kanzlei', text: 'Die Quote dieser Zehntwoche sinkt um ein Viertel. Wir sprechen mit der Kanzlei. Sie hört auf uns.', once: true },
+  tiefe:      { title: 'Gnade der Tiefe', text: 'Das Seil reicht eine Stufe tiefer, ohne dass Ada es verlängern muss. Unten warten wir.', max: 1 },
+};
+
 // Name mit abgegebenen Buchstaben (von hinten nach vorn verschwinden sie, zufällig verteilt aber stabil)
 export function nameWithLetters(name, given) {
   const chars = [...name.toUpperCase()];

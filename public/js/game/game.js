@@ -24,7 +24,7 @@ import { audio } from '../audio/audio.js';
 import { music } from '../audio/music.js';
 import { voice } from '../audio/voice.js';
 import { ui } from '../ui/ui.js';
-import { openShop, openBoard, nightReport, showSlate } from '../ui/shop.js';
+import { openShop, openBoard, nightReport, showSlate, openGifts } from '../ui/shop.js';
 import { QUOTES } from '../story/codex.js';
 import { DOCS } from '../story/docs.js';
 import { KOM, SLATE } from '../story/lines.js';
@@ -350,6 +350,8 @@ export class Game {
         break;
       case 'phone':
         if (this.mode === 'night' && this.director.scares.answerPhone()) break;
+        // oben: die Vermittlerin bietet ihre Gaben an (ab der zweiten Nacht)
+        if (this.mode === 'hub' && !this.state.flags.tutorial) { audio.play('phonePickup', { vol: 0.4 }); this._openPanel(() => openGifts(this)); break; }
         voice.say(this.mode === 'night' ? 'v_e0_stay' : 'v_e0_hello', { interrupt: true });
         break;
       case 'flutlicht': e.setFlood(!e.floodOn); audio.play('lampClick', { on: e.floodOn }); break;
@@ -620,6 +622,12 @@ export class Game {
     // Anselms Suppe: längerer Atem für diese Nacht
     this._applyCampaignToCab();
     if (this.state.buffs?.suppe) { this.player.stats.staminaMax *= 1.35; this.player.applyStats(); }
+    // Gnaden der Vermittlerin für diese Nacht
+    const gifts = this.state.nightGifts || {};
+    if (gifts.licht) this.player.stats.lampDrain = 0;
+    if (gifts.stille) { this.player.stats.stepNoise = 0; this.player.stats.crankNoise *= 0.3; }
+    this.giftSight = !!gifts.blick;
+    if (Object.keys(gifts).length) setTimeout(() => ui.komMessage('WIR SIND BEI IHNEN, SEILKIND. – V.', { glitch: true }), 3000);
     this.director.startNight(this.world, this.nightInfo, this.state);
     this.player.toggleLamp(true);
     audio.play('lampClick', { on: true });
@@ -715,6 +723,16 @@ export class Game {
   damage(amount, { from = null, kind = '' } = {}) {
     if (this.player.dead || this.mode !== 'night' || this.busy) return;
     this.hp = Math.max(0, this.hp - amount);
+    // Gnade der Wiederkehr: einmal festgehalten
+    if (this.hp <= 0 && (this.state.flags.wiederkehr || 0) > 0) {
+      this.state.flags.wiederkehr--;
+      this.hp = 1;
+      this.R.glitchPulse(1);
+      audio.play('stinger', { kind: 'reveal', vol: 0.6 });
+      ui.komMessage('WIR HALTEN SIE. EINMAL. – V.', { glitch: true });
+      voice.say('v_gift_taken', { interrupt: true, delay: 0.5 });
+      saveCampaign(this.state);
+    }
     this.hurtT = 1.5;
     this.blood = Math.min(1.2, this.blood + 0.25 + amount / 60);
     this.player.shake = Math.max(this.player.shake, amount >= 30 ? 1.6 : 0.5);
@@ -836,6 +854,8 @@ export class Game {
     st.night += 1;
     st.stats.nights += 1;
     if (st.buffs) st.buffs.suppe = false;
+    st.nightGifts = {};
+    this.giftSight = false;
     st.stats.bestNight = Math.max(st.stats.bestNight, broughtValue);
     if (lost) { st.stats.deaths += 1; st.stats.lost += lostValue; }
     // Kabinenbeute als Fracht merken (liegt oben in der Kabine)
@@ -1017,6 +1037,7 @@ export class Game {
       if (input.down('KeyW') || input.down('KeyA') || input.down('KeyS') || input.down('KeyD')) ui.hintDone('move');
     }
     this.scanCooldown = Math.max(0, this.scanCooldown - dt);
+    if (this.giftSight && this.mode === 'night') this.scanUntil = this.time + 0.5;   // Gnade des Blicks
 
     // Gewicht bremst
     const w = this.inv.weight;
