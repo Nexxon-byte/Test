@@ -13,11 +13,15 @@ import { Dust } from '../gfx/particles.js';
 import { buildLevel } from '../world/levelbuild.js';
 import { THEMES, applyThemeEnvironment } from '../world/themes.js';
 import { MODULES } from '../world/cab.js';
+import { loadPBR } from '../gfx/materials.js';
+import { loadModelManifest, preloadModels, modelIds, setModelEnvironment } from '../gfx/models.js';
 
 export async function runSandbox(params = new URLSearchParams(location.search)) {
   await document.fonts.ready;
+  if (!params.has('nopbr')) await Promise.all([loadPBR(), loadModelManifest().then(() => preloadModels(modelIds()))]);
   const canvas = document.getElementById('game');
   const R = new Renderer(canvas);
+  setModelEnvironment(R.renderer);
   const col = new CollisionWorld();
   const elev = new Elevator(R, col);
   const player = new Player(R, col);

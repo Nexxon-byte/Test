@@ -9,3 +9,5 @@ tools/tts/gen_err.txt
 Thumbs.db
 dist/
 shots/
+tools/blender/packs/
+tools/blender/out/

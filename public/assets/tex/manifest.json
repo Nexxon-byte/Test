@@ -1,0 +1,217 @@
+{
+ "concrete": {
+  "id": "concrete_wall_006",
+  "world": 3,
+  "maps": {
+   "col": "assets/tex/concrete/col.jpg",
+   "nor": "assets/tex/concrete/nor.jpg",
+   "rough": "assets/tex/concrete/rough.jpg"
+  }
+ },
+ "concreteFloor": {
+  "id": "concrete_floor_worn_001",
+  "world": 3,
+  "maps": {
+   "col": "assets/tex/concreteFloor/col.jpg",
+   "nor": "assets/tex/concreteFloor/nor.jpg",
+   "rough": "assets/tex/concreteFloor/rough.jpg"
+  }
+ },
+ "stone": {
+  "id": "church_bricks_02",
+  "world": 3,
+  "maps": {
+   "nor": "assets/tex/stone/nor.jpg",
+   "rough": "assets/tex/stone/rough.jpg"
+  }
+ },
+ "stoneDark": {
+  "id": "castle_wall_slates",
+  "world": 3,
+  "maps": {
+   "col": "assets/tex/stoneDark/col.jpg",
+   "nor": "assets/tex/stoneDark/nor.jpg",
+   "rough": "assets/tex/stoneDark/rough.jpg"
+  }
+ },
+ "stoneWet": {
+  "id": "cobblestone_floor_04",
+  "world": 2.5,
+  "maps": {
+   "col": "assets/tex/stoneWet/col.jpg",
+   "nor": "assets/tex/stoneWet/nor.jpg",
+   "rough": "assets/tex/stoneWet/rough.jpg"
+  }
+ },
+ "brick": {
+  "id": "medieval_red_brick",
+  "world": 2.5,
+  "maps": {
+   "col": "assets/tex/brick/col.jpg",
+   "nor": "assets/tex/brick/nor.jpg",
+   "rough": "assets/tex/brick/rough.jpg"
+  }
+ },
+ "plaster": {
+  "id": "worn_plaster_wall",
+  "world": 3,
+  "maps": {
+   "col": "assets/tex/plaster/col.jpg",
+   "nor": "assets/tex/plaster/nor.jpg",
+   "rough": "assets/tex/plaster/rough.jpg"
+  }
+ },
+ "marble": {
+  "id": "marble_01",
+  "world": 2,
+  "maps": {
+   "col": "assets/tex/marble/col.jpg",
+   "nor": "assets/tex/marble/nor.jpg",
+   "rough": "assets/tex/marble/rough.jpg"
+  }
+ },
+ "wood": {
+  "id": "dark_wood",
+  "world": 1.5,
+  "maps": {
+   "col": "assets/tex/wood/col.jpg",
+   "nor": "assets/tex/wood/nor.jpg",
+   "rough": "assets/tex/wood/rough.jpg"
+  }
+ },
+ "woodPanel": {
+  "id": "dark_paneled_wood",
+  "world": 2,
+  "maps": {
+   "col": "assets/tex/woodPanel/col.jpg",
+   "nor": "assets/tex/woodPanel/nor.jpg",
+   "rough": "assets/tex/woodPanel/rough.jpg"
+  }
+ },
+ "woodPlanks": {
+  "id": "dark_wooden_planks",
+  "world": 2,
+  "maps": {
+   "col": "assets/tex/woodPlanks/col.jpg",
+   "nor": "assets/tex/woodPlanks/nor.jpg",
+   "rough": "assets/tex/woodPlanks/rough.jpg"
+  }
+ },
+ "walnut": {
+  "id": "black_walnut_veneer_01",
+  "world": 1,
+  "maps": {
+   "col": "assets/tex/walnut/col.jpg",
+   "nor": "assets/tex/walnut/nor.jpg",
+   "rough": "assets/tex/walnut/rough.jpg"
+  }
+ },
+ "steel": {
+  "id": "metal_plate",
+  "world": 2,
+  "maps": {
+   "col": "assets/tex/steel/col.jpg",
+   "nor": "assets/tex/steel/nor.jpg",
+   "rough": "assets/tex/steel/rough.jpg"
+  }
+ },
+ "steelPanel": {
+  "id": "blue_metal_plate",
+  "world": 2,
+  "maps": {
+   "col": "assets/tex/steelPanel/col.jpg",
+   "nor": "assets/tex/steelPanel/nor.jpg",
+   "rough": "assets/tex/steelPanel/rough.jpg"
+  }
+ },
+ "rust": {
+  "id": "rusty_metal_02",
+  "world": 2,
+  "maps": {
+   "col": "assets/tex/rust/col.jpg",
+   "nor": "assets/tex/rust/nor.jpg",
+   "rough": "assets/tex/rust/rough.jpg"
+  }
+ },
+ "tilesWhite": {
+  "id": "dirty_tiles",
+  "world": 1.5,
+  "maps": {
+   "col": "assets/tex/tilesWhite/col.jpg",
+   "nor": "assets/tex/tilesWhite/nor.jpg",
+   "rough": "assets/tex/tilesWhite/rough.jpg"
+  }
+ },
+ "tilesFloor": {
+  "id": "worn_tile_floor",
+  "world": 2,
+  "maps": {
+   "col": "assets/tex/tilesFloor/col.jpg",
+   "nor": "assets/tex/tilesFloor/nor.jpg",
+   "rough": "assets/tex/tilesFloor/rough.jpg"
+  }
+ },
+ "carpet": {
+  "id": "dirty_carpet",
+  "world": 2,
+  "maps": {
+   "col": "assets/tex/carpet/col.jpg",
+   "nor": "assets/tex/carpet/nor.jpg",
+   "rough": "assets/tex/carpet/rough.jpg"
+  }
+ },
+ "rock": {
+  "id": "dark_rock",
+  "world": 4,
+  "maps": {
+   "col": "assets/tex/rock/col.jpg",
+   "nor": "assets/tex/rock/nor.jpg",
+   "rough": "assets/tex/rock/rough.jpg"
+  }
+ },
+ "asphalt": {
+  "id": "asphalt_02",
+  "world": 4,
+  "maps": {
+   "col": "assets/tex/asphalt/col.jpg",
+   "nor": "assets/tex/asphalt/nor.jpg",
+   "rough": "assets/tex/asphalt/rough.jpg"
+  }
+ },
+ "fabric": {
+  "id": "rough_linen",
+  "world": 0.8,
+  "maps": {
+   "col": "assets/tex/fabric/col.jpg",
+   "nor": "assets/tex/fabric/nor.jpg",
+   "rough": "assets/tex/fabric/rough.jpg"
+  }
+ },
+ "leather": {
+  "id": "brown_leather",
+  "world": 0.8,
+  "maps": {
+   "col": "assets/tex/leather/col.jpg",
+   "nor": "assets/tex/leather/nor.jpg",
+   "rough": "assets/tex/leather/rough.jpg"
+  }
+ },
+ "grate": {
+  "id": "metal_grate_rusty",
+  "world": 1.5,
+  "maps": {
+   "col": "assets/tex/grate/col.jpg",
+   "nor": "assets/tex/grate/nor.jpg",
+   "rough": "assets/tex/grate/rough.jpg"
+  }
+ },
+ "brassBase": {
+  "id": "metal_plate_02",
+  "world": 1,
+  "maps": {
+   "col": "assets/tex/brassBase/col.jpg",
+   "nor": "assets/tex/brassBase/nor.jpg",
+   "rough": "assets/tex/brassBase/rough.jpg"
+  }
+ }
+}

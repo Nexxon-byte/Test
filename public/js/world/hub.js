@@ -10,6 +10,29 @@ import { CAB } from './cab.js';
 import { P } from './props.js';
 import { buildFigure, pose, idle } from './figures.js';
 import { RNG } from '../core/rng.js';
+import { NPC } from './npc.js';
+import { hasCharacter } from '../gfx/characters.js';
+import { cloneModel, hasModel } from '../gfx/models.js';
+import { bus } from '../core/bus.js';
+
+// Besetzung des Markts: Figur (MPFB), Grundhaltung, Requisit
+const CAST = {
+  dieter:    { char: 'dieter', clip: 'Idle_TalkingPhone_Loop', prop: 'phone', look: 4 },
+  veit:      { char: 'veit', clip: 'Idle_Lantern_Loop', prop: 'lantern', look: 5 },
+  voss:      { char: 'voss', clip: 'Idle_FoldArms_Loop', look: 6 },
+  ada:       { char: 'ada', clip: 'Fixing_Kneeling', prop: 'torch', look: 3 },
+  hanne:     { char: 'hanne', clip: 'Sitting_Idle_Loop', look: 4, speed: 0.8 },
+  jomo:      { char: 'jomo', clip: 'Idle_Loop', look: 6 },
+  stummer:   { char: 'stumm', clip: 'Sitting_Idle_Loop', look: 0, speed: 0.7 },
+  anselm:    { char: 'anselm', clip: 'Idle_Loop', look: 5 },
+  beter:     { char: 'crew_f', clip: 'Crouch_Idle_Loop', look: 0, speed: 0.6 },
+  schlaefer: { char: 'crew_m', clip: 'Sitting_Idle_Loop', look: 0, speed: 0.5 },
+};
+// Sprecher der Stimmen → Figur im Markt
+const SPEAKER_NPC = { dieter: 'dieter', ada: 'ada', voss: 'voss', veit: 'veit' };
+// Sitzen: Becken 0,46 m über den Füßen, 0,28 m hinter ihnen → Wurzel relativ zur Sitzfläche
+const SIT_BACK = 0.28, SIT_PELVIS = 0.39;
+export const HUB_CHARACTERS = [...new Set(Object.values(CAST).map(c => c.char))];
 
 export const HUB_THEME = {
   name: 'Markt Neun',
@@ -42,6 +65,10 @@ export class Hub {
     this.rng = new RNG(94);
     this.isHub = true;
     this._build();
+    this._offs = [
+      bus.on('voice:start', (e) => this.npcs[SPEAKER_NPC[e.speaker]]?.talking?.(true)),
+      bus.on('voice:end', (e) => this.npcs[SPEAKER_NPC[e.speaker]]?.talking?.(false)),
+    ];
   }
 
   surfaceAt() { return 'stone'; }
@@ -140,7 +167,20 @@ export class Hub {
     b.box(mat('brassDark'), x + face * 0.36, 1.1, z, 0.06, 0.04, len);
   }
 
-  _npc(id, opts, x, z, ry, poseName = 'counter') {
+  // Figur aufstellen; seat = Höhe der Sitzfläche (dann ist x/z die Sitzmitte)
+  _npc(id, opts, x, z, ry, poseName = 'counter', seat = null) {
+    const cast = CAST[id];
+    if (cast && hasCharacter(cast.char)) {
+      const n = new NPC(cast.char, cast);
+      let y = 0;
+      if (seat !== null) { x += Math.sin(ry) * SIT_BACK; z += Math.cos(ry) * SIT_BACK; y = seat - SIT_PELVIS; }
+      n.root.position.set(x, y, z);
+      n.root.rotation.y = ry;
+      this.group.add(n.root);
+      this.npcs[id] = n;
+      if (seat === null) this.collision && this.colliders.push(this.collision.add({ minX: x - 0.3, maxX: x + 0.3, minZ: z - 0.3, maxZ: z + 0.3, minY: 0, maxY: 1.8, tag: 'hub' }));
+      return n;
+    }
     const fig = buildFigure(opts);
     fig.root.position.set(x, 0, z);
     fig.root.rotation.y = ry;
@@ -149,6 +189,31 @@ export class Hub {
     this.npcs[id] = fig;
     this.collision && this.colliders.push(this.collision.add({ minX: x - 0.3, maxX: x + 0.3, minZ: z - 0.3, maxZ: z + 0.3, minY: 0, maxY: 1.8, tag: 'hub' }));
     return fig;
+  }
+
+  // Kerze: Wachsstumpf + Flamme obenauf
+  _wax(b, ctx, x, y, z, light = false) {
+    const h = this.rng.float(0.05, 0.2), r = this.rng.float(0.016, 0.028);
+    b.cyl(mat('bone'), x, y, z, r, r * 1.1, h, 6);
+    return ctx.candle(x, y + h + 0.03, z, light);
+  }
+
+  // Fertiges Modell (Poly Haven) aufstellen; y = Unterkante
+  _model(id, x, z, ry = 0, { y = 0, height = null, collide = false, pad = 0.05, tint = null } = {}) {
+    if (!hasModel(id)) return null;
+    const o = cloneModel(id, { height });
+    // Farbe dämpfen/umfärben (eigene Materialkopie, damit andere Kopien unverändert bleiben)
+    if (tint !== null) o.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.color.multiply(new THREE.Color(tint)); } });
+    o.position.set(x, y, z);
+    o.rotation.y = ry;
+    o.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+    this.group.add(o);
+    if (collide && this.collision) {
+      o.updateMatrixWorld(true);
+      const bb = new THREE.Box3().setFromObject(o);
+      this.colliders.push(this.collision.add({ minX: bb.min.x - pad, maxX: bb.max.x + pad, minZ: bb.min.z - pad, maxZ: bb.max.z + pad, minY: bb.min.y, maxY: bb.max.y, tag: 'hub' }));
+    }
+    return o;
   }
 
   _spot(id, x, y, z, prompt, radius = 0.6) {
@@ -199,7 +264,13 @@ export class Hub {
     // Messinggitter über der Theke
     for (let i = 0; i < 16; i++) b.box(mat('brass'), 9.0, 2.0, z - 2.2 + i * 0.29, 0.03, 1.8, 0.03);
     b.box(mat('brass'), 9.0, 2.92, z, 0.08, 0.06, 4.6);
-    b.box(mat('stoneDark'), 12, 1.6, z, 4, 3.2, 5.6);
+    b.box(mat('stoneDark'), 12.4, 3.5, z, 3.2, 7, 5.6);
+    // Regale mit Registern hinter dem Kantor
+    for (const dz of [-1.6, 1.6]) {
+      this._model('Shelf_01', 10.66, z + dz, -Math.PI / 2, { tint: 0x4a3222 });
+      for (const sy of [0.42, 0.83, 1.24, 1.65]) if (this.rng.chance(0.8)) this._model('book_encyclopedia_set_01', 10.68, z + dz + this.rng.float(-0.2, 0.2), -Math.PI / 2 + this.rng.float(-0.1, 0.1), { y: sy, tint: 0x7a6050 });
+    }
+    this._model('CashRegister_01', 9.3, z - 1.1, -Math.PI / 2, { y: 1.1, height: 0.34 });
     b.collider(9.6, z - 2.8, 14, z + 2.8);
     // Waage
     b.cyl(mat('brass'), 9.3, 1.1, z + 0.9, 0.18, 0.2, 0.03, 12);
@@ -207,10 +278,10 @@ export class Hub {
     b.box(mat('brass'), 9.3, 1.48, z + 0.9, 0.02, 0.02, 0.5);
     for (const d of [-0.25, 0.25]) b.cyl(mat('brass'), 9.3, 1.3, z + 0.9 + d, 0.1, 0.12, 0.02, 10);
     // Kerzen & Banner
-    for (let i = 0; i < 6; i++) ctx.candle(9.25, 1.16, z - 1.9 + i * 0.18, i === 2);
-    ctx.poster({ title: 'KANTOREI\nDES ZEHNTS', lines: ['Annahme von Bergegut', 'für die Hohe Kanzlei.', 'Was aus der Tiefe kommt,', 'wird dem Chor übergeben.'] }, 9.92, 3.9, z, -Math.PI / 2, 1.1);
+    for (let i = 0; i < 6; i++) this._wax(b, ctx, 9.25, 1.1, z - 1.9 + i * 0.18, i === 2);
+    ctx.poster({ title: 'KANTOREI\nDES ZEHNTS', lines: ['Annahme von Bergegut', 'für die Hohe Kanzlei.', 'Was aus der Tiefe kommt,', 'wird dem Chor übergeben.'] }, 10.78, 3.9, z, -Math.PI / 2, 1.1);
     const dial = textTexture(256, 160, (g, w, h) => { g.clearRect(0, 0, w, h); drawDialSymbol(g, w / 2, h - 16, 100, '#ffcf7a', 0.4, 6); });
-    ctx.decal(dial, 9.9, 5.8, z, -Math.PI / 2, 1.6, 1.0, { emissive: 1.4 });
+    ctx.decal(dial, 10.78, 5.8, z, -Math.PI / 2, 1.6, 1.0, { emissive: 1.4 });
     ctx.fixture({ x: 9.2, y: 2.6, z, type: 'none', color: 0xffb060, intensity: 4, distance: 7, mode: 'candle', priority: 2 });
     this._npc('veit', { coat: 'robe', robe: true, hat: 'kantor', face: { age: 0.6 }, bulk: 1.1 }, x, z, -Math.PI / 2, 'wait');
     this._spot('veit', 9.2, 1.4, z - 0.6, 'Kantor Veit · Kantorei-Annahme');
@@ -252,24 +323,36 @@ export class Hub {
     ctx.neon('WERKSTATT BRENNER', '#ffb040', 9.0, 4.6, z, -Math.PI / 2, 3, { flicker: 0.2 });
     ctx.fixture({ x: 11.2, y: 1.3, z: z + 0.6, type: 'none', color: 0xb8d8ff, intensity: 5, distance: 7, mode: 'strobe', priority: 2 });
     ctx.fixture({ x: 11, y: 3.4, z, type: 'bulb', color: 0xffd090, intensity: 3.5, distance: 8, mode: 'steady', priority: 2 });
-    this._npc('ada', { coat: 'coatGreen', apron: true, hat: 'goggles', hair: 'coatBrown', skin: '#a07a60', face: { age: 0.35 }, height: 1.68 }, x, z + 0.6, Math.PI / 2, 'work');
+    const ada = this._npc('ada', { coat: 'coatGreen', apron: true, hat: 'goggles', hair: 'coatBrown', skin: '#a07a60', face: { age: 0.35 }, height: 1.68 }, 10.75, z + 0.6, -Math.PI / 2, 'work');
+    this._model('portable_generator', 9.95, z + 0.6, Math.PI / 2, { collide: true });
+    this._model('metal_tool_chest', 12.6, z - 1.9, -Math.PI / 2, { collide: true });
+    this._model('tool_cart', 11.9, z + 2.1, Math.PI, { collide: true });
+    this._model('drill_press_01', 11.5, z - 1.2, -Math.PI / 2, { y: 0.94 });
+    this._model('bench_vice_01', 11.4, z + 0.9, -Math.PI / 2, { y: 0.94 });
+    this._model('propane_tank', 13.3, z + 1.6, 0, { collide: true });
     this._spot('ada', 9.4, 1.4, z, 'Ada Brenner · Werkstatt');
-    this.anchors.sparks = new THREE.Vector3(11.2, 1.0, z + 0.6);
+    this.anchors.sparks = ada?.anchor || new THREE.Vector3(10.2, 0.4, z + 0.6);
   }
 
   _stille(b, ctx) {
     const z = 27;
-    for (let i = 0; i < 3; i++) b.box(mat('stone'), -12 + i * 0.4, 0.15 + i * 0.3, z, 3.5 - i * 0.4, 0.3, 5, { collide: i === 0 });
+    // Kerzenstufen an der Wand (hoch an der Wand, nach vorn abfallend)
+    const tiers = [[-13.65, 1.05], [-13.15, 0.8], [-12.8, 0.55]];
+    tiers.forEach(([tx, th], i) => b.box(mat('stone'), tx, th / 2, z + 0.4, [0.7, 0.3, 0.3][i], th, 4.6, { collide: true }));
     const board = textTexture(512, 320, (g, w, h) => {
       g.fillStyle = '#1b1f1d'; g.fillRect(0, 0, w, h);
       g.fillStyle = 'rgba(235,235,225,0.85)'; g.font = '40px "Caveat", cursive'; g.textAlign = 'center';
       ['Wir sind nicht oben.', 'Wir sind nicht unten.', 'Wir sind dazwischen,', 'und hier hört uns niemand.'].forEach((l, i) => g.fillText(l, w / 2, 70 + i * 62));
     });
     ctx.decal(board, -13.9, 1.9, z, Math.PI / 2, 2.4, 1.5, { transparent: false });
-    for (let i = 0; i < 9; i++) ctx.candle(-11.2 + (i % 3) * 0.2, 0.62 + Math.floor(i / 3) * 0.3, z - 1.5 + (i % 4) * 0.8, i === 4);
-    this._npc('hanne', { coat: 'robe', hat: 'hood', face: { age: 0.9, eyes: 'closed' }, height: 1.62 }, -11.8, z - 0.8, Math.PI / 2, 'sit');
+    for (let i = 0; i < 27; i++) {
+      const [tx, th] = tiers[i % 3];
+      this._wax(b, ctx, tx + this.rng.float(-0.1, 0.1), th, z + 0.4 - 2.1 + this.rng.float(0, 4.2), i % 9 === 4);
+    }
+    P.pew(b, -12.1, z + 0.4, Math.PI / 2, this.rng, { l: 3.4 });
+    this._npc('hanne', { coat: 'robe', hat: 'hood', face: { age: 0.9, eyes: 'closed' }, height: 1.62 }, -12.1, z - 0.8, Math.PI / 2, 'sit', 0.48);
     this._npc('jomo', { coat: 'coatGrey', hair: 'fabricBlack', skin: '#6a4a36', face: { age: 0.1 }, height: 1.5, bulk: 0.85 }, -10.6, z + 1.6, Math.PI / 2 + 0.4, 'wait');
-    this._npc('stummer', { coat: 'coatBrown', hat: 'hood', face: { eyes: 'closed' } }, -12.4, z + 1.8, Math.PI / 2, 'sit');
+    this._npc('stummer', { coat: 'coatBrown', hat: 'hood', face: { eyes: 'closed' } }, -12.1, z + 1.6, Math.PI / 2, 'sit', 0.48);
     this._spot('hanne', -11.0, 1.0, z - 0.8, 'Mutter Hanne · Die Stillen');
     this._spot('jomo', -10.4, 1.2, z + 1.6, 'Jomo');
   }
@@ -286,7 +369,7 @@ export class Hub {
     // Sockel für die Andenken der Kleinen Heiligen
     for (let i = 0; i < 6; i++) b.box(mat('marble'), 12.5, 0.45, z - 1.25 + i * 0.5, 0.3, 0.9, 0.3, { collide: true });
     this.anchors.keepsakes = Array.from({ length: 6 }, (_, i) => new THREE.Vector3(12.5, 0.92, z - 1.25 + i * 0.5));
-    this._npc('beter', { coat: 'fabricWhite', robe: true, hat: 'hood', face: { eyes: 'closed' } }, 10.4, z + 0.8, -Math.PI / 2, 'pray');
+    this._npc('beter', { coat: 'fabricWhite', robe: true, hat: 'hood', face: { eyes: 'closed' } }, 10.6, z + 0.9, Math.PI / 2, 'pray');
     this._spot('kapelle', 11.8, 1.2, z, 'Kapelle der Kleinen Heiligen', 0.9);
   }
 
@@ -317,7 +400,7 @@ export class Hub {
     // Bänke, Straßenlaternen, Zehntkabine, Pfützen
     P.pew(b, -3.5, 13, Math.PI / 2, this.rng, { l: 2.6 });
     P.pew(b, -3.5, 16, Math.PI / 2, this.rng, { l: 2.6 });
-    this._npc('schlaefer', { coat: 'coatBrown', hat: 'hood', face: { eyes: 'closed' } }, -3.3, 16, Math.PI / 2, 'sit');
+    this._npc('schlaefer', { coat: 'coatBrown', hat: 'hood', face: { eyes: 'closed' } }, -3.5, 16, Math.PI / 2, 'sit', 0.48);
     for (const [x, z] of [[-5.5, 9], [5.5, 9], [-5.5, 22], [5.5, 22]]) {
       b.cyl(mat('steel'), x, 0, z, 0.06, 0.09, 4.2, 8, { collide: true });
       b.box(mat('steel'), x, 4.2, z, 0.5, 0.12, 0.25);
@@ -408,11 +491,18 @@ export class Hub {
     this.rain.geometry.attributes.position.needsUpdate = true;
     this._holoT = (this._holoT ?? 0) + dt;
     if (this._holoT > 0.12) { this._drawHolo(time); this._holoT = 0; }
-    for (const id in this.npcs) if (!['hanne', 'stummer', 'schlaefer'].includes(id)) idle(this.npcs[id], dt, 0.7);
+    const eye = this.R.camera.position;
+    for (const id in this.npcs) {
+      const n = this.npcs[id];
+      if (n.update) n.update(dt, eye);
+      else if (!['hanne', 'stummer', 'schlaefer'].includes(id)) idle(n, dt, 0.7);
+    }
     for (const c of this.candles) c.scale.y = 0.07 * (0.85 + Math.sin(time * 11 + (c.userData.phase || 0)) * 0.15);
   }
 
   dispose(scene, collision) {
+    for (const off of this._offs || []) off();
+    for (const id in this.npcs) this.npcs[id].dispose?.();
     disposeGroup(this.group);
     for (const c of this.colliders) collision.remove(c);
     for (const e of this.emitters) e.handle?.stop(0.4);

@@ -184,7 +184,8 @@ export class Builder {
 
 export function disposeGroup(obj) {
   obj.traverse((o) => {
-    if (o.geometry) o.geometry.dispose();
+    if (o.geometry && !o.userData.shared && !o.isInstancedMesh) o.geometry.dispose();
+    if (o.isInstancedMesh) o.dispose?.();
     if (o.material && o.material.userData?.disposable) {
       if (o.material.map && o.material.map.userData?.disposable) o.material.map.dispose();
       o.material.dispose();

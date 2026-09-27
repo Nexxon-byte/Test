@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { Builder, sphereGeometry, coneGeometry, cylGeometry, boxGeometry } from '../gfx/geo.js';
 import { mat, glowMat } from '../gfx/materials.js';
 import { glowTexture, iconTexture } from '../gfx/textures.js';
+import { cloneModel, hasModel } from '../gfx/models.js';
 
 // value: Grundwert-Spanne (Marken) · weight: kg · two: beide Hände
 export const LOOT = {
@@ -22,16 +23,52 @@ export const LOOT = {
   roehre:     { name: 'Nixie-Röhre', value: [20, 42], weight: 0.8, glow: 0xff7a2a, desc: 'Zeigt eine Zahl, auch ohne Strom.' },
   salzkristall:{ name: 'Salzkristall', value: [18, 60], weight: 3, glow: 0xa8d8ff, desc: 'Er summt, wenn man ihn ans Ohr hält.' },
   handy:      { name: 'Glasziegel der Alten Welt', value: [60, 180], weight: 0.4, desc: 'Ein flacher, schwarzer Stein aus der Zeit vor der Flut. Man sagt, die Menschen hätten hineingesprochen.' },
+  // --- echte Modelle (Poly Haven, CC0)
+  kelch2:     { name: 'Messingkelche', model: 'brass_goblets', value: [38, 76], weight: 1.5, desc: 'Zwei Kelche aus dem Festmahl. Der Wein ist nie ganz getrocknet.' },
+  vase:       { name: 'Messingvase', model: 'brass_vase_03', value: [30, 64], weight: 3, desc: 'Aus einer Kapelle. Innen klebt etwas, das kein Wachs ist.' },
+  vase2:      { name: 'Altarvase', model: 'brass_vase_04', value: [34, 70], weight: 3.5, desc: 'Getriebenes Messing. Ein Halbbogen auf jeder Seite.' },
+  topf:       { name: 'Messingtopf', model: 'brass_pot_01', value: [20, 44], weight: 3, desc: 'Anselm würde ihn wiedererkennen.' },
+  uhr:        { name: 'Taschenuhr', model: 'pocket_watch', value: [45, 95], weight: 0.3, desc: 'Steht auf 3:07. Alle Uhren hier unten stehen auf 3:07.' },
+  uhr2:       { name: 'Kantorenuhr', model: 'vintage_pocket_watch', value: [55, 115], weight: 0.3, desc: 'Graviert: „Für 30 Jahre Zehnt.“' },
+  wecker:     { name: 'Wecker der Alten Welt', model: 'alarm_clock_01', value: [28, 60], weight: 0.8, desc: 'Er klingelt nicht mehr. Er tickt aber noch.' },
+  band:       { name: 'Bandgerät', model: 'portable_cassette_player', value: [50, 110], weight: 1.5, desc: 'Ein Band ist eingelegt. Wer es abspielt, hört Atem.' },
+  deck:       { name: 'Kassettendeck', model: 'cassette_player', value: [40, 90], weight: 4, desc: 'Die Kanzlei zahlt gut für alles, was Stimmen speichern kann.' },
+  funk:       { name: 'Funkgerät', model: 'vintage_radio_transceiver', value: [70, 150], weight: 6, desc: 'Auf Kanal 9 rauscht es. Manchmal sagt das Rauschen einen Namen.' },
+  kamera:     { name: 'Kamera der Alten Welt', model: 'Camera_01', value: [60, 140], weight: 1.2, desc: 'Der letzte Film zeigt ein Meer, das noch an seinem Platz ist.' },
+  fernglas:   { name: 'Fernglas', model: 'binoculars', value: [30, 70], weight: 1, desc: 'Durch das linke Glas sieht man manchmal jemanden, der zurücksieht.' },
+  fernglas2:  { name: 'Marinefernglas', model: 'vintage_binocular', value: [40, 85], weight: 1.4, desc: 'Aus der Zeit, als es noch Häfen gab.' },
+  gasmaske:   { name: 'Gasmaske', model: 'old_gas_mask', value: [25, 55], weight: 1, desc: 'Innen riecht sie nach einem Menschen.' },
+  truhe:      { name: 'Reliquientruhe', model: 'treasure_chest', value: [110, 220], weight: 12, two: true, desc: 'Schwer, beschlagen, verschlossen. Etwas darin klopft zweimal.' },
+  schach:     { name: 'Schachspiel der Krone', model: 'chess_set', value: [60, 120], weight: 3, desc: 'Ein Bauer fehlt. Man findet ihn nie.' },
+  etui:       { name: 'Zigarettenetui', model: 'cigarette_case', value: [22, 48], weight: 0.3, desc: 'Leer bis auf einen Zettel: „Nicht tiefer.“' },
+  kompass:    { name: 'Seekompass', model: 'seadogs_compass', value: [35, 80], weight: 1, desc: 'Die Nadel zeigt nach unten.' },
+  messgeraet: { name: 'Messgerät', model: 'retro_multimeter', value: [26, 58], weight: 1.5, desc: 'Misst etwas in den Wänden, das keinen Namen hat.' },
+  feuerzeug:  { name: 'Sturmfeuerzeug', model: 'vintage_lighter', value: [18, 40], weight: 0.2, desc: 'Es geht jedes Mal an. Das ist hier unten schon ein Wunder.' },
+  lupe:       { name: 'Lupe eines Schreibers', model: 'magnifying_glass_01', value: [20, 44], weight: 0.4, desc: 'Für die kleinen Namen im Zehntregister.' },
+  oel:        { name: 'Geweihtes Öl', model: 'oil_tin', value: [22, 50], weight: 2, desc: 'Für die Seile. Die Bruderschaft segnet jede Dose.' },
+  wein:       { name: 'Messwein', model: 'wine_bottles_01', value: [30, 66], weight: 3, desc: 'Jahrgang 33. Eine Flasche ist leer. Finn?' },
+  sani:       { name: 'Sanitätskasten', model: 'medical_box', value: [18, 36], weight: 2, desc: 'Verbandszeug, sechshundert Jahre alt. Die Kanzlei kauft alles.' },
+  koffer:     { name: 'Reisekoffer', model: 'vintage_suitcase', value: [40, 90], weight: 5, desc: 'Gepackt für die Fahrt nach oben. Weißes Gewand, obenauf.' },
+  pferd:      { name: 'Bronzepferd', model: 'horse_statue_01', value: [80, 160], weight: 6, desc: 'Aus einem Salon der Krone. Wie kam es hier herunter?' },
+  elefant:    { name: 'Holzelefant', model: 'carved_wooden_elephant', value: [24, 52], weight: 1.5, desc: 'Ein Kinderspielzeug. Jemand hat einen Namen in den Bauch geritzt.' },
+  brille:     { name: 'Nickelbrille', model: 'round_spectacles', value: [15, 34], weight: 0.1, desc: 'Ein Glas ist gesprungen. Von innen.' },
+  mikroskop:  { name: 'Mikroskop', model: 'vintage_microscope', value: [70, 140], weight: 7, desc: 'Aus einem Labor der Kantorei. Auf dem Objektträger: eine Stimmrille.' },
+  platine:    { name: 'Kanzlei-Platine', model: 'circuit_board', value: [40, 95], weight: 0.6, desc: 'Aus einem Zehntautomaten. Riecht nach verbranntem Weihrauch.' },
+  megafon:    { name: 'Megafon', model: 'Megaphone_01', value: [34, 72], weight: 2, desc: 'Streikgerät der Schachtratten. Wer hineinspricht, wird gehört. Überall.' },
+  projektor:  { name: 'Filmprojektor', model: 'filmstrip_projector_8mm', value: [65, 130], weight: 5, desc: 'Eine Rolle ist eingelegt: „Richtfest, Jahr 20“.' },
+  rochen:     { name: 'Bronzerochen', model: 'bronze_ray_statue', value: [90, 170], weight: 7, desc: 'Ein Tier aus dem Meer vor der Flut. Poliert von vielen Händen.' },
+  munition:   { name: 'Munitionskiste', model: 'ammo_box', value: [30, 60], weight: 5, desc: 'Leer. Innen Salzkrümel.' },
 };
 
 // Welche Beute wo liegt: [id, Gewichtung]
 export const SPAWN = {
-  dock:        [['zahnrad', 3], ['spule', 4], ['zelle', 2], ['leuchter', 1], ['zehntbuch', 1], ['roehre', 2], ['zifferblatt', 0.5]],
-  scriptorium: [['walze', 6], ['zehntbuch', 5], ['ikone', 2], ['leuchter', 2], ['roehre', 1], ['zelle', 1], ['schrein', 0.4]],
-  banquet:     [['kelch', 4], ['leuchter', 4], ['ikone', 2], ['weihrauch', 2], ['schrein', 0.6], ['zifferblatt', 0.3]],
-  ossuary:     [['schaedel', 6], ['leuchter', 3], ['weihrauch', 2], ['ikone', 1], ['schrein', 0.6]],
-  mine:        [['salzkristall', 6], ['zahnrad', 2], ['zelle', 2], ['spule', 2]],
-  default:     [['zahnrad', 2], ['walze', 2], ['leuchter', 2], ['zelle', 1]],
+  dock:        [['zahnrad', 3], ['spule', 3], ['zelle', 2], ['roehre', 2], ['oel', 3], ['munition', 2], ['gasmaske', 2], ['messgeraet', 2], ['platine', 2], ['feuerzeug', 2], ['koffer', 1], ['megafon', 1], ['funk', 0.6], ['zifferblatt', 0.4]],
+  scriptorium: [['walze', 5], ['zehntbuch', 4], ['band', 3], ['deck', 2], ['lupe', 3], ['brille', 2], ['uhr2', 1.5], ['ikone', 2], ['platine', 1], ['mikroskop', 0.7], ['projektor', 0.6], ['truhe', 0.3]],
+  banquet:     [['kelch', 3], ['kelch2', 3], ['wein', 3], ['leuchter', 3], ['vase', 2], ['vase2', 2], ['uhr', 2], ['schach', 1.2], ['topf', 2], ['etui', 2], ['pferd', 0.6], ['truhe', 0.5]],
+  ossuary:     [['schaedel', 5], ['leuchter', 3], ['weihrauch', 2], ['vase', 2], ['uhr', 1.5], ['brille', 2], ['elefant', 1.5], ['ikone', 1], ['truhe', 0.5]],
+  mine:        [['salzkristall', 5], ['zahnrad', 2], ['zelle', 2], ['oel', 2], ['kompass', 2], ['fernglas', 1.5], ['munition', 2], ['wecker', 1.5], ['fernglas2', 0.8]],
+  city:        [['handy', 3], ['kamera', 2], ['wecker', 2], ['fernglas', 2], ['koffer', 2], ['elefant', 2], ['rochen', 0.6], ['pferd', 0.6]],
+  default:     [['zahnrad', 2], ['walze', 2], ['leuchter', 2], ['zelle', 1], ['uhr', 1], ['feuerzeug', 1]],
 };
 
 // Wertfaktor je Tiefenstufe
@@ -60,6 +97,12 @@ const MODELS = {
 };
 
 export function buildItemModel(type) {
+  const def = LOOT[type];
+  if (def?.model && hasModel(def.model)) {
+    const g = cloneModel(def.model);
+    g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    return g;
+  }
   const g = new THREE.Group();
   const b = new Builder();
   (MODELS[type] || MODELS.zahnrad)(b, g);

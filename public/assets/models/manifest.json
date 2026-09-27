@@ -1,0 +1,1262 @@
+{
+ "Television_01": {
+  "group": "hub",
+  "small": true,
+  "file": "assets/models/Television_01/Television_01.gltf",
+  "name": "Television 01",
+  "size": [
+   0.6,
+   0.471,
+   0.457
+  ],
+  "poly": 1918
+ },
+ "street_lamp_02": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/street_lamp_02/street_lamp_02.gltf",
+  "name": "Street Lamp 02",
+  "size": [
+   0.386,
+   0.807,
+   1.675
+  ],
+  "poly": 20338
+ },
+ "metal_office_desk": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/metal_office_desk/metal_office_desk.gltf",
+  "name": "Metal Office Desk",
+  "size": [
+   2,
+   0.947,
+   0.788
+  ],
+  "poly": 6898
+ },
+ "street_lamp_01": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/street_lamp_01/street_lamp_01.gltf",
+  "name": "Street Lamp 01",
+  "size": [
+   0.704,
+   0.386,
+   3.871
+  ],
+  "poly": 30610
+ },
+ "BarberShopChair_01": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/BarberShopChair_01/BarberShopChair_01.gltf",
+  "name": "Barber Shop Chair 01",
+  "size": [
+   0.757,
+   1.328,
+   1.489
+  ],
+  "poly": 4280
+ },
+ "vintage_telephone_wall_clock": {
+  "group": "hub",
+  "small": true,
+  "file": "assets/models/vintage_telephone_wall_clock/vintage_telephone_wall_clock.gltf",
+  "name": "Vintage Telephone Wall Clock",
+  "size": [
+   0.343,
+   0.193,
+   0.501
+  ],
+  "poly": 15864
+ },
+ "portable_welding_cart": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/portable_welding_cart/portable_welding_cart.gltf",
+  "name": "Portable Welding Cart",
+  "size": [
+   0.838,
+   0.655,
+   1.563
+  ],
+  "poly": 29418
+ },
+ "CashRegister_01": {
+  "group": "hub",
+  "small": true,
+  "file": "assets/models/CashRegister_01/CashRegister_01.gltf",
+  "name": "Cash Register 01",
+  "size": [
+   0.6,
+   0.624,
+   0.621
+  ],
+  "poly": 9927
+ },
+ "tool_cart": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/tool_cart/tool_cart.gltf",
+  "name": "Tool Cart",
+  "size": [
+   1.273,
+   0.754,
+   0.965
+  ],
+  "poly": 29394
+ },
+ "rollershutter_door": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/rollershutter_door/rollershutter_door.gltf",
+  "name": "Rollershutter Door",
+  "size": [
+   3.08,
+   0.3,
+   2.4
+  ],
+  "poly": 1104
+ },
+ "drill_press_01": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/drill_press_01/drill_press_01.gltf",
+  "name": "Drill Press 01",
+  "size": [
+   0.366,
+   0.599,
+   0.902
+  ],
+  "poly": 58526
+ },
+ "bench_vice_01": {
+  "group": "hub",
+  "small": true,
+  "file": "assets/models/bench_vice_01/bench_vice_01.gltf",
+  "name": "Bench Vice 01",
+  "size": [
+   0.2,
+   0.396,
+   0.272
+  ],
+  "poly": 2864
+ },
+ "security_camera_01": {
+  "group": "hub",
+  "small": true,
+  "file": "assets/models/security_camera_01/security_camera_01.gltf",
+  "name": "Security Camera 01",
+  "size": [
+   0.17,
+   0.554,
+   0.286
+  ],
+  "poly": 13571
+ },
+ "fire_hydrant": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/fire_hydrant/fire_hydrant.gltf",
+  "name": "Fire Hydrant",
+  "size": [
+   0.875,
+   0.318,
+   0.799
+  ],
+  "poly": 86316
+ },
+ "metal_trash_can": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/metal_trash_can/metal_trash_can.gltf",
+  "name": "Metal Trash Can",
+  "size": [
+   1.847,
+   0.556,
+   0.906
+  ],
+  "poly": 13960
+ },
+ "exterior_aircon_unit": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/exterior_aircon_unit/exterior_aircon_unit.gltf",
+  "name": "Exterior Aircon Unit",
+  "size": [
+   1.8,
+   0.374,
+   0.928
+  ],
+  "poly": 18986
+ },
+ "gothic_statue": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/gothic_statue/gothic_statue.gltf",
+  "name": "Gothic Statue",
+  "size": [
+   1.477,
+   1.564,
+   1.74
+  ],
+  "poly": 27739
+ },
+ "overhead_crane": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/overhead_crane/overhead_crane.gltf",
+  "name": "Overhead Crane",
+  "size": [
+   12.492,
+   4,
+   5.133
+  ],
+  "poly": 89964
+ },
+ "korean_public_payphone_01": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/korean_public_payphone_01/korean_public_payphone_01.gltf",
+  "name": "Korean Public Payphone 01",
+  "size": [
+   0.401,
+   0.301,
+   0.74
+  ],
+  "poly": 48132
+ },
+ "wooden_barrels_01": {
+  "group": "hub",
+  "small": false,
+  "file": "assets/models/wooden_barrels_01/wooden_barrels_01.gltf",
+  "name": "Wooden Barrels 01",
+  "size": [
+   4.44,
+   3.345,
+   0.957
+  ],
+  "poly": 33142
+ },
+ "Barrel_02": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/Barrel_02/Barrel_02.gltf",
+  "name": "Barrel 02",
+  "size": [
+   0.488,
+   0.485,
+   0.88
+  ],
+  "poly": 2688
+ },
+ "barrel_03": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/barrel_03/barrel_03.gltf",
+  "name": "Barrel 03",
+  "size": [
+   0.634,
+   0.639,
+   0.93
+  ],
+  "poly": 1473
+ },
+ "Barrel_01": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/Barrel_01/Barrel_01.gltf",
+  "name": "Barrel_01",
+  "size": [
+   0.563,
+   0.563,
+   0.88
+  ],
+  "poly": 2682
+ },
+ "wooden_crate_02": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/wooden_crate_02/wooden_crate_02.gltf",
+  "name": "Wooden Crate 02",
+  "size": [
+   1.166,
+   0.529,
+   0.464
+  ],
+  "poly": 5176
+ },
+ "old_military_crate": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/old_military_crate/old_military_crate.gltf",
+  "name": "Old Military Crate",
+  "size": [
+   1.815,
+   0.979,
+   0.301
+  ],
+  "poly": 10476
+ },
+ "cardboard_box_01": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/cardboard_box_01/cardboard_box_01.gltf",
+  "name": "Cardboard Box 01",
+  "size": [
+   0.387,
+   0.516,
+   0.342
+  ],
+  "poly": 16952
+ },
+ "wooden_military_crate": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/wooden_military_crate/wooden_military_crate.gltf",
+  "name": "Wooden Military Crate",
+  "size": [
+   1.242,
+   0.52,
+   0.465
+  ],
+  "poly": 22986
+ },
+ "steel_frame_shelves_01": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/steel_frame_shelves_01/steel_frame_shelves_01.gltf",
+  "name": "Steel Frame Shelves 01",
+  "size": [
+   1.097,
+   0.502,
+   2.141
+  ],
+  "poly": 4348
+ },
+ "steel_frame_shelves_02": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/steel_frame_shelves_02/steel_frame_shelves_02.gltf",
+  "name": "Steel Frame Shelves 02",
+  "size": [
+   0.593,
+   0.502,
+   2.142
+  ],
+  "poly": 4348
+ },
+ "utility_box_01": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/utility_box_01/utility_box_01.gltf",
+  "name": "Utility Box 01",
+  "size": [
+   0.52,
+   0.432,
+   1.12
+  ],
+  "poly": 4404
+ },
+ "power_box_01": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/power_box_01/power_box_01.gltf",
+  "name": "Power Box 01",
+  "size": [
+   0.377,
+   0.418,
+   0.503
+  ],
+  "poly": 21272
+ },
+ "worn_metal_rack": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/worn_metal_rack/worn_metal_rack.gltf",
+  "name": "Worn Metal Rack",
+  "size": [
+   0.915,
+   0.6,
+   1.9
+  ],
+  "poly": 6372
+ },
+ "portable_generator": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/portable_generator/portable_generator.gltf",
+  "name": "Portable Generator",
+  "size": [
+   0.818,
+   0.564,
+   0.577
+  ],
+  "poly": 26419
+ },
+ "old_tyre": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/old_tyre/old_tyre.gltf",
+  "name": "Old Tyre",
+  "size": [
+   0.6,
+   0.165,
+   0.6
+  ],
+  "poly": 2880
+ },
+ "metal_jerrycan": {
+  "group": "prop",
+  "small": true,
+  "file": "assets/models/metal_jerrycan/metal_jerrycan.gltf",
+  "name": "Metal Jerrycan",
+  "size": [
+   0.35,
+   0.172,
+   0.455
+  ],
+  "poly": 20022
+ },
+ "propane_tank": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/propane_tank/propane_tank.gltf",
+  "name": "Propane Tank",
+  "size": [
+   0.337,
+   0.337,
+   0.554
+  ],
+  "poly": 5238
+ },
+ "SchoolDesk_01": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/SchoolDesk_01/SchoolDesk_01.gltf",
+  "name": "School Desk 01",
+  "size": [
+   0.712,
+   0.546,
+   0.883
+  ],
+  "poly": 4162
+ },
+ "WoodenChair_01": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/WoodenChair_01/WoodenChair_01.gltf",
+  "name": "Wooden Chair 01",
+  "size": [
+   0.688,
+   0.658,
+   2.274
+  ],
+  "poly": 19992
+ },
+ "hand_truck": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/hand_truck/hand_truck.gltf",
+  "name": "Hand Truck",
+  "size": [
+   0.593,
+   0.693,
+   1.403
+  ],
+  "poly": 13220
+ },
+ "WoodenTable_01": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/WoodenTable_01/WoodenTable_01.gltf",
+  "name": "Wooden Table 01",
+  "size": [
+   1.8,
+   0.657,
+   0.549
+  ],
+  "poly": 952
+ },
+ "Shelf_01": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/Shelf_01/Shelf_01.gltf",
+  "name": "Shelf 01",
+  "size": [
+   1.003,
+   0.257,
+   2.08
+  ],
+  "poly": 182
+ },
+ "GothicCabinet_01": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/GothicCabinet_01/GothicCabinet_01.gltf",
+  "name": "Gothic Cabinet 01",
+  "size": [
+   1.719,
+   1.129,
+   2.361
+  ],
+  "poly": 12170
+ },
+ "GothicBed_01": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/GothicBed_01/GothicBed_01.gltf",
+  "name": "Gothic Bed 01",
+  "size": [
+   1.494,
+   2.04,
+   1.534
+  ],
+  "poly": 18741
+ },
+ "GothicCommode_01": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/GothicCommode_01/GothicCommode_01.gltf",
+  "name": "Gothic Commode 01",
+  "size": [
+   1.201,
+   0.581,
+   1.212
+  ],
+  "poly": 3897
+ },
+ "caged_hanging_light": {
+  "group": "prop",
+  "small": true,
+  "file": "assets/models/caged_hanging_light/caged_hanging_light.gltf",
+  "name": "Caged Hanging Light",
+  "size": [
+   1.162,
+   0.315,
+   0.75
+  ],
+  "poly": 22893
+ },
+ "old_bed_frame": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/old_bed_frame/old_bed_frame.gltf",
+  "name": "Old Bed Frame",
+  "size": [
+   0.905,
+   2.002,
+   1.201
+  ],
+  "poly": 49990
+ },
+ "industrial_caged_sconce": {
+  "group": "prop",
+  "small": true,
+  "file": "assets/models/industrial_caged_sconce/industrial_caged_sconce.gltf",
+  "name": "Industrial Caged Sconce",
+  "size": [
+   1.21,
+   0.389,
+   0.913
+  ],
+  "poly": 26576
+ },
+ "Rockingchair_01": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/Rockingchair_01/Rockingchair_01.gltf",
+  "name": "Rockingchair 01",
+  "size": [
+   0.708,
+   0.833,
+   0.995
+  ],
+  "poly": 11866
+ },
+ "mounted_fluorescent_lights": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/mounted_fluorescent_lights/mounted_fluorescent_lights.gltf",
+  "name": "Mounted Fluorescent Lights",
+  "size": [
+   0.912,
+   0.645,
+   0.035
+  ],
+  "poly": 17820
+ },
+ "Lantern_01": {
+  "group": "prop",
+  "small": true,
+  "file": "assets/models/Lantern_01/Lantern_01.gltf",
+  "name": "Lantern 01",
+  "size": [
+   0.122,
+   0.097,
+   0.294
+  ],
+  "poly": 33902
+ },
+ "wooden_lantern_01": {
+  "group": "prop",
+  "small": true,
+  "file": "assets/models/wooden_lantern_01/wooden_lantern_01.gltf",
+  "name": "Wooden Lantern 01",
+  "size": [
+   0.221,
+   0.235,
+   0.53
+  ],
+  "poly": 8321
+ },
+ "industrial_pipe_lamp": {
+  "group": "prop",
+  "small": true,
+  "file": "assets/models/industrial_pipe_lamp/industrial_pipe_lamp.gltf",
+  "name": "Industrial Pipe Lamp",
+  "size": [
+   0.183,
+   0.262,
+   0.364
+  ],
+  "poly": 8626
+ },
+ "book_encyclopedia_set_01": {
+  "group": "prop",
+  "small": true,
+  "file": "assets/models/book_encyclopedia_set_01/book_encyclopedia_set_01.gltf",
+  "name": "Book Encyclopedia Set 01",
+  "size": [
+   0.551,
+   0.163,
+   0.237
+  ],
+  "poly": 67306
+ },
+ "metal_tool_chest": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/metal_tool_chest/metal_tool_chest.gltf",
+  "name": "Metal Tool Chest",
+  "size": [
+   0.685,
+   0.407,
+   0.652
+  ],
+  "poly": 14576
+ },
+ "metal_toolbox": {
+  "group": "prop",
+  "small": true,
+  "file": "assets/models/metal_toolbox/metal_toolbox.gltf",
+  "name": "Metal Toolbox",
+  "size": [
+   0.4,
+   0.292,
+   0.347
+  ],
+  "poly": 14228
+ },
+ "WetFloorSign_01": {
+  "group": "prop",
+  "small": true,
+  "file": "assets/models/WetFloorSign_01/WetFloorSign_01.gltf",
+  "name": "Wet Floor Sign 01",
+  "size": [
+   0.3,
+   0.359,
+   0.63
+  ],
+  "poly": 228
+ },
+ "security_light": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/security_light/security_light.gltf",
+  "name": "Security Light",
+  "size": [
+   0.323,
+   0.417,
+   0.531
+  ],
+  "poly": 4668
+ },
+ "wooden_ladder": {
+  "group": "prop",
+  "small": false,
+  "file": "assets/models/wooden_ladder/wooden_ladder.gltf",
+  "name": "Wooden Ladder",
+  "size": [
+   0.959,
+   0.5,
+   1.335
+  ],
+  "poly": 8492
+ },
+ "street_rat": {
+  "group": "prop",
+  "small": true,
+  "file": "assets/models/street_rat/street_rat.gltf",
+  "name": "Street Rat",
+  "size": [
+   0.032,
+   0.148,
+   0.034
+  ],
+  "poly": 14286
+ },
+ "brass_pot_01": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/brass_pot_01/brass_pot_01.gltf",
+  "name": "Brass Pot 01",
+  "size": [
+   0.302,
+   0.302,
+   0.291
+  ],
+  "poly": 3760
+ },
+ "brass_vase_03": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/brass_vase_03/brass_vase_03.gltf",
+  "name": "Brass Vase 03",
+  "size": [
+   0.083,
+   0.083,
+   0.2
+  ],
+  "poly": 2616
+ },
+ "brass_goblets": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/brass_goblets/brass_goblets.gltf",
+  "name": "Brass Goblets",
+  "size": [
+   0.453,
+   0.298,
+   0.273
+  ],
+  "poly": 9600
+ },
+ "brass_vase_04": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/brass_vase_04/brass_vase_04.gltf",
+  "name": "Brass Vase 04",
+  "size": [
+   0.082,
+   0.061,
+   0.17
+  ],
+  "poly": 2760
+ },
+ "vintage_pocket_watch": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/vintage_pocket_watch/vintage_pocket_watch.gltf",
+  "name": "Vintage Pocket Watch",
+  "size": [
+   0.062,
+   0.014,
+   0.08
+  ],
+  "poly": 4200
+ },
+ "portable_cassette_player": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/portable_cassette_player/portable_cassette_player.gltf",
+  "name": "Portable Cassette Player",
+  "size": [
+   0.172,
+   0.04,
+   0.13
+  ],
+  "poly": 13307
+ },
+ "alarm_clock_01": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/alarm_clock_01/alarm_clock_01.gltf",
+  "name": "Alarm Clock 01",
+  "size": [
+   0.228,
+   0.168,
+   0.174
+  ],
+  "poly": 13006
+ },
+ "pocket_watch": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/pocket_watch/pocket_watch.gltf",
+  "name": "Pocket Watch",
+  "size": [
+   0.058,
+   0.016,
+   0.076
+  ],
+  "poly": 15615
+ },
+ "binoculars": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/binoculars/binoculars.gltf",
+  "name": "Binoculars",
+  "size": [
+   0.167,
+   0.288,
+   0.077
+  ],
+  "poly": 19248
+ },
+ "cassette_player": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/cassette_player/cassette_player.gltf",
+  "name": "Cassette Player",
+  "size": [
+   0.129,
+   0.049,
+   0.237
+  ],
+  "poly": 4830
+ },
+ "Camera_01": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/Camera_01/Camera_01.gltf",
+  "name": "Camera 01",
+  "size": [
+   0.214,
+   0.263,
+   0.078
+  ],
+  "poly": 26987
+ },
+ "vintage_radio_transceiver": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/vintage_radio_transceiver/vintage_radio_transceiver.gltf",
+  "name": "Vintage Radio Transceiver",
+  "size": [
+   0.618,
+   0.418,
+   0.434
+  ],
+  "poly": 42350
+ },
+ "old_gas_mask": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/old_gas_mask/old_gas_mask.gltf",
+  "name": "Old Gas Mask",
+  "size": [
+   0.211,
+   0.309,
+   1.126
+  ],
+  "poly": 18900
+ },
+ "treasure_chest": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/treasure_chest/treasure_chest.gltf",
+  "name": "Treasure Chest",
+  "size": [
+   0.959,
+   0.523,
+   0.619
+  ],
+  "poly": 103330
+ },
+ "cigarette_case": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/cigarette_case/cigarette_case.gltf",
+  "name": "Cigarette Case",
+  "size": [
+   0.323,
+   0.101,
+   0.024
+  ],
+  "poly": 16912
+ },
+ "chess_set": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/chess_set/chess_set.gltf",
+  "name": "Chess Set",
+  "size": [
+   0.553,
+   0.553,
+   0.112
+  ],
+  "poly": 76920
+ },
+ "vintage_lighter": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/vintage_lighter/vintage_lighter.gltf",
+  "name": "Vintage Lighter",
+  "size": [
+   0.082,
+   0.014,
+   0.066
+  ],
+  "poly": 3366
+ },
+ "magnifying_glass_01": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/magnifying_glass_01/magnifying_glass_01.gltf",
+  "name": "Magnifying Glass 01",
+  "size": [
+   0.132,
+   0.027,
+   0.272
+  ],
+  "poly": 7240
+ },
+ "retro_multimeter": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/retro_multimeter/retro_multimeter.gltf",
+  "name": "Retro Multimeter",
+  "size": [
+   0.216,
+   0.203,
+   0.279
+  ],
+  "poly": 13356
+ },
+ "seadogs_compass": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/seadogs_compass/seadogs_compass.gltf",
+  "name": "Seadogs Compass",
+  "size": [
+   0.081,
+   0.15,
+   0.087
+  ],
+  "poly": 11645
+ },
+ "ammo_box": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/ammo_box/ammo_box.gltf",
+  "name": "Ammo Box",
+  "size": [
+   0.087,
+   0.258,
+   0.177
+  ],
+  "poly": 4382
+ },
+ "medical_box": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/medical_box/medical_box.gltf",
+  "name": "Medical Box",
+  "size": [
+   0.525,
+   0.35,
+   0.098
+  ],
+  "poly": 3718
+ },
+ "oil_tin": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/oil_tin/oil_tin.gltf",
+  "name": "Oil Tin",
+  "size": [
+   0.115,
+   0.154,
+   0.205
+  ],
+  "poly": 2834
+ },
+ "wine_bottles_01": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/wine_bottles_01/wine_bottles_01.gltf",
+  "name": "Wine Bottles 01",
+  "size": [
+   0.676,
+   0.081,
+   0.331
+  ],
+  "poly": 28848
+ },
+ "horse_statue_01": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/horse_statue_01/horse_statue_01.gltf",
+  "name": "Horse Statue 01",
+  "size": [
+   0.164,
+   0.108,
+   0.22
+  ],
+  "poly": 22388
+ },
+ "carved_wooden_elephant": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/carved_wooden_elephant/carved_wooden_elephant.gltf",
+  "name": "Carved Wooden Elephant",
+  "size": [
+   0.109,
+   0.058,
+   0.096
+  ],
+  "poly": 2752
+ },
+ "round_spectacles": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/round_spectacles/round_spectacles.gltf",
+  "name": "Round Spectacles",
+  "size": [
+   0.158,
+   0.149,
+   0.046
+  ],
+  "poly": 11810
+ },
+ "vintage_suitcase": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/vintage_suitcase/vintage_suitcase.gltf",
+  "name": "Vintage Suitcase",
+  "size": [
+   1.608,
+   0.239,
+   0.568
+  ],
+  "poly": 16474
+ },
+ "Megaphone_01": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/Megaphone_01/Megaphone_01.gltf",
+  "name": "Megaphone 01",
+  "size": [
+   0.371,
+   0.228,
+   0.3
+  ],
+  "poly": 15814
+ },
+ "filmstrip_projector_8mm": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/filmstrip_projector_8mm/filmstrip_projector_8mm.gltf",
+  "name": "Filmstrip Projector 8mm",
+  "size": [
+   0.254,
+   0.603,
+   0.345
+  ],
+  "poly": 32697
+ },
+ "circuit_board": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/circuit_board/circuit_board.gltf",
+  "name": "Circuit Board",
+  "size": [
+   0.404,
+   0.397,
+   0.078
+  ],
+  "poly": 14430
+ },
+ "vintage_microscope": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/vintage_microscope/vintage_microscope.gltf",
+  "name": "Vintage Microscope",
+  "size": [
+   0.107,
+   0.182,
+   0.4
+  ],
+  "poly": 20631
+ },
+ "sledgehammer_01": {
+  "group": "tool",
+  "small": true,
+  "file": "assets/models/sledgehammer_01/sledgehammer_01.gltf",
+  "name": "Sledgehammer 01",
+  "size": [
+   0.208,
+   0.09,
+   1.006
+  ],
+  "poly": 2596
+ },
+ "bronze_ray_statue": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/bronze_ray_statue/bronze_ray_statue.gltf",
+  "name": "Bronze Ray Statue",
+  "size": [
+   0.707,
+   0.536,
+   0.59
+  ],
+  "poly": 1844
+ },
+ "vintage_binocular": {
+  "group": "loot",
+  "small": true,
+  "file": "assets/models/vintage_binocular/vintage_binocular.gltf",
+  "name": "Vintage Binoculars",
+  "size": [
+   0.194,
+   0.199,
+   0.068
+  ],
+  "poly": 19362
+ },
+ "crowbar_01": {
+  "group": "tool",
+  "small": true,
+  "file": "assets/models/crowbar_01/crowbar_01.gltf",
+  "name": "Crowbar 01",
+  "size": [
+   0.04,
+   0.128,
+   0.555
+  ],
+  "poly": 2300
+ },
+ "stick_grenade": {
+  "group": "tool",
+  "small": true,
+  "file": "assets/models/stick_grenade/stick_grenade.gltf",
+  "name": "Stick Grenade",
+  "size": [
+   0.081,
+   0.081,
+   0.381
+  ],
+  "poly": 6250
+ },
+ "vintage_flashlight": {
+  "group": "tool",
+  "small": true,
+  "file": "assets/models/vintage_flashlight/vintage_flashlight.gltf",
+  "name": "Vintage Flashlight",
+  "size": [
+   0.096,
+   0.305,
+   0.144
+  ],
+  "poly": 10562
+ },
+ "bolt_cutters_01": {
+  "group": "tool",
+  "small": true,
+  "file": "assets/models/bolt_cutters_01/bolt_cutters_01.gltf",
+  "name": "Bolt Cutters 01",
+  "size": [
+   0.281,
+   0.036,
+   0.938
+  ],
+  "poly": 6719
+ },
+ "machete": {
+  "group": "tool",
+  "small": true,
+  "file": "assets/models/machete/machete.gltf",
+  "name": "Machete",
+  "size": [
+   0.044,
+   0.061,
+   0.755
+  ],
+  "poly": 3032
+ },
+ "portable_searchlight": {
+  "group": "tool",
+  "small": true,
+  "file": "assets/models/portable_searchlight/portable_searchlight.gltf",
+  "name": "Portable Searchlight",
+  "size": [
+   0.165,
+   0.253,
+   0.185
+  ],
+  "poly": 18802
+ },
+ "bolt_action_rifle_7_62": {
+  "group": "tool",
+  "small": true,
+  "file": "assets/models/bolt_action_rifle_7_62/bolt_action_rifle_7_62.gltf",
+  "name": "Bolt Action Rifle 7.62",
+  "size": [
+   1.231,
+   0.067,
+   0.205
+  ],
+  "poly": 19985
+ },
+ "signal_flashlight": {
+  "group": "tool",
+  "small": true,
+  "file": "assets/models/signal_flashlight/signal_flashlight.gltf",
+  "name": "Signal Flashlight",
+  "size": [
+   0.071,
+   0.045,
+   0.15
+  ],
+  "poly": 9730
+ },
+ "service_pistol": {
+  "group": "tool",
+  "small": true,
+  "file": "assets/models/service_pistol/service_pistol.gltf",
+  "name": "Service Pistol",
+  "size": [
+   0.302,
+   0.032,
+   0.281
+  ],
+  "poly": 27548
+ },
+ "propane_torch": {
+  "group": "tool",
+  "small": true,
+  "file": "assets/models/propane_torch/propane_torch.gltf",
+  "name": "Propane Torch",
+  "size": [
+   0.068,
+   0.058,
+   0.328
+  ],
+  "poly": 4848
+ },
+ "pipe_wrench": {
+  "group": "tool",
+  "small": true,
+  "file": "assets/models/pipe_wrench/pipe_wrench.gltf",
+  "name": "Pipe Wrench",
+  "size": [
+   0.084,
+   0.034,
+   0.405
+  ],
+  "poly": 10746
+ }
+}

@@ -13,6 +13,10 @@ import { Game } from './game/game.js';
 import { newCampaign, loadCampaign, saveCampaign } from './game/state.js';
 import { INTRO_HYBRID } from './story/codex.js';
 import { meta, saveMeta } from './core/save.js';
+import { loadPBR } from './gfx/materials.js';
+import { loadModelManifest, preloadModels, modelIds, setModelEnvironment } from './gfx/models.js';
+import { preloadCharacters } from './gfx/characters.js';
+import { HUB_CHARACTERS } from './world/hub.js';
 
 const params = new URLSearchParams(location.search);
 
@@ -27,6 +31,12 @@ export async function boot() {
   onSettings((s) => {
     R.camera.fov = s.fov; R.camera.updateProjectionMatrix();
   });
+
+  // Fototexturen laden, während der Warnhinweis zu sehen ist
+  const pbr = Promise.all([loadPBR(), loadModelManifest().then(() => preloadModels(modelIds())), preloadCharacters(HUB_CHARACTERS)]);
+  if (!params.has('skip')) await menus.warning(); else audio.init();
+  await pbr;
+  setModelEnvironment(R.renderer);
 
   // Kulisse: das Spiel mit einem vorläufigen Stand, Kamera im Titelmodus
   const saved = loadCampaign();
@@ -50,10 +60,9 @@ export async function boot() {
   requestAnimationFrame(frame);
 
   if (!params.has('skip')) {
-    await menus.warning();
     await menus.ident();
     if (!settings.calibrated) await menus.calibration();
-  } else audio.init();
+  }
 
   music.setZone('menu');
   music.musicBox({ vol: 0.35, tempo: 72, wobble: 12 });

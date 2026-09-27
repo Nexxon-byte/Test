@@ -762,8 +762,7 @@ export class Elevator {
     const uv = wallGeo.attributes.uv;
     for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * SW, uv.getY(i) * 16);
     this.shaftMatFront = mat('concrete').clone();
-    this.shaftMatFront.map = this.shaftMatFront.map.clone();
-    this.shaftMatFront.bumpMap = this.shaftMatFront.bumpMap.clone();
+    this._copyShaftMaps(mat('concrete'));
     const front = new THREE.Mesh(wallGeo, this.shaftMatFront);
     front.position.set(0, 3, CAB.LANDING_Z + 0.3);
     front.rotation.y = Math.PI;
@@ -810,14 +809,21 @@ export class Elevator {
     this.passSpacing = 11;
   }
 
+  // Texturen der Schachtwand als eigene Kopien (sie werden beim Fahren verschoben)
+  _copyShaftMaps(src) {
+    const m = this.shaftMatFront;
+    for (const k of ['map', 'bumpMap', 'normalMap', 'roughnessMap']) {
+      m[k] = src[k] ? src[k].clone() : null;
+      if (m[k]) m[k].needsUpdate = true;
+    }
+    m.bumpScale = src.bumpScale;
+  }
+
   setShaftStyle(name) {
     const st = SHAFT_STYLES[name] || SHAFT_STYLES.concrete;
     this.shaftStyle = name;
     const src = mat(st.mat);
-    this.shaftMatFront.map = src.map.clone();
-    this.shaftMatFront.bumpMap = src.bumpMap.clone();
-    this.shaftMatFront.map.needsUpdate = true;
-    this.shaftMatFront.bumpMap.needsUpdate = true;
+    this._copyShaftMaps(src);
     this.shaftMatFront.roughness = src.roughness;
     this.shaftMatFront.metalness = src.metalness;
     this.shaftMatFront.color.copy(src.color);
@@ -996,8 +1002,10 @@ export class Elevator {
     if (this.state === 'stopping' && Math.abs(this.speed) < 0.05) { this.speed = 0; this.state = 'stopped'; }
     if (this.shaft.visible) {
       this.shaftOffset += this.speed * dt;
-      this.shaftMatFront.map.offset.y = -this.shaftOffset / 3;
-      this.shaftMatFront.bumpMap.offset.y = -this.shaftOffset / 3;
+      for (const k of ['map', 'bumpMap', 'normalMap', 'roughnessMap']) {
+        const t = this.shaftMatFront[k];
+        if (t) t.offset.y = -this.shaftOffset * t.repeat.y;
+      }
       let lampI = 0;
       for (const p of this.passers) {
         p.position.y -= this.speed * dt;

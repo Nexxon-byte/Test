@@ -80,8 +80,14 @@ export class Inventory {
     if (!it) return;
     const m = buildItemModel(it.type);
     m.traverse(o => { if (o.isMesh) { o.castShadow = false; o.renderOrder = 9; } });
-    if (it.two) { m.position.set(0.2, -0.12, -0.2); m.scale.setScalar(0.75); m.rotation.set(0.35, 0.2, 0); }
-    else { m.scale.setScalar(0.9); m.rotation.set(0.25, 0.6, 0.1); }
+    // echte Modelle haben Weltmaße → auf Handgröße bringen
+    let k = 1;
+    if (it.def?.model) {
+      const size = new THREE.Box3().setFromObject(m).getSize(new THREE.Vector3());
+      k = (it.two ? 0.6 : 0.24) / Math.max(0.01, size.x, size.y, size.z);
+    }
+    if (it.two) { m.position.set(0.2, -0.12, -0.2); m.scale.setScalar(0.75 * k); m.rotation.set(0.35, 0.2, 0); }
+    else { m.scale.setScalar(0.9 * k); m.rotation.set(0.25, 0.6, 0.1); }
     this.view.add(m);
     this.viewModel = m;
   }

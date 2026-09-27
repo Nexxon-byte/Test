@@ -1,0 +1,79 @@
+{
+ "worker": {
+  "file": "assets/chars/worker.glb",
+  "source": "https://poly.pizza/m/Yg2bQZO6Hj",
+  "title": "Worker - Free 3D Model By Quaternius",
+  "license": "CC0",
+  "author": "Quaternius"
+ },
+ "business": {
+  "file": "assets/chars/business.glb",
+  "source": "https://poly.pizza/m/JFrLIKqvCH",
+  "title": "Business Man - Free 3D Model By Quaternius",
+  "license": "CC0",
+  "author": "Quaternius"
+ },
+ "punk": {
+  "file": "assets/chars/punk.glb",
+  "source": "https://poly.pizza/m/BTALZymknF",
+  "title": "Punk - Free 3D Model By Quaternius",
+  "license": "CC0",
+  "author": "Quaternius"
+ },
+ "punk2": {
+  "file": "assets/chars/punk2.glb",
+  "source": "https://poly.pizza/m/djXoqejw6w",
+  "title": "Punk - Free 3D Model By Quaternius",
+  "license": "CC0",
+  "author": "Quaternius"
+ },
+ "farmer": {
+  "file": "assets/chars/farmer.glb",
+  "source": "https://poly.pizza/m/7pn3R6hPvE",
+  "title": "Farmer - Free 3D Model By Quaternius",
+  "license": "CC0",
+  "author": "Quaternius"
+ },
+ "casual": {
+  "file": "assets/chars/casual.glb",
+  "source": "https://poly.pizza/m/kZ3DmIoGip",
+  "title": "Casual Character - Free 3D Model By Quaternius",
+  "license": "CC0",
+  "author": "Quaternius"
+ },
+ "hoodie": {
+  "file": "assets/chars/hoodie.glb",
+  "source": "https://poly.pizza/m/gKLBoRsyKe",
+  "title": "Hoodie Character - Free 3D Model By Quaternius",
+  "license": "CC0",
+  "author": "Quaternius"
+ },
+ "hooded": {
+  "file": "assets/chars/hooded.glb",
+  "source": "https://poly.pizza/m/y9KWOVG21R",
+  "title": "Hooded Adventurer - Free 3D Model By Quaternius",
+  "license": "CC0",
+  "author": "Quaternius"
+ },
+ "adventurer": {
+  "file": "assets/chars/adventurer.glb",
+  "source": "https://poly.pizza/m/ZwF0K7WBmu",
+  "title": "Adventurer - Free 3D Model By Quaternius",
+  "license": "CC0",
+  "author": "Quaternius"
+ },
+ "adventurer2": {
+  "file": "assets/chars/adventurer2.glb",
+  "source": "https://poly.pizza/m/5EGWBMpuXq",
+  "title": "Adventurer - Free 3D Model By Quaternius",
+  "license": "CC0",
+  "author": "Quaternius"
+ },
+ "woman": {
+  "file": "assets/chars/woman.glb",
+  "source": "https://poly.pizza/m/qJ2gsTUBHL",
+  "title": "Animated Woman - Free 3D Model By Quaternius",
+  "license": "CC0",
+  "author": "Quaternius"
+ }
+}

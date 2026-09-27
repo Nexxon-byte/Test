@@ -2,7 +2,9 @@
 
 const params = new URLSearchParams(location.search);
 
-if (params.has('sandbox')) {
+if (params.has('viewer')) {
+  import('./dev/viewer.js').then(m => m.runViewer(params));
+} else if (params.has('sandbox')) {
   import('./dev/sandbox.js').then(m => m.runSandbox());
 } else {
   import('./app.js').then(m => m.boot()).catch((e) => {
