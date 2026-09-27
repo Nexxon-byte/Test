@@ -277,6 +277,18 @@ export class Game {
   }
 
   _slate(who) {
+    // Entscheidung (Kapitel −13): Reliquie an die Stummen
+    if (who === 'hanne' && this.inv.current?.type === 'reliquie' && !this.state.flags.relicTo) {
+      const it = this.inv.takeCurrent();
+      this.items.remove(it.id);
+      this._removeCargo(it.id);
+      this.state.flags.relicTo = 'stumme';
+      this.state.marks += 60;
+      saveCampaign(this.state);
+      this._updateKom();
+      showSlate('Mutter Hanne', 'Eine leere Walze. Die Kirche hat sechshundert Jahre lang zu einer leeren Walze gebetet. (Sie legt dir sechzig Marken der Gemeinde in die Hand.) Wir werden es alle wissen lassen. Leise.');
+      return;
+    }
     const n = (this._slateN = (this._slateN || 0) + 1);
     if (who === 'hanne') showSlate('Mutter Hanne', SLATE[['hanne_1', 'hanne_2', 'hanne_3', 'hanne_4'][n % 4]]);
     if (who === 'jomo') showSlate('Jomo', SLATE[n % 2 ? 'jomo_1' : 'jomo_2']);
@@ -397,13 +409,15 @@ export class Game {
     const it = this.inv.current;
     if (!it) { ui.toast('Halte ein Stück Bergegut, um es auf die Waage zu legen.'); return; }
     if (it.tool) { ui.toast('Die Kantorei kauft kein Werkzeug. Nur Bergegut.'); return; }
+    // Entscheidung (Kapitel −13): Reliquie an die Kanzlei
+    if (it.type === 'reliquie') { this.state.flags.relicTo = 'kanzlei'; voice.say('ve_relic', { interrupt: true }); }
     this.inv.takeCurrent();
     this.items.remove(it.id);
     this.state.marks += it.value;
     this.state.sold += it.value;
     this.state.stats.total += it.value;
     audio.play('ding', { vol: 0.35, pitch: 1.5 });
-    if (Math.random() < 0.35) voice.say(Math.random() < 0.8 ? 've_sell' : 've_doubt');
+    if (it.type !== 'reliquie' && Math.random() < 0.35) voice.say(Math.random() < 0.8 ? 've_sell' : 've_doubt');
     ui.toast(`+${it.value} M · ${it.def.name} der Kantorei übergeben`);
     saveCampaign(this.state);
     this._updateKom();
@@ -608,7 +622,9 @@ export class Game {
       ui.hint('scan', 'Q', 'Scannen: zeigt Bergegut');
       ui.komMessage(KOM.k_first);
     } else {
-      voice.say(['v_arr_1', 'v_arr_2', 'v_arr_3', 'v_arr_4'][Math.floor(Math.random() * 4)], { delay: 0.6 });
+      // Story-Kapitel haben eigene Ankunft
+      if (this.contracts.scene?.arrive) this.contracts.scene.arrive();
+      else voice.say(['v_arr_1', 'v_arr_2', 'v_arr_3', 'v_arr_4'][Math.floor(Math.random() * 4)], { delay: 0.6 });
       ui.setObjective('Bergen. Vor 03:07 zurück in der Kabine sein.');
     }
     this._updateKom();
@@ -808,6 +824,8 @@ export class Game {
     });
     input.enabled = true;
     this.busy = false;
+    // Nachwirkungen der Nacht (Story-Szenen), erst nach der Abrechnung
+    for (const fn of (this.afterReport || []).splice(0)) fn();
     if (tut) {
       voice.say('v_tut_6');
       ui.setObjective('Beute aus der Kabine zur Waage der Kantorei tragen und verkaufen');

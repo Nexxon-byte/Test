@@ -5,14 +5,16 @@
 import * as THREE from 'three';
 import { RNG, hashStr } from '../core/rng.js';
 import { LOOT, SPAWN, TIER_VALUE, pickLoot } from './items.js';
-import { floorsFor, STORY_FLOORS } from './floors.js';
+import { floorsFor } from './floors.js';
+import { nextChapter, chapterById } from '../story/chapters.js';
+import { SCENES } from '../story/scenes/index.js';
 import { Character, hasCharacter } from '../gfx/characters.js';
 import { Builder } from '../gfx/geo.js';
 import { mat } from '../gfx/materials.js';
-import { glowTexture } from '../gfx/textures.js';
 import { audio } from '../audio/audio.js';
 import { ui } from '../ui/ui.js';
 import { CS } from '../world/levelgen.js';
+import { GoldMark } from './goldmark.js';
 
 export const KINDS = {
   bergung:  { label: 'BERGUNG', from: 'Disposition' },
@@ -61,7 +63,8 @@ export function offersFor(state) {
   if (state.offers?.key === key) return state.offers.list;
   const rng = new RNG((hashStr(state.name + ':' + key) ^ 0x51ed) >>> 0);
   const list = [];
-  if (storyAvailable(state)) list.push(makeStory13(state));
+  const ch = nextChapter(state);
+  if (ch) list.push(makeStory(ch));
   const kinds = rng.shuffle(['bergung', 'spezial', 'vermisst', 'wartung', 'kirche', 'schwarz']);
   const n = rng.int(3, 4) - (list.length ? 1 : 0);
   for (const k of kinds.slice(0, n)) list.push(makeContract(k, rng, state));
@@ -71,12 +74,8 @@ export function offersFor(state) {
 
 // Entwicklung: Auftrag einer Art für eine bestimmte Welt (…&contracts=spezial,wartung)
 export function devContract(kind, floor, stage, state, seed = 1) {
-  if (kind === 'story') return makeStory13();
+  if (kind.startsWith('story')) return makeStory(chapterById(kind === 'story' ? 'story13' : kind));
   return makeContract(kind, new RNG(seed), state, { stage, floor });
-}
-
-export function storyAvailable(state) {
-  return !state.flags.tutorial && !state.flags.story13 && (state.stats?.nights || 0) >= 1;
 }
 
 function pickFloor(rng, state) {
@@ -148,14 +147,9 @@ function makeContract(kind, rng, state, forced = null) {
   return c;
 }
 
-function makeStory13() {
-  const floor = STORY_FLOORS.story13;
-  return {
-    id: 'story13', kind: 'story', stage: 1, floor, target: { story: 13 }, reward: 300,
-    title: 'Der Saal der Vierzig',
-    text: 'Die Kanzlei will die Stimmreliquie aus dem Saal der Vierzig, −13. Der Schrein steht hinter der Bühne, wo die Getreuen ihr letztes Mahl hielten. Goldene Siegel – das zahlt die ganze Woche.',
-    line: 'd_story_13',
-  };
+// Goldener Auftrag aus einem Story-Kapitel
+function makeStory(ch) {
+  return { id: ch.id, kind: 'story', chapter: ch.id, stage: ch.stage, floor: ch.floor, target: {}, reward: ch.reward, title: ch.title, text: ch.text, line: ch.line };
 }
 
 // Annehmen: höchstens zwei, alle für dieselbe Welt
@@ -179,37 +173,6 @@ export function drop(state, id) {
   state.contracts = (state.contracts || []).filter(c => c.id !== id);
 }
 
-// ---------------------------------------------------------------- Goldene Markierung
-
-const _v = new THREE.Vector3();
-
-class GoldMark {
-  constructor(scene, pos, big = false) {
-    this.group = new THREE.Group();
-    this.group.position.copy(pos);
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture(), color: 0xffc860, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
-    sprite.position.y = 0.35;
-    sprite.scale.setScalar(big ? 0.9 : 0.6);
-    // schwacher Lichtschaft nach oben
-    const beamGeo = new THREE.CylinderGeometry(0.05, 0.22, 2.6, 10, 1, true);
-    beamGeo.translate(0, 1.3, 0);
-    const beam = new THREE.Mesh(beamGeo, new THREE.MeshBasicMaterial({ color: 0xffb040, transparent: true, opacity: 0.08, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
-    this.group.add(sprite, beam);
-    this.sprite = sprite; this.beam = beam;
-    this.t = Math.random() * 6;
-    scene.add(this.group);
-  }
-  follow(p) { this.group.position.set(p.x, p.y, p.z); }
-  update(dt, visible = true) {
-    this.t += dt;
-    this.group.visible = visible;
-    const k = 0.75 + Math.sin(this.t * 2.2) * 0.25;
-    this.sprite.material.opacity = 0.55 * k;
-    this.beam.material.opacity = 0.06 + 0.04 * k;
-    this.beam.rotation.y += dt * 0.4;
-  }
-  dispose() { this.group.removeFromParent(); this.sprite.material.dispose(); this.beam.geometry.dispose(); this.beam.material.dispose(); }
-}
 
 // ---------------------------------------------------------------- Nacht
 
@@ -226,6 +189,8 @@ export class ContractRun {
     for (const m of this.marks) m.mark.dispose();
     for (const p of this.props) p.removeFromParent();
     for (const r of this.relays) this.g.interact.remove(r.entry);
+    this.scene?.dispose();
+    this.scene = null;
     this.marks = []; this.props = []; this.relays = [];
     this.active = [];
   }
@@ -270,6 +235,10 @@ export class ContractRun {
         this._corpse(s[0], s[1], c);
       } else if (c.kind === 'wartung') {
         this._relay(level, c);
+      } else if (c.kind === 'story') {
+        const ch = chapterById(c.chapter);
+        const Scene = ch && SCENES[ch.scene];
+        if (Scene) { this.scene = new Scene({ game: this.g, level, contract: c, chapter: ch, rng: rng.fork('scene') }); this.scene.setup(); }
       }
     }
     if (this.active.length) {
@@ -360,6 +329,7 @@ export class ContractRun {
 
   update(dt) {
     const g = this.g, p = g.player;
+    this.scene?.update(dt);
     for (const m of this.marks) {
       if (m.item) m.mark.follow(m.item.pos);
       const vis = m.item ? !m.item.holder && !g.elev.contains(m.item.pos) : !m.relay.c.done;
@@ -401,6 +371,10 @@ export class ContractRun {
       const d = Math.hypot(pos.x - p.pos.x, pos.z - p.pos.z);
       if (d < bd) { bd = d; best = { pos, c: this.active.find(c => c.id === m.cid) }; }
     }
+    for (const pos of this.scene?.targets() || []) {
+      const d = Math.hypot(pos.x - p.pos.x, pos.z - p.pos.z);
+      if (d < bd) { bd = d; best = { pos }; }
+    }
     const lines = [];
     for (const c of this.active) lines.push(`<span class="c ${this.isDone(c) ? 'ok' : ''}">${this.isDone(c) ? '✓' : '◆'} ${c.title}</span>`);
     if (best) {
@@ -417,7 +391,7 @@ export class ContractRun {
     if (c.kind === 'bergung') return g._cabValue() + g.inv.value >= c.target.value;
     const have = this._broughtItems().filter(it => it.contract === c.id || (c.kind === 'kirche' && it.type === c.target.type));
     if (c.kind === 'kirche') return have.length >= c.target.count;
-    if (c.kind === 'story') return !!c.done;
+    if (c.kind === 'story') return !!this.scene?.done(this._broughtItems());
     return have.length > 0;
   }
 
@@ -433,7 +407,8 @@ export class ContractRun {
       let ok = false;
       const mine = brought.filter(it => it.contract === c.id);
       if (c.kind === 'bergung') ok = broughtValue >= c.target.value;
-      else if (c.kind === 'wartung' || c.kind === 'story') ok = !!c.done;
+      else if (c.kind === 'wartung') ok = !!c.done;
+      else if (c.kind === 'story') ok = !!this.scene?.settle(brought, state);
       else if (c.kind === 'kirche') ok = brought.filter(it => it.type === c.target.type).length >= c.target.count;
       else ok = mine.length > 0;
       out.push({ id: c.id, kind: c.kind, title: c.title, ok, reward: ok ? c.reward : 0, remove: ok && (c.kind === 'vermisst' || c.kind === 'schwarz') ? mine.map(it => it.id) : [] });

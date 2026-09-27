@@ -60,7 +60,8 @@ export const LOOT = {
   munition:   { name: 'Munitionskiste', model: 'ammo_box', value: [30, 60], weight: 5, desc: 'Leer. Innen Salzkrümel.' },
   // --- Auftragsgut (nicht in den Zufallstabellen)
   marke:      { name: 'Erkennungsmarke', value: [4, 8], weight: 0.1, desc: 'Messing, an einer Kette. Eine Mannschaftsnummer, ein Name, eine Blutgruppe. Mehr bleibt nicht.' },
-  reliquie:   { name: 'Stimmreliquie', value: [140, 180], weight: 4, desc: 'Ein goldener Schrein mit Glasfenster. Darin eine Wachswalze der Ersten Fahrt. Die Rillen sind … nicht da.' },
+  reliquie:   { name: 'Stimmreliquie', value: [140, 180], weight: 4, desc: 'Ein goldener Schrein mit Glasfenster. Darin eine Wachswalze der Ersten Fahrt. Die Rillen sind … nicht da.',
+    view: { len: 0.2, pos: [0.04, 0.02, -0.06], rot: [0.35, 0.55, 0.05] } },
 };
 
 // Werkzeuge & Waffen (Voss). Kein Bergegut: Wert 0, die Kantorei kauft sie nicht.
@@ -134,7 +135,7 @@ const MODELS = {
     b.box(mat('gold'), 0, 0.3, 0, 0.3, 0.03, 0.2);
     b.add(mat('gold'), coneGeometry(0.17, 0.1, 4), 0, 0.365, 0, 0, Math.PI / 4, 0);
     b.cyl(mat('bone'), 0, 0.14, 0, 0.035, 0.035, 0.1, 14, { rz: Math.PI / 2 });
-    const glass = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.2, 0.15), new THREE.MeshStandardMaterial({ color: 0xc8d0d0, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.18, depthWrite: false }));
+    const glass = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.2, 0.15), new THREE.MeshStandardMaterial({ color: 0x6a7472, roughness: 0.05, metalness: 0.4, transparent: true, opacity: 0.12, depthWrite: false }));
     glass.position.y = 0.19;
     g.add(glass);
   },

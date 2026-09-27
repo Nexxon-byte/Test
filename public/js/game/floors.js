@@ -1,28 +1,26 @@
 // Welten je Tiefenstufe: [Thema, Tiefe, Name]. Eigene Datei, damit Spiel, Aufträge und Tafeln
 // dieselbe Tabelle benutzen, ohne sich gegenseitig zu importieren.
 
+import { CHAPTERS, unlockedStoryFloors } from '../story/chapters.js';
+
 export const FLOORS = {
   1: [['dock', 2, 'Die Ladebucht'], ['scriptorium', 7, 'Das Skriptorium'], ['ossuary', 17, 'Das Beinhaus']],
   2: [['mine', 33, 'Bohrung Null']],
 };
 
-// Sonderwelten der Story-Aufträge (erst nach dem Auftrag frei betretbar)
-export const STORY_FLOORS = {
-  story13: ['banquet', 13, 'Der Saal der Vierzig'],
-};
+// Sonderwelten der Story-Kapitel (story/chapters.js)
+export const STORY_FLOORS = Object.fromEntries(CHAPTERS.map(c => [c.id, c.floor]));
 
-// Welten, die in dieser Stufe zur Wahl stehen (der Saal der Vierzig erst nach seinem Auftrag)
+// Welten, die in dieser Stufe zur Wahl stehen (Story-Welten erst nach ihrem Kapitel)
 export function floorsFor(stage, state) {
-  const list = [...(FLOORS[stage] || FLOORS[1])];
-  if (stage === 1 && state?.flags?.story13) list.push(STORY_FLOORS.story13);
-  return list;
+  return [...(FLOORS[stage] || FLOORS[1]), ...unlockedStoryFloors(stage, state)];
 }
 
 // Tiefenstufe einer Welt (für Direktsprünge und Aufträge)
 export function stageOfTheme(themeId) {
   for (const [k, list] of Object.entries(FLOORS)) if (list.some(f => f[0] === themeId)) return Number(k);
-  for (const f of Object.values(STORY_FLOORS)) if (f[0] === themeId) return f[1] <= 17 ? 1 : 2;
-  return 1;
+  const ch = CHAPTERS.find(c => c.floor[0] === themeId);
+  return ch ? ch.stage : 1;
 }
 
 export function floorOfTheme(themeId) {
