@@ -17,6 +17,9 @@ node server.js          # http://localhost:3033
 ```
 Oder `START.bat` (Windows). Test-Sandkasten: `http://localhost:3033/?sandbox&theme=dock&seed=3` (Themen: dock, scriptorium, banquet, ossuary, mine). Zusätze: `&modules=all` oder `&modules=flutlicht,salzkanone,panzergitter:2`, `&stufe=4` (Seilstufe). Im Sandkasten: `window.__sb` = { R, elev, player, pool, level } zum Steuern per JS. Tasten: F Lampe · N Noclip · O Tor auf/zu · [ ] Tiefenhebel · B Rufglocke · L Flutlicht · K Salzkanone.
 
+### Web-Testversion (ohne Installation, auch Handy)
+Der Nutzer testet oft nicht lokal. `node tools/build-web.mjs` baut `dist/web/` (Seite aus `tools/web/index.html`, Startmenü `js/dev/web.js`, Touch-Steuerung `js/dev/touch.js`, three.js per jsDelivr-Import-Map, Schriften per Google Fonts). Veröffentlicht als Artifact: https://claude.ai/artifact/M1JYKtUUgZvJ12xL46PQzn – nach Änderungen neu bauen und mit `url` + `root: dist/web` + Dateiliste aus `dist/web/files.json` erneut veröffentlichen.
+
 ## Stand der Dateien
 | Bereich | Datei | Stand |
 |---|---|---|

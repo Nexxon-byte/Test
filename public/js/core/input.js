@@ -15,6 +15,7 @@ class Input {
     this.onUnlock = null;
     this.mouseDown = false;
     this.mouseClicked = false;
+    this.dragLook = false;        // Umsehen durch Ziehen, wenn Pointer-Lock fehlt (eingebettete Seiten)
   }
 
   attach(canvas) {
@@ -33,7 +34,7 @@ class Input {
     });
     window.addEventListener('blur', () => { this.keys.clear(); });
     document.addEventListener('mousemove', (e) => {
-      if (!this.locked) return;
+      if (!this.locked && !(this.dragLook && this.mouseDown)) return;
       // extreme Sprünge (Browser-Bug beim Locken) ignorieren
       if (Math.abs(e.movementX) > 400 || Math.abs(e.movementY) > 400) return;
       this.mouseDX += e.movementX;

@@ -14,9 +14,8 @@ import { buildLevel } from '../world/levelbuild.js';
 import { THEMES, applyThemeEnvironment } from '../world/themes.js';
 import { MODULES } from '../world/cab.js';
 
-export async function runSandbox() {
+export async function runSandbox(params = new URLSearchParams(location.search)) {
   await document.fonts.ready;
-  const params = new URLSearchParams(location.search);
   const canvas = document.getElementById('game');
   const R = new Renderer(canvas);
   const col = new CollisionWorld();
