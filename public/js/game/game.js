@@ -424,30 +424,36 @@ export class Game {
     this.R.scene.fog.density = 0.02;
     const motor = audio.loop('motor', { vol: 0.4 });
     motor?.setSpeed(0);
-    this.elev.startRide({ speed: -5.5, style: theme.shaft || 'concrete' });
+    // Schachtfahrt: oben Beton und Stahl, ab etwa 40 % der Strecke der Schacht der Zielwelt.
+    // Das Etagentor des Markts fährt mit seinem Absatz nach oben weg (home).
+    this.elev.onRideEvent = (kind, k) => this._rideSound(kind, k);
+    this.elev.startRide({ speed: -5.5, from: 'concrete', style: theme.shaft || 'concrete', stage, depth, fromDepth: 0, toLabel: '−' + depth, home: true });
     this.elev.setDisplay('▼');
     music.setZone('spindel');
     voice.say(st.flags.tutorial ? 'v_e0_hello' : ['v_dep_1', 'v_dep_2', 'v_dep_3', 'v_dep_4', 'v_dep_5', 'v_dep_6'][rng.int(0, 5)], { delay: 1.2 });
     const rideT = 11 + stage * 3;
-    let level = null;
+    let level = null, styled = false, braking = false;
     const t0 = this.time;
-    while (this.time - t0 < rideT) {
-      const k = (this.time - t0) / rideT;
+    for (;;) {
+      const el = this.time - t0, k = Math.min(1, el / rideT);
+      if (!styled && k > 0.4) { styled = true; this.elev.setShaftStyle(theme.shaft || 'concrete'); }
+      // rechtzeitig bremsen: die Kabine hält weich und bündig an einem Absatz
+      if (!braking && el > rideT - 3) { braking = true; this.elev.stopRide(); }
+      if (braking && this.elev.state === 'stopped') break;
+      if (el > rideT + 10) break; // Sicherheitsnetz
       motor?.setSpeed(this.elev.speed);
       this.elev.setNeedleDepth(depth * Math.min(1, k * 1.05));
       this.elev.setDisplay('−' + Math.round(depth * Math.min(1, k * 1.05)));
-      if (!level && this.time - t0 > 2) {
+      if (!level && el > 2) {
         level = buildLevel(this.R, this.col, theme, seed);
         level.group.visible = false;
       }
       if (Math.random() < 0.01) audio.play('cableCreak', { vol: 0.25 });
       await this._frameWait();
     }
-    this.elev.stopRide();
-    await this._wait(1.4);
     motor?.stop(0.8);
-    audio.play('jolt', { vol: 0.8 });
-    this.player.shake = 1.2;
+    audio.play('jolt', { vol: 0.7 });
+    this.player.shake = 1.0;
     this.elev.arrive();
     // Ankunft: Stromausfall-Ritual
     this.elev.lightMode = 'off';
@@ -465,6 +471,12 @@ export class Game {
     audio.play('doorSlide', { vol: 0.35 });
     this.busy = false;
     this._startNight();
+  }
+
+  // Geräusche der Schachtfahrt: Schienenstöße, vorbeiziehende Absätze
+  _rideSound(kind, k) {
+    if (kind === 'joint') audio.play('clunk', { vol: 0.05 + 0.07 * k });
+    else if (kind === 'landing') audio.play('flyby', { vol: 0.08 + 0.1 * k });
   }
 
   _keepOnlyCabinItems() {
@@ -605,21 +617,33 @@ export class Game {
       ui.setEcho(true);
     }
     const motor = audio.loop('motor', { vol: 0.4 });
-    this.elev.startRide({ speed: 6, style: THEMES[this.nightInfo?.themeId]?.shaft || 'concrete' });
+    // Aufwärts: erst der Schacht der Welt, zum Markt hin wieder Beton; oben wartet das Etagentor (homeArrival)
+    const nightTheme = THEMES[this.nightInfo?.themeId];
+    this.elev.onRideEvent = (kind, k) => this._rideSound(kind, k);
+    this.elev.startRide({
+      speed: 6, from: nightTheme?.shaft || 'concrete', style: nightTheme?.shaft || 'concrete', stage: this.nightInfo?.stage || 1,
+      depth: 0, fromDepth: depth, fromLabel: '−' + depth, toLabel: 'IX', homeArrival: true, startLeaf: nightTheme?.outerDoors || 'steel',
+    });
+    this.elev.setOuterStyle(HUB_THEME.outerDoors);
     voice.say(lost ? 'v_up_lost' : (Math.random() < 0.5 ? 'v_up_1' : 'v_up_2'), { delay: 1.5 });
     music.setTension(0); music.setZone('spindel');
     const t0 = this.time, rideT = 9 + (this.nightInfo?.stage || 1) * 2;
-    while (this.time - t0 < rideT) {
-      const k = 1 - (this.time - t0) / rideT;
+    let styled = false, braking = false;
+    for (;;) {
+      const el = this.time - t0, k = Math.max(0, 1 - el / rideT);
+      if (!styled && k < 0.45) { styled = true; this.elev.setShaftStyle('concrete'); }
+      if (!braking && el > rideT - 3) { braking = true; this.elev.stopRide(); }
+      if (braking && this.elev.state === 'stopped') break;
+      if (el > rideT + 10) break; // Sicherheitsnetz
       motor?.setSpeed(this.elev.speed);
       this.elev.setNeedleDepth(depth * k);
       this.elev.setDisplay(k > 0.02 ? '−' + Math.round(depth * k) : 'OBEN');
       await this._frameWait();
     }
-    this.elev.stopRide();
-    await this._wait(1.2);
+    this.elev.setNeedleDepth(0);
+    this.elev.setDisplay('OBEN');
     motor?.stop(0.6);
-    audio.play('jolt', { vol: 0.6 });
+    audio.play('jolt', { vol: 0.5 });
 
     // Stand fortschreiben
     const st = this.state;
@@ -772,6 +796,8 @@ export class Game {
     this.inv.update(dt, p.moving);
     p.shake = Math.max(p.shake, this.elev.shake * 0.6);
     this.elev.update(dt);
+    // Fahrgefühl: Einsacken beim Bremsen, leichtes Rollen in den Führungen
+    if (this.mode === 'ride') { this.R.camera.position.y += this.elev.rideCam.y; this.R.camera.rotation.z += this.elev.rideCam.roll; }
     if (this.world?.update) this.world.update(dt, this.time);
     for (const c of this.world?.candles || []) if (!this.world.isHub) c.scale.y = 0.07 * (0.85 + Math.sin(this.time * 11 + (c.userData.phase || 0)) * 0.15);
 

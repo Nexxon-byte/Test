@@ -11,6 +11,7 @@ import { textTexture, drawDialSymbol, flameTexture } from '../gfx/textures.js';
 import { damp, lerp } from '../core/rng.js';
 import { CAB, DEPTH_STAGES, MODULES } from './cab.js';
 import { buildModule, buildSlotPlate } from './cabin-modules.js';
+import { ShaftRide } from './shaft.js';
 
 export { CAB, DEPTH_STAGES, MODULES };
 
@@ -31,18 +32,6 @@ export function depthToAngle(depth) {
 const LEVER_SPAN = 2.5;
 function stageAngle(i) { return -LEVER_SPAN / 2 + (i / (DEPTH_STAGES.length - 1)) * LEVER_SPAN; }
 
-const SHAFT_STYLES = {
-  concrete: { mat: 'concrete', lamp: 0xffb070 },
-  stone:    { mat: 'stoneDark', lamp: 0xffa060 },
-  ossuary:  { mat: 'stoneDark', lamp: 0xff8840, skulls: true },
-  salt:     { mat: 'salt', lamp: 0xa8d8ff },
-  pipes:    { mat: 'rust', lamp: 0xff7040, pipes: true },
-  water:    { mat: 'brick', lamp: 0x60d0ff, wet: true },
-  rock:     { mat: 'rock', lamp: 0xffd090 },
-  flesh:    { mat: 'flesh', lamp: 0xff3020, hands: true },
-  void:     { mat: 'rock', lamp: 0x000000, none: true },
-};
-
 const HW = CAB.W / 2, T = CAB.WALL, DW = CAB.DOOR / 2;
 
 export class Elevator {
@@ -61,7 +50,10 @@ export class Elevator {
     this.needleTarget = 0;
     this.needleJitter = 0;
     this.speed = 0;          // m/s beim Fahren (negativ = abwärts)
-    this.shaftOffset = 0;
+    this.rideCam = { y: 0, roll: 0 }; // Kamera-Versatz während der Fahrt (Spiel addiert ihn)
+    this.outerRide = false;  // Etagentor fährt mit der Heimat-Etage durch den Schacht
+    this.depthValue = 0;
+    this.onRideEvent = null; // (art, stärke): 'joint' | 'landing' | 'stop'
     this.light = 1;          // Kabinenlicht 0..1
     this.lightMode = 'normal';
     this.emergency = 0;
@@ -449,8 +441,21 @@ export class Elevator {
     this.redLight = new THREE.PointLight(0xff1a10, 0, 8, 1.6);
     this.redLight.position.set(0, H - 0.3, -0.8);
     this.group.add(this.redLight);
-    this.shaftLamp = new THREE.PointLight(0xffb070, 0, 6, 1.8);
-    this.group.add(this.shaftLamp);
+    // Schachtlampe: übernimmt während der Fahrt das Licht der gerade vorbeiziehenden Lampe.
+    // Spot mit Schatten, damit Gitter und Toröffnung einen wandernden Lichtstreifen werfen.
+    // Die Schattenkarte wird nur während der Fahrt neu gezeichnet (shadow.autoUpdate, siehe shaft.js).
+    this.shaftLamp = new THREE.SpotLight(0xffb070, 0, 10, 1.2, 0.6, 1.5);
+    this.shaftLamp.castShadow = true;
+    this.shaftLamp.shadow.mapSize.set(512, 512);
+    this.shaftLamp.shadow.camera.near = 0.08;
+    this.shaftLamp.shadow.camera.far = 10;
+    this.shaftLamp.shadow.bias = -0.0008;
+    this.shaftLamp.shadow.normalBias = 0.03;
+    this.shaftLamp.shadow.autoUpdate = false;
+    this.shaftLamp.shadow.needsUpdate = true; // einmal zeichnen, damit die Schattenkarte existiert
+    this.shaftLamp.position.set(0, 1.5, CAB.LANDING_Z + 0.2);
+    this.shaftLamp.target.position.set(0, 1.2, CAB.BACK);
+    this.group.add(this.shaftLamp, this.shaftLamp.target);
   }
 
   _buildMirror() {
@@ -748,91 +753,21 @@ export class Elevator {
     const off = this.doorsOpen * (this.leafW + 0.02);
     this.leafL.position.x = -this.leafW / 2 - off;
     this.leafR.position.x = this.leafW / 2 + off;
-    this.outer.visible = this.outerVisible;
+    this.outer.visible = this.outerVisible || this.outerRide;
     if (this.outerNixie) this.outerNixie.visible = this.outerVisible && this.showOuterNixie !== false;
   }
 
   // ---------------------------------------------------------------- Schacht (Fahrt)
 
+  // Schachtfahrt: echte Geometrie im Ringpuffer (siehe shaft.js), Licht = this.shaftLamp
   _buildShaft() {
-    this.shaft = new THREE.Group();
-    this.shaft.visible = false;
-    const SW = CAB.W + 1.6;
-    const wallGeo = new THREE.PlaneGeometry(SW, 16, 1, 1);
-    const uv = wallGeo.attributes.uv;
-    for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * SW, uv.getY(i) * 16);
-    this.shaftMatFront = mat('concrete').clone();
-    this._copyShaftMaps(mat('concrete'));
-    const front = new THREE.Mesh(wallGeo, this.shaftMatFront);
-    front.position.set(0, 3, CAB.LANDING_Z + 0.3);
-    front.rotation.y = Math.PI;
-    front.receiveShadow = true;
-    this.shaftFront = front;
-    this.shaft.add(front);
-    for (const s of [-1, 1]) {
-      const side = new THREE.Mesh(wallGeo, this.shaftMatFront);
-      side.position.set(s * (DW + 0.5), 3, CAB.LANDING_Z);
-      side.rotation.y = -s * Math.PI / 2;
-      side.scale.x = 0.12;
-      this.shaft.add(side);
-    }
-    // Vorbeiziehende Etagen (Tore, Lampen) – Pool
-    this.passers = [];
-    for (let i = 0; i < 3; i++) {
-      const g = new THREE.Group();
-      const b = new Builder();
-      b.box(mat('steel'), 0, CAB.DOOR_H / 2, 0, CAB.DOOR + 0.1, CAB.DOOR_H, 0.06);
-      b.box(mat('hazard'), 0, 0.14, 0.035, CAB.DOOR + 0.1, 0.28, 0.01);
-      b.box(mat('rust'), -DW - 0.12, CAB.DOOR_H / 2 + 0.1, 0.05, 0.16, CAB.DOOR_H + 0.2, 0.12);
-      b.box(mat('rust'), DW + 0.12, CAB.DOOR_H / 2 + 0.1, 0.05, 0.16, CAB.DOOR_H + 0.2, 0.12);
-      b.box(mat('rust'), 0, CAB.DOOR_H + 0.15, 0.05, CAB.DOOR + 0.4, 0.16, 0.12);
-      b.box(mat('concrete'), 0, -0.1, 0.1, CAB.DOOR + 1, 0.2, 0.3);
-      g.add(b.build());
-      const numTex = textTexture(128, 64, (gg) => { gg.fillStyle = '#000'; gg.fillRect(0, 0, 128, 64); }, { srgb: false });
-      const num = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.3), new THREE.MeshStandardMaterial({ color: 0xd8d0b0, alphaMap: numTex, transparent: true, depthWrite: false }));
-      num.position.set(DW - 0.4, CAB.DOOR_H + 0.45, 0.03);
-      g.add(num);
-      g.userData.numTex = numTex;
-      const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), glowMat(0xffb070, 4, 'shaftLampGlow'));
-      lamp.position.set(-DW - 0.5, CAB.DOOR_H + 0.3, 0.12);
-      g.add(lamp);
-      g.userData.lamp = lamp;
-      g.rotation.y = Math.PI;
-      g.position.set(0, -50, CAB.LANDING_Z + 0.27);
-      this.shaft.add(g);
-      this.passers.push(g);
-    }
-    this.decor = new THREE.Group();
-    this.shaft.add(this.decor);
-    this.group.add(this.shaft);
-    this.shaftStyle = 'concrete';
-    this.passSpacing = 11;
+    this.shaftRig = new ShaftRide(this.group, this.shaftLamp);
+    this.shaftRig.onEvent = (k, v) => this.onRideEvent?.(k, v);
+    this.shaft = this.shaftRig.group;
   }
 
-  // Texturen der Schachtwand als eigene Kopien (sie werden beim Fahren verschoben)
-  _copyShaftMaps(src) {
-    const m = this.shaftMatFront;
-    for (const k of ['map', 'bumpMap', 'normalMap', 'roughnessMap']) {
-      m[k] = src[k] ? src[k].clone() : null;
-      if (m[k]) m[k].needsUpdate = true;
-    }
-    m.bumpScale = src.bumpScale;
-  }
-
-  setShaftStyle(name) {
-    const st = SHAFT_STYLES[name] || SHAFT_STYLES.concrete;
-    this.shaftStyle = name;
-    const src = mat(st.mat);
-    this._copyShaftMaps(src);
-    this.shaftMatFront.roughness = src.roughness;
-    this.shaftMatFront.metalness = src.metalness;
-    this.shaftMatFront.color.copy(src.color);
-    this.shaftMatFront.needsUpdate = true;
-    this.shaftLampColor = st.lamp;
-    this.shaftLamp.color.set(st.lamp);
-    for (const p of this.passers) p.visible = !st.none;
-    this.shaftFront.visible = !st.none;
-  }
+  // Stil für die als Nächstes auftauchenden Schachtsegmente (Übergang Beton → Stein …)
+  setShaftStyle(name) { this.shaftRig.setStyle(name); }
 
   // ---------------------------------------------------------------- Kollision
 
@@ -920,6 +855,7 @@ export class Elevator {
 
   setNeedleDepth(depth, instant = false) {
     this.needleTarget = depthToAngle(depth);
+    this.depthValue = depth;
     if (instant) this.needle = this.needleTarget;
   }
 
@@ -945,30 +881,35 @@ export class Elevator {
     return Math.abs(p.x) < HW - margin && p.z > CAB.BACK + margin && p.z < CAB.GATE_Z - margin;
   }
 
-  startRide({ speed = -4, style = 'concrete' } = {}) {
-    this.setShaftStyle(style);
-    this.shaft.visible = true;
+  // speed < 0 abwärts. style = Schacht am Ziel, from = Schacht zu Beginn (Wechsel per setShaftStyle).
+  // home: Fahrt beginnt an der Heimat-Etage (das echte Etagentor fährt mit nach oben weg),
+  // homeArrival: Fahrt endet dort. depth/fromDepth: Tiefen für die Nummernschilder.
+  startRide({ speed = -4, style = 'concrete', ...opts } = {}) {
+    this.shaftRig.start({ speed, style, ...opts });
     this.outerVisible = false;
     this.state = 'riding';
     this.speedTarget = speed;
-    this.passCounter = 0;
-    for (let i = 0; i < this.passers.length; i++) this.passers[i].position.y = -6 - i * this.passSpacing;
   }
 
-  setRideSpeed(v) { this.speedTarget = v; }
+  setRideSpeed(v) { this.speedTarget = v; this.shaftRig.setSpeed(v); }
 
+  // Bremsen: hält bündig am nächsten erreichbaren Absatz → state 'stopped'
   stopRide() {
     this.speedTarget = 0;
     this.state = 'stopping';
+    this.shaftRig.brake();
   }
 
   arrive() {
-    this.shaft.visible = false;
+    this.shaftRig.stop();
     this.speed = 0;
     this.speedTarget = 0;
     this.state = 'idle';
     this.outerVisible = true;
-    this.shaftLamp.intensity = 0;
+    this.outerRide = false;
+    this.outer.position.set(0, 0, 0);
+    this.rideCam.y = 0; this.rideCam.roll = 0;
+    this._layoutOuter();
   }
 
   ring(on) { this.phoneRinging = on; }
@@ -985,7 +926,7 @@ export class Elevator {
     const dT = this.doorsTarget, dPrev = this.doorsOpen;
     if (dT > this.doorsOpen && this.gateOpen > 0.4) this.doorsOpen = moveTo(this.doorsOpen, dT, dt / 1.6);
     else if (dT < this.doorsOpen) this.doorsOpen = moveTo(this.doorsOpen, dT, dt / 1.6);
-    if (this.doorsOpen !== dPrev || this.outer.visible !== this.outerVisible) this._layoutOuter();
+    if (this.doorsOpen !== dPrev || this.outer.visible !== (this.outerVisible || this.outerRide)) this._layoutOuter();
     this.gateCollider.enabled = this.gateOpen < 0.85;
     this.doorCollider.enabled = this.outerVisible && this.doorsOpen < 0.85;
 
@@ -998,28 +939,21 @@ export class Elevator {
     this.leverPivot.rotation.x = this.lever;
 
     // Fahrt
-    this.speed = damp(this.speed, this.speedTarget ?? 0, 0.9, dt);
-    if (this.state === 'stopping' && Math.abs(this.speed) < 0.05) { this.speed = 0; this.state = 'stopped'; }
     if (this.shaft.visible) {
-      this.shaftOffset += this.speed * dt;
-      for (const k of ['map', 'bumpMap', 'normalMap', 'roughnessMap']) {
-        const t = this.shaftMatFront[k];
-        if (t) t.offset.y = -this.shaftOffset * t.repeat.y;
+      this.shaftRig.depthNow = this.depthValue;
+      const r = this.shaftRig.update(dt);
+      this.speed = r.v;
+      if (this.state === 'stopping' && r.stopped) this.state = 'stopped';
+      this.shake = Math.max(this.shake, r.shake);
+      this.rideCam.y = r.camY; this.rideCam.roll = r.roll;
+      const hy = this.shaftRig.homeY();
+      if ((hy !== null) !== this.outerRide) {
+        this.outerRide = hy !== null;
+        if (!this.outerRide) this.outer.position.set(0, 0, 0);
+        this._layoutOuter();
       }
-      let lampI = 0;
-      for (const p of this.passers) {
-        p.position.y -= this.speed * dt;
-        if (p.position.y > 14) p.position.y -= this.passSpacing * this.passers.length;
-        if (p.position.y < -20) p.position.y += this.passSpacing * this.passers.length;
-        const ly = p.position.y + CAB.DOOR_H + 0.3;
-        if (Math.abs(ly - 1.3) < 3.5) {
-          lampI = Math.max(lampI, 1 - Math.abs(ly - 1.3) / 3.5);
-          this.shaftLamp.position.set(DW + 0.5, ly, CAB.LANDING_Z + 0.1);
-        }
-      }
-      this.shaftLamp.intensity = lampI * 4 * (this.shaftStyle === 'void' ? 0 : 1);
-      this.shake = Math.max(this.shake, Math.min(0.25, Math.abs(this.speed) * 0.02));
-    }
+      if (hy !== null) this.outer.position.set(this.shaft.position.x, hy, this.shaft.position.z);
+    } else this.speed = 0;
 
     // Licht
     let lv = this.light;

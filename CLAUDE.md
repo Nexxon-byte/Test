@@ -74,3 +74,9 @@ Playwright/Chromium headless mit Software-WebGL (`--use-angle=swiftshader --enab
 - **Nächster Schritt:** Kleidung düsterer machen. Pakete liegen in `tools/blender/packs/` (suits02 = Mönchsroben CC0, suits03 = Overalls CC-BY, shoes03, pants02, shirts02, suits01, gloves01). Mit `blender -b -P tools/blender/load_packs.py` einspielen, `npcs.json` umkleiden (Veit/Hanne/Stumme: donitz_monk_robe*, Ada/Dieter/Crew: elvs_male_coveralls_1, Voss: toigo_male_double-breasted_suit + fedora01), dann `make_npcs.py`. CC-BY-Autoren in `public/assets/CREDITS.md` nennen.
 - Danach: Dispo/Voss mit Modellen ausstatten, Sprint C (Monster: Fahrgäste gast_m/gast_f, Hörer, Ratten; Waffen; LP/Tod).
 - Testen: `node tools/test/shot-local.mjs "skip" name <views.json>` und `node tools/test/eval.mjs "skip" "<js>"`.
+
+## Stand 27.09.2026 abends (lokal)
+- Werkzeuge & Bausteine: **docs/WERKZEUGE.md** (zuerst lesen), Quellen/Lizenzen: docs/RECHERCHE_WERKZEUGE.md. Cloud-Auftrag: docs/AUFTRAG_ONLINE.md.
+- Oberstadt neu (Fassaden-Baukasten, Himmel, Laternen, Wetter), Figuren neu eingekleidet, Monster „Hörer“ (npc_hoerer.glb + gfx/monsterize.js), placecheck-Werkzeug.
+- **Nächste lokale Aufgaben (nur hier möglich):** Hörer-Feinschliff (bleiche Haut greift nicht – MAKESKIN-Material hat keinen Principled-Knoten), weitere Monster-Modelle (Portier, Ertrunkene, Nachsprecher), Ego-Hände, Licht-Backen für Hub/Kabine, Stimmen für neue Zeilen der Cloud, Grafik-Endkontrolle.
+- Arbeitsweise: einfache/klar umrissene Aufgaben an Sonnet-Agenten, Gestaltung an Opus-Agenten, immer geprüft; Tokens sparsam.

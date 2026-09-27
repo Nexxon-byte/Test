@@ -1,6 +1,7 @@
 // Entwickler-Sandkasten: Kabine + generierte Ebene.  ?sandbox&theme=dock&seed=1
 // Zusätze: &modules=all | &modules=flutlicht,salzkanone,panzergitter:2 · &stufe=3 (Seilstufe)
 // Tasten: F Lampe · N Noclip · O Tor auf/zu · [ ] Tiefenhebel · B Rufglocke · L Flutlicht · K Salzkanone
+// J Schachtfahrt abwärts starten / bremsen · U aufwärts (per JS: __sb.ride({ speed, style, from, … }), __sb.brake())
 
 import * as THREE from 'three';
 import { Renderer } from '../gfx/renderer.js';
@@ -55,7 +56,18 @@ export async function runSandbox(params = new URLSearchParams(location.search)) 
 
   input.attach(canvas);
   canvas.addEventListener('click', () => input.lock());
-  window.__sb = { R, elev, player, pool, level, THREE, col };
+  // Schachtfahrt zum Testen: Ebene ausblenden, Tor zu, losfahren (Optionen wie elev.startRide)
+  let savedFx = null;
+  const ride = (opts = {}) => {
+    level.group.visible = false;
+    if (!savedFx) { savedFx = pool.fixtures.slice(); pool.clear(); }
+    elev.gateOpen = 0; elev.gateTarget = 0; elev.doorsOpen = 0; elev.doorsTarget = 0;
+    elev._layoutGate(); elev._layoutOuter();
+    elev.startRide({ speed: -5.5, from: 'concrete', style: theme.shaft || 'concrete', stage: 2, depth: 13, toLabel: '−13', home: true, ...opts });
+  };
+  const brake = () => elev.stopRide();
+  const land = () => { elev.arrive(); level.group.visible = true; if (savedFx) { for (const f of savedFx) pool.add(f); savedFx = null; } };
+  window.__sb = { R, elev, player, pool, level, THREE, col, ride, brake, land };
 
   let last = performance.now();
   function frame(now) {
@@ -70,9 +82,16 @@ export async function runSandbox(params = new URLSearchParams(location.search)) 
     if (input.hit('KeyB')) elev.ringBell();
     if (input.hit('KeyL')) elev.setFlood(!elev.floodOn);
     if (input.hit('KeyK')) { elev.aimCannon(player.pos); elev.fireCannon(); }
+    if (input.hit('KeyJ') || input.hit('KeyU')) {
+      if (elev.state === 'riding') brake();
+      else if (elev.state === 'stopped') land();
+      else ride(input.hit('KeyU') ? { speed: 6, from: theme.shaft || 'concrete', style: 'concrete', home: false, homeArrival: true, fromDepth: 13, depth: 0, fromLabel: '−13', toLabel: 'OBEN' } : {});
+    }
     player.update(dt);
     elev.setRadarBlips([{ x: player.pos.x, z: player.pos.z, kind: 'crew' }, { x: Math.sin(now * 0.0003) * 14, z: 12 + Math.cos(now * 0.0003) * 6, kind: 'monster' }]);
     elev.update(dt);
+    R.camera.position.y += elev.rideCam.y;
+    R.camera.rotation.z += elev.rideCam.roll;
     pool.update(dt, R.camera.position);
     for (const c of level.candles) c.scale.y = 0.07 * (0.85 + Math.sin(now * 0.011 + c.userData.phase) * 0.15);
     const lp = new THREE.Vector3(); player.spot.getWorldPosition(lp);

@@ -34,13 +34,13 @@ const GUARD_LO = -3.6, GUARD_HI = 6.6; // dahinter darf beim Bremsen neu gelegt 
 const RAIL = 5.0;     // Schienenlänge – an jedem Stoß ruckt die Kabine
 const EYE = 1.5;
 const A_RUN = 1.5, A_BRAKE = 1.2, V_LEV = 0.22, R_LEV = 0.3;
-const LIGHT_I = 11;
+const LIGHT_I = 42;
 
 // ---------------------------------------------------------------- Stile
 // Oben (Markt, Ladebucht): Beton und Stahl. Tiefer: Stein, Rost, Salz, Knochen.
 const CONCRETE = {
   wall: 'concrete', ledge: 'concrete', iron: 'steel', beamM: 'steel', cable: 'rubber',
-  door: 'steelPanel', lamp: 0xffb070, plate: 'enamel', beams: 0.75, ties: true, stencil: true, hazard: true,
+  door: 'doorPaint', lamp: 0xffb070, plate: 'enamel', beams: 0.75, ties: true, stencil: true, hazard: true,
   lampEvery: 9.5, lampChance: 0.65, chalk: 0.06, signs: 0.3,
   landings: ['steel', 'steel', 'steel', 'ajar', 'bricked', 'grille'],
 };
@@ -55,7 +55,7 @@ const STYLES = {
   pipes:   { ...CONCRETE, iron: 'rust', beamM: 'rust', lamp: 0xff7040, hazard: false },
   stone:   STONE,
   ossuary: { ...STONE, lamp: 0xff8840, bones: true, plate: 'chalk', landings: ['grille', 'grille', 'wood', 'bricked', 'bricked', 'ajar'] },
-  salt:    { ...STONE, ledge: 'salt', door: 'rust', lamp: 0xa8d8ff, crust: true, landings: ['grille', 'steel', 'ajar', 'bricked', 'steel', 'grille'] },
+  salt:    { ...STONE, door: 'rust', lamp: 0xa8d8ff, crust: true, landings: ['grille', 'steel', 'ajar', 'bricked', 'steel', 'grille'] },
   water:   { ...STONE, wall: 'brick', lamp: 0x60d0ff },
   rock:    { ...STONE, wall: 'rock', lamp: 0xffd090 },
   flesh:   { ...STONE, wall: 'flesh', lamp: 0xff3020 },
@@ -66,6 +66,25 @@ const CHALK = ['||||  ||||  ||||  ||', 'NICHT HALTEN', 'NICHT AUSSTEIGEN', 'ZÄH
 const SIGNS = [['SCHACHT IX', '#e8e0c8', '#1c1a18'], ['BETRETEN\nVERBOTEN', '#c8a020', '#141210'], ['LAST 2000 KG', '#e8e0c8', '#7a1410'], ['NOTAUSSTIEG ↑', '#2a6a3a', '#e8e0c8']];
 
 // ---------------------------------------------------------------- geteilte Kleinteile
+// Abgewandelte Materialien nur für den Schacht (Kopien, die Bibliothek bleibt unberührt)
+const VARIANTS = {
+  doorPaint: ['steelPanel', { metalness: 0.3, roughness: 0.75, color: 0x8a8478 }],   // lackierte Stahltore
+  saltCrust: ['salt', { color: 0x9aa3a6, roughness: 0.7 }],                          // Salz, nicht grellweiß
+};
+const variantCache = new Map();
+function smat(name) {
+  if (!VARIANTS[name]) return mat(name);
+  if (variantCache.has(name)) return variantCache.get(name);
+  const [base, p] = VARIANTS[name];
+  const m = mat(base).clone();
+  m.name = name;
+  if (p.metalness !== undefined) m.metalness = p.metalness;
+  if (p.roughness !== undefined) m.roughness = p.roughness;
+  if (p.color !== undefined) m.color.setHex(p.color);
+  variantCache.set(name, m);
+  return m;
+}
+
 let BULB_GEO = null, LENS_GEO = null;
 const decalMats = new Map();
 
@@ -117,16 +136,16 @@ function shell(b, st, h, rng, opening = false) {
     const top = h - FLOOR - DOOR_H;
     b.add(wallM, uvBox(2 * OPEN, top, 0.4, u + 1.7, v + FLOOR + DOOR_H), 0, FLOOR + DOOR_H + top / 2, ZW + 0.2);
   }
-  for (const s of [-1, 1]) b.add(wallM, uvBox(0.2, h, 1.42, v, u), s * (XS + 0.1), h / 2, 2.31);
+  for (const s of [-1, 1]) b.add(wallM, uvBox(0.2, h, ZW - 1.6, v, u), s * (XS + 0.1), h / 2, (1.6 + ZW) / 2);
   // Stoß: Betonfuge (dunkler Strich) bzw. Steingesims – verdeckt zugleich die Kante zum Nachbarsegment
   if (st.courses) {
     const ledge = mat(st.ledge);
     b.box(ledge, 0, 0, ZW - 0.05, 2 * XC - 0.22, 0.18, 0.1);
-    for (const s of [-1, 1]) b.box(ledge, s * (XS - 0.05), 0, 2.31, 0.1, 0.18, 1.42);
+    for (const s of [-1, 1]) b.box(ledge, s * (XS - 0.05), 0, (1.6 + ZW) / 2, 0.1, 0.18, ZW - 1.6);
   } else {
     const dark = mat('rubber');
     b.box(dark, 0, 0, ZW - 0.003, 2 * XC - 0.22, 0.03, 0.006);
-    for (const s of [-1, 1]) b.box(dark, s * (XS - 0.003), 0, 2.31, 0.006, 0.03, 1.42);
+    for (const s of [-1, 1]) b.box(dark, s * (XS - 0.003), 0, (1.6 + ZW) / 2, 0.006, 0.03, ZW - 1.6);
   }
 }
 
@@ -263,12 +282,12 @@ function buildWall(st, rng) {
   }
   // Salzkrusten und Salzzapfen
   if (st.crust) {
-    const salt = mat('salt');
+    const salt = smat('saltCrust');
     const n = rng.int(3, 6);
     for (let i = 0; i < n; i++) {
       const x = rng.float(-1.7, 1.7), y = rng.float(0.8, h - 0.45), r = rng.float(0.12, 0.32);
       if (!occ.free(x, y, r)) continue;
-      b.sphere(salt, x, y, ZW, r, 10, 8, rng.float(1, 1.6), rng.float(0.6, 1.1), 0.3);
+      b.sphere(salt, x, y, ZW, r, 10, 8, rng.float(1, 1.6), rng.float(0.6, 1.1), 0.15);
       occ.add(x, y, r);
     }
     const yb = beamY !== null ? beamY - 0.12 : -0.09;
@@ -353,7 +372,7 @@ function buildLanding(st, variant, rng) {
   let leafM = null;
   if (variant === 'steel' || variant === 'ajar' || variant === 'wood') {
     const wood = variant === 'wood';
-    leafM = mat(wood ? 'walnut' : (st.door === 'walnut' ? 'steelPanel' : st.door));
+    leafM = smat(wood ? 'walnut' : (st.door === 'walnut' ? 'doorPaint' : st.door));
     const gap = variant === 'ajar' ? 0.16 : 0, LW = 1.72, zl = LEAF_Z;
     for (const s of [-1, 1]) {
       const cx = s * (LW / 2 + gap);
@@ -415,6 +434,8 @@ function buildLanding(st, variant, rng) {
 
 // Geometrie verschmelzen, Birnen und Aufkleber als eigene Meshes anhängen
 function finish(o, b, lb = null) {
+  // Prüfwerkzeug (?placecheck): Bauteil-Hüllen merken (Builder sammelt sie nur dann)
+  if (b.debugBoxes || lb?.debugBoxes) o.debugBoxes = [...(b.debugBoxes || []), ...(lb?.debugBoxes || [])];
   o.group = b.build();
   if (lb) { o.leafGroup = lb.build(); o.group.add(o.leafGroup); }
   for (const L of o.lamps) {
@@ -504,7 +525,7 @@ export class ShaftRide {
     const st = STYLES[style];
     const rng = new RNG(hashStr('schacht:' + style));
     const pool = { wall: [], landing: [] };
-    for (let i = 0; i < 10; i++) pool.wall.push(this._adopt(buildWall(st, rng), style));
+    for (let i = 0; i < 13; i++) pool.wall.push(this._adopt(buildWall(st, rng), style));
     for (const v of st.landings) pool.landing.push(this._adopt(buildLanding(st, v, rng), style));
     this.pools[style] = pool;
   }
@@ -635,6 +656,7 @@ export class ShaftRide {
     this.pos = 0; this.time = 0;
     this.mode = 'run';
     this.stopS = null;
+    this.arrival = null;
     this.toLabel = toLabel;
     this.homeArrival = homeArrival;
     this.depthTarget = depth;
@@ -648,7 +670,7 @@ export class ShaftRide {
     this._place(first, -FLOOR, 'hi', { label: home ? 'IX' : fromLabel, leaf: startLeaf });
     this.sides.lo.lampS = this.sides.hi.lampS;
     this._fill();
-    this.light.distance = 9;
+    this.light.distance = 10;
     this.light.decay = 1.5;
     this.light.intensity = 0;
     this.group.visible = true;
@@ -687,15 +709,18 @@ export class ShaftRide {
       this.sides.hi.since = 0;
     }
     this.stopS = arrival.S + FLOOR;
+    this.arrival = arrival;
     this.mode = 'brake';
   }
 
   stop() {
+    this.arrival = null;
     this._releaseAll();
     this.mode = 'idle';
     this.v = 0;
     this.group.visible = false;
     this.light.intensity = 0;
+    if (this.light.shadow) this.light.shadow.autoUpdate = false;
   }
 
   // Bodenhöhe der Heimat-Etage relativ zur Kabine (null = nicht im Schacht)
@@ -708,8 +733,9 @@ export class ShaftRide {
 
   _fill() {
     const segs = this.segs;
-    while (segs.length && segs[0].S + segs[0].h - this.pos < Y_MIN - 1) this._release(segs.shift());
-    while (segs.length && segs[segs.length - 1].S - this.pos > Y_MAX + 1) this._release(segs.pop());
+    // der Zielabsatz liegt beim Bremsen oft außerhalb des Puffers – er (und alles davor) bleibt
+    while (segs.length > 1 && segs[0] !== this.arrival && segs[0].S + segs[0].h - this.pos < Y_MIN - 1) this._release(segs.shift());
+    while (segs.length > 1 && segs[segs.length - 1] !== this.arrival && segs[segs.length - 1].S - this.pos > Y_MAX + 1) this._release(segs.pop());
     while (segs[0].S - this.pos > Y_MIN) this._spawn('lo');
     while (this._top() - this.pos < Y_MAX) this._spawn('hi');
   }
@@ -743,7 +769,7 @@ export class ShaftRide {
     } else if (this.mode === 'brake') {
       const r = Math.max(0, (this.stopS - this.pos) * this.dir);
       let vDes = Math.sqrt(2 * A_BRAKE * Math.max(0, r - R_LEV)) + V_LEV * Math.min(1, r / R_LEV);
-      vDes = Math.min(vDes, Math.max(Math.abs(this.vTarget), 0.5));
+      vDes = Math.max(0.06, Math.min(vDes, Math.max(Math.abs(this.vTarget), 0.5)));  // letzte Millimeter nicht ewig schleichen
       let a = Math.abs(this.v);
       a = a < vDes ? Math.min(vDes, a + A_RUN * dt) : Math.max(vDes, damp(a, vDes, 9, dt));
       a = Math.min(a, vDes + 0.2);
@@ -799,11 +825,14 @@ export class ShaftRide {
       const w = (1 - smoothstep(2.6, 4.8, Math.abs(y - EYE))) * L.power;
       if (w > bw) { bw = w; best = L; by = y; bf = f; }
     }
+    const L = this.light;
     if (best) {
-      this.light.position.set(best.x + sx, by, best.z - 0.08 + sz);
-      this.light.color.setHex(best.color);
-      this.light.intensity = LIGHT_I * bw * bf;
-    } else this.light.intensity = 0;
+      L.position.set(best.x + sx, by, best.z - 0.08 + sz);
+      if (L.target) L.target.position.set(best.x * 0.3, by * 0.6 + 0.4, -2.2);
+      L.color.setHex(best.color);
+      L.intensity = LIGHT_I * bw * bf;
+    } else L.intensity = 0;
+    if (L.shadow) L.shadow.autoUpdate = L.intensity > 0.01;
 
     out.v = this.v;
     return out;
