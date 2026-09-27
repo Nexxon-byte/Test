@@ -11,3 +11,4 @@ dist/
 shots/
 tools/blender/packs/
 tools/blender/out/
+tools/blender/__pycache__/

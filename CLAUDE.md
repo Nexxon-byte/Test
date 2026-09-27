@@ -68,3 +68,9 @@ Playwright/Chromium headless mit Software-WebGL (`--use-angle=swiftshader --enab
 - 1 Einheit = 1 m, Y oben. Kabine im Ursprung, Tür zur +Z-Seite.
 - Alles prozedural (keine Bild-/Sounddateien außer Stimmen). Fremde Marken meiden (Warhammer-*Ton*, eigene Begriffe).
 - Git-Commits enden mit: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`
+
+## Stand 27.09.2026 (lokale Sitzung)
+- Markt Neun hat echte Figuren (`world/npc.js`, Besetzung `CAST` in `world/hub.js`, Figuren `public/assets/chars/npc_*.glb` aus `tools/blender/make_npcs.py`).
+- **Nächster Schritt:** Kleidung düsterer machen. Pakete liegen in `tools/blender/packs/` (suits02 = Mönchsroben CC0, suits03 = Overalls CC-BY, shoes03, pants02, shirts02, suits01, gloves01). Mit `blender -b -P tools/blender/load_packs.py` einspielen, `npcs.json` umkleiden (Veit/Hanne/Stumme: donitz_monk_robe*, Ada/Dieter/Crew: elvs_male_coveralls_1, Voss: toigo_male_double-breasted_suit + fedora01), dann `make_npcs.py`. CC-BY-Autoren in `public/assets/CREDITS.md` nennen.
+- Danach: Dispo/Voss mit Modellen ausstatten, Sprint C (Monster: Fahrgäste gast_m/gast_f, Hörer, Ratten; Waffen; LP/Tod).
+- Testen: `node tools/test/shot-local.mjs "skip" name <views.json>` und `node tools/test/eval.mjs "skip" "<js>"`.
