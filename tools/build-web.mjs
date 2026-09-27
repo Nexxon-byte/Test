@@ -16,8 +16,9 @@ fs.copyFileSync(path.join(ROOT, 'tools/web/index.html'), path.join(OUT, 'index.h
 // CSS ohne die lokalen @font-face-Zeilen (Google Fonts übernimmt)
 const css = fs.readFileSync(path.join(ROOT, 'public/css/style.css'), 'utf8').split('\n').filter(l => !l.startsWith('@font-face')).join('\n');
 fs.writeFileSync(path.join(OUT, 'css/style.css'), css);
+fs.copyFileSync(path.join(ROOT, 'public/css/loading.css'), path.join(OUT, 'css/loading.css'));
 // Alle Module
-const files = ['css/style.css'];
+const files = ['css/style.css', 'css/loading.css'];
 (function copy(dir) {
   for (const e of fs.readdirSync(path.join(ROOT, 'public', dir), { withFileTypes: true })) {
     const rel = path.join(dir, e.name);

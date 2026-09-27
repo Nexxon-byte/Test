@@ -1,0 +1,92 @@
+/* TIEFER – Ladebildschirm: Blick in den Schacht der Neunten. Gothic Neon Lo-Fi. */
+
+#loadscreen {
+  position: fixed; inset: 0; z-index: 40; display: none; opacity: 0; overflow: hidden;
+  background: #050303; color: var(--bone, #e9dcc2); pointer-events: none; user-select: none;
+  will-change: opacity; contain: strict;
+}
+#loadscreen.on { display: block; }
+#loadscreen .ls-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; image-rendering: crisp-edges; opacity: 0; transition: opacity 0.6s ease; }
+#loadscreen.art .ls-art { opacity: 1; }
+/* bis das erste Bild steht: Schachtdunkel mit fernem Glühen statt Schwarz */
+#loadscreen { background: radial-gradient(ellipse 30% 26% at 60% 43%, rgba(120, 22, 10, 0.55), rgba(30, 10, 6, 0.3) 45%, transparent 75%), #060404; }
+#loadscreen[data-kind="hub"] { background: radial-gradient(ellipse 34% 30% at 60% 43%, rgba(200, 120, 50, 0.5), rgba(60, 34, 14, 0.35) 50%, transparent 80%), #0a0705; }
+
+/* Abdunklung hinter den Texten (links, unten) + leichte Rasterlinien wie im Spiel */
+#loadscreen .ls-scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(5, 3, 2, 0.82) 0%, rgba(5, 3, 2, 0.55) 26%, rgba(5, 3, 2, 0.12) 50%, rgba(5, 3, 2, 0) 62%),
+    linear-gradient(0deg, rgba(5, 3, 2, 0.72) 0%, rgba(5, 3, 2, 0.25) 26%, rgba(5, 3, 2, 0) 42%),
+    linear-gradient(180deg, rgba(5, 3, 2, 0.5) 0%, rgba(5, 3, 2, 0) 30%);
+}
+#loadscreen .ls-grain {
+  position: absolute; inset: 0; opacity: 0.22; mix-blend-mode: multiply;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.55) 0 1px, transparent 1px 3px);
+}
+
+/* Kopf: Kennung, Titel, Unterzeile */
+#loadscreen .ls-head { position: absolute; left: 6.5vw; top: 10vh; max-width: 52vw; }
+#loadscreen .ls-label {
+  display: flex; align-items: center; gap: 0.9em;
+  font-family: var(--mono, monospace); font-size: clamp(14px, 1.2vw, 19px); letter-spacing: 0.42em; color: var(--gold, #c9a050);
+  text-shadow: 0 0 10px rgba(255, 170, 80, 0.35);
+}
+#loadscreen .ls-label::before { content: ''; width: 38px; height: 1px; background: currentColor; box-shadow: 0 0 6px rgba(255, 170, 80, 0.6); }
+#loadscreen .ls-title {
+  margin-top: 0.22em; font-family: var(--serif, serif); font-weight: 300; font-size: clamp(46px, 6.6vw, 112px);
+  letter-spacing: 0.3em; line-height: 0.95; color: var(--bone, #e9dcc2);
+  text-shadow: 0 0 30px rgba(255, 150, 70, 0.3), 0 0 2px rgba(255, 240, 220, 0.55);
+  animation: lsTitleIn 1.4s ease both;
+}
+#loadscreen .ls-title { text-transform: uppercase; }
+#loadscreen .ls-title.long { font-size: clamp(34px, 4.3vw, 76px); letter-spacing: 0.22em; }
+#loadscreen .ls-title.xlong { font-size: clamp(30px, 3.4vw, 60px); letter-spacing: 0.18em; }
+#loadscreen .ls-sub { margin-top: 16px; font-family: var(--serif, serif); font-style: italic; font-size: clamp(17px, 1.5vw, 24px); letter-spacing: 0.05em; color: var(--bone-dim, #a89a80); }
+#loadscreen .ls-sub:empty { display: none; }
+@keyframes lsTitleIn { from { opacity: 0; filter: blur(6px); letter-spacing: 0.42em; } to { opacity: 1; filter: blur(0); } }
+
+/* Tipp / Zitat unten links */
+#loadscreen .ls-tip { position: absolute; left: 6.5vw; bottom: 8.5vh; width: min(660px, 48vw); }
+#loadscreen .ls-tip-lbl {
+  display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 8px; margin-bottom: 14px;
+  border-bottom: 1px solid rgba(201, 160, 80, 0.3);
+  font-family: var(--mono, monospace); font-size: clamp(13px, 1vw, 17px); letter-spacing: 0.34em; color: var(--gold, #c9a050);
+}
+#loadscreen .ls-tip-n { color: #6e5a3a; letter-spacing: 0.2em; }
+#loadscreen .ls-tip-body { min-height: 5.6em; transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease; }
+#loadscreen .ls-tip-body.out { opacity: 0; transform: translateY(6px); filter: blur(3px); }
+#loadscreen .ls-tip p.tip { font-family: var(--type, monospace); font-size: clamp(17px, 1.34vw, 22px); line-height: 1.55; color: var(--bone, #e9dcc2); text-shadow: 0 1px 0 #000, 0 0 14px rgba(0, 0, 0, 0.9); }
+#loadscreen .ls-tip p.quote { font-family: var(--serif, serif); font-style: italic; font-size: clamp(21px, 1.8vw, 29px); line-height: 1.42; color: var(--bone, #e9dcc2); text-shadow: 0 0 16px rgba(0, 0, 0, 0.9); }
+#loadscreen .ls-tip kbd {
+  display: inline-block; min-width: 1.5em; padding: 0 0.35em; margin: 0 0.1em; text-align: center;
+  font-family: var(--mono, monospace); font-size: 1.05em; line-height: 1.25; color: var(--gold-hi, #f0d28a);
+  border: 1px solid rgba(201, 160, 80, 0.55); background: rgba(201, 160, 80, 0.1); box-shadow: 0 0 8px rgba(255, 180, 90, 0.2);
+}
+#loadscreen .ls-tip .sig { margin-top: 4px; font-family: var(--hand, cursive); font-size: clamp(25px, 2vw, 34px); color: var(--gold-hi, #f0d28a); transform: rotate(-2deg); transform-origin: left; text-shadow: 0 0 12px rgba(255, 170, 80, 0.3); }
+#loadscreen .ls-tip cite { display: block; margin-top: 12px; font-style: normal; font-family: var(--mono, monospace); font-size: clamp(13px, 1vw, 16px); letter-spacing: 0.24em; color: var(--gold, #c9a050); }
+#loadscreen .ls-tip cite::before { content: '— '; }
+
+/* Stand knapp über dem Instrument unten rechts (Lage setzt loading.js aus der Auflösung der Animation) */
+#loadscreen .ls-status {
+  position: absolute; right: var(--ls-ir, 3.4vh); bottom: var(--ls-ib, 28.2vh);
+  font-family: var(--mono, monospace); font-size: clamp(15px, 1.15vw, 19px); letter-spacing: 0.26em; color: #c9a050;
+  text-shadow: 0 0 10px rgba(255, 150, 60, 0.45), 0 1px 0 #000; white-space: nowrap;
+}
+#loadscreen .ls-dots i { font-style: normal; animation: lsDot 1.5s steps(1) infinite; opacity: 0; }
+#loadscreen .ls-dots i:nth-child(2) { animation-delay: 0.25s; }
+#loadscreen .ls-dots i:nth-child(3) { animation-delay: 0.5s; }
+#loadscreen .ls-pct { margin-left: 0.8em; color: #ff9a4a; }
+@keyframes lsDot { 0%, 20% { opacity: 0; } 21%, 100% { opacity: 1; } }
+
+/* Weniger Bewegung (Einstellung „Flackern abschwächen“ oder Systemwunsch) */
+#loadscreen.calm .ls-title { animation: none; }
+#loadscreen.calm .ls-tip-body.out { transform: none; filter: none; }
+@media (prefers-reduced-motion: reduce) {
+  #loadscreen .ls-title { animation: none; }
+  #loadscreen .ls-tip-body.out { transform: none; filter: none; }
+}
+@media (max-width: 760px) {
+  #loadscreen .ls-head { max-width: 88vw; }
+  #loadscreen .ls-tip { width: 86vw; bottom: 22vh; }
+}

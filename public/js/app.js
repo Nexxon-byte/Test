@@ -17,10 +17,17 @@ import { loadPBR } from './gfx/materials.js';
 import { loadModelManifest, preloadModels, modelIds, setModelEnvironment } from './gfx/models.js';
 import { preloadCharacters } from './gfx/characters.js';
 import { HUB_CHARACTERS } from './world/hub.js';
+import { loading, withLoading, recordLoad, estimateLoad } from './ui/loading.js';
 
 const params = new URLSearchParams(location.search);
+// „Zum Titel“ aus dem Pausenmenü lädt die Seite neu – Warnhinweis, Studio und Helligkeit dann nicht noch einmal
+const toTitle = (() => { try { const v = sessionStorage.getItem('tiefer.toTitle') === '1'; sessionStorage.removeItem('tiefer.toTitle'); return v; } catch { return false; } })();
+const quick = params.has('skip') || toTitle;
+const nextFrames = (n = 1) => new Promise((r) => { const step = () => (n-- <= 0 ? r() : requestAnimationFrame(step)); requestAnimationFrame(step); });
 
 export async function boot() {
+  // Schnellstart: Ladebildschirm sofort (steht meist schon aus main.js); sonst Worker im Hintergrund aufwärmen
+  if (quick) loading.show({ kind: 'boot' }); else loading.prewarm();
   await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 2500))]);
   ui.init();
   const canvas = document.getElementById('game');
@@ -32,19 +39,47 @@ export async function boot() {
     R.camera.fov = s.fov; R.camera.updateProjectionMatrix();
   });
 
-  // Fototexturen laden, während der Warnhinweis zu sehen ist
-  const pbr = Promise.all([loadPBR(), loadModelManifest().then(() => preloadModels(modelIds())), preloadCharacters(HUB_CHARACTERS)]);
-  if (!params.has('skip')) await menus.warning(); else audio.init();
-  await pbr;
+  // Fototexturen, Modelle und Figuren laden (während Warnhinweis bzw. Ladebildschirm zu sehen sind)
+  const W = { pbr: 0.24, models: 0.46, chars: 0.18, hub: 0.12 };
+  const prog = { pbr: 0, models: 0, chars: 0, hub: 0 };
+  const STEPS = [['pbr', 'Wände werden verputzt'], ['models', 'Frachtgut wird verladen'], ['chars', 'Die Händler kommen'], ['hub', 'Markt Neun wird errichtet']];
+  const report = () => {
+    loading.progress(Object.keys(W).reduce((s, k) => s + W[k] * prog[k], 0));
+    const open = STEPS.find(([k]) => prog[k] < 1);
+    loading.status(open ? open[1] : 'Kerzen werden entzündet');
+  };
+  report();
+  let assetsDone = false;
+  const assets = Promise.all([
+    loadPBR().then(() => { prog.pbr = 1; report(); }),
+    loadModelManifest().then(() => preloadModels(modelIds(), (d, n) => { prog.models = d / n; report(); })).then(() => { prog.models = 1; report(); }),
+    preloadCharacters(HUB_CHARACTERS).then(() => { prog.chars = 1; report(); }),
+  ]).then(() => { assetsDone = true; });
+  if (!quick) {
+    await menus.warning();   // gibt auch den Ton frei
+    // Wer schneller klickt, als geladen wird, sieht den Schacht statt Schwarz (der Bau des Markts blockiert kurz)
+    const est = estimateLoad('hub');
+    if (!assetsDone || est === undefined || est >= 150) await loading.show({ kind: 'boot' });
+  } else {
+    audio.init();
+    // ohne Warnhinweis gibt es noch keine Nutzergeste: Ton beim ersten Klick/Tastendruck freigeben
+    const unlock = () => { audio.init(); removeEventListener('pointerdown', unlock, true); removeEventListener('keydown', unlock, true); };
+    addEventListener('pointerdown', unlock, true); addEventListener('keydown', unlock, true);
+  }
+  await assets;
   setModelEnvironment(R.renderer);
 
   // Kulisse: das Spiel mit einem vorläufigen Stand, Kamera im Titelmodus
   const saved = loadCampaign();
   const game = new Game(R, saved || newCampaign(settings.name || 'Namenlos'));
   window.__tiefer.game = game;
+  report();
+  await nextFrames(2);       // Stand zeichnen lassen, bevor der Bau den Hauptthread blockiert
+  const tHub = performance.now();
   await game.loadHub({ spawn: 'cabin' });
   game.titleMode = true;
   ui.setHud(false);
+  prog.hub = 1; report();
 
   // Hauptschleife
   let last = performance.now();
@@ -58,8 +93,14 @@ export async function boot() {
     requestAnimationFrame(frame);
   };
   requestAnimationFrame(frame);
+  await nextFrames(3);       // erste Bilder (Shader-Übersetzung) noch unter dem Ladebildschirm
+  recordLoad('hub', performance.now() - tHub);
+  if (!params.has('night')) {
+    if (quick) loading.hide();          // Titel erscheint darunter
+    else await loading.hide({ fade: 600 });
+  }
 
-  if (!params.has('skip')) {
+  if (!quick) {
     await menus.ident();
     if (!settings.calibrated) await menus.calibration();
   }
@@ -77,7 +118,13 @@ export async function boot() {
       const a = await menus.pause({ where });
       if (a === 'settings') { await menus.settingsPanel({ onChange: () => R.applyQuality() }); continue; }
       if (a === 'journal') { ui.toast('Das Tagebuch folgt im nächsten Sprint.'); continue; }
-      if (a === 'quit') { saveCampaign(game.state); location.reload(); return; }
+      if (a === 'quit') {
+        saveCampaign(game.state);
+        try { sessionStorage.setItem('tiefer.toTitle', '1'); } catch { /* privat */ }
+        await loading.show({ kind: 'boot', status: 'Zurück zum Titel', fade: 350 });
+        location.reload();
+        return;
+      }
       break;
     }
     audio.setMuffle(22000);
@@ -103,6 +150,7 @@ export async function boot() {
     game.adoptState(st);
     game.titleMode = false;
     await game.devNight(params.get('night') || 'dock', Number(params.get('seed') || 7));
+    loading.hide();
     // &tools=flinte,fackel → gleich in die Taschen; &patronen=6
     st.consumables.patronen = Number(params.get('patronen') || 0);
     for (const t of (params.get('tools') || '').split(',').filter(Boolean)) game._pickup(game.deliver(t));
@@ -132,7 +180,8 @@ export async function boot() {
     if (choice !== 'continue') await ui.intro(INTRO_HYBRID);
     game.adoptState(state);
     game.titleMode = false;
-    await game.start();
+    // Schwarz → Schacht → Markt Neun (der Bau des Markts blockiert kurz)
+    await withLoading(() => game.start(), { kind: 'hub', always: true, sub: choice === 'continue' ? `Woche ${state.week} · Nacht ${state.night + 1} von 3` : undefined });
     input.lock();
     break;
   }
