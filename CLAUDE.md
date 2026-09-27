@@ -80,3 +80,7 @@ Playwright/Chromium headless mit Software-WebGL (`--use-angle=swiftshader --enab
 - Oberstadt neu (Fassaden-Baukasten, Himmel, Laternen, Wetter), Figuren neu eingekleidet, Monster „Hörer“ (npc_hoerer.glb + gfx/monsterize.js), placecheck-Werkzeug.
 - **Nächste lokale Aufgaben (nur hier möglich):** Hörer-Feinschliff (bleiche Haut greift nicht – MAKESKIN-Material hat keinen Principled-Knoten), weitere Monster-Modelle (Portier, Ertrunkene, Nachsprecher), Ego-Hände, Licht-Backen für Hub/Kabine, Stimmen für neue Zeilen der Cloud, Grafik-Endkontrolle.
 - Arbeitsweise: einfache/klar umrissene Aufgaben an Sonnet-Agenten, Gestaltung an Opus-Agenten, immer geprüft; Tokens sparsam.
+
+## Stand 27.09.2026 nachts (Cloud-Sitzung)
+- **Sprint C fertig** (Monster, LP/Tod, Waffen, Module, Schrecken) – Einzelheiten, neue Sprechtext-IDs und Wünsche: **docs/UEBERGABE_ONLINE.md**.
+- Nacht direkt testen: `?skip&night=ossuary&seed=7&monsters=passenger,listener,rats&tools=flinte,fackel` (alle Zusätze in docs/WERKZEUGE.md).
