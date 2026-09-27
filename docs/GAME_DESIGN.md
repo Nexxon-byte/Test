@@ -213,7 +213,7 @@ public/js/
 
 ## 11. Umsetzungsphasen (Hybrid)
 1. ✅ Fundament: Server, Renderer/Post-FX, Texturen, Materialien, Licht-Pool, Audio-Engine, Musik, Stimmen-Pipeline, Generator, Themen, Requisiten, Story-Texte
-2. Lastkabine „Die Neunte“ (5×4 m, Module) + Generator auf 2×2-Kabine
+2. ✅ Lastkabine „Die Neunte“ (5×4 m, Module) + Generator auf 2×2-Kabine
 3. Spielkern: Nacht-Uhr, LP, Inventar, Beute, Kabinen-Zählung, Abrechnung, Wirtschaft, Speichern
 4. Hub „Markt Neun“ + Händler-UI + Auftragsbrett
 5. Monster (Fahrgäste, Hörer, Ratten) + Waffen

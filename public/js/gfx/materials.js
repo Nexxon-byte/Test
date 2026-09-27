@@ -5,6 +5,18 @@ import { getTexture } from './textures.js';
 
 const cache = new Map();
 
+// Bump-Mapping auf sehr dünner Geometrie (Ketten, Kabel, Seile unter einem Pixel) liefert
+// entartete Ableitungen → normalize(0) = NaN. Ein NaN-Pixel reicht, und der Bloom schwärzt das
+// ganze Bild. Deshalb: bei Länge ≈ 0 die ungestörte Normale nehmen.
+{
+  const chunk = THREE.ShaderChunk.bumpmap_pars_fragment;
+  const bad = 'return normalize( abs( fDet ) * surf_norm - vGrad );';
+  if (chunk.includes(bad)) {
+    THREE.ShaderChunk.bumpmap_pars_fragment = chunk.replace(bad,
+      'vec3 bumpN = abs( fDet ) * surf_norm - vGrad; float bumpL = length( bumpN ); return bumpL > 1e-6 ? bumpN / bumpL : surf_norm;');
+  } else console.warn('Bump-Shader-Schutz nicht angewendet: three.js-Chunk hat sich geändert');
+}
+
 // tex: Texturname · r: Rauheit · m: Metall · b: Bump-Stärke · c: Farbmultiplikator · e: Emissiv-Intensität
 const DEFS = {
   concrete:      { tex: 'concrete', r: 0.92, m: 0, b: 2.5 },
@@ -25,6 +37,10 @@ const DEFS = {
   gold:          { tex: 'brass', r: 0.22, m: 1, b: 0.3, c: 0xffe0a0 },
   steel:         { tex: 'steel', r: 0.45, m: 0.85, b: 1 },
   rust:          { tex: 'rust', r: 0.9, m: 0.3, b: 3 },
+  treadPlate:    { tex: 'treadPlate', r: 0.5, m: 0.8, b: 2.5 },
+  hazard:        { tex: 'hazard', r: 0.7, m: 0.2, b: 1 },
+  steelPanel:    { tex: 'steelPanel', r: 0.55, m: 0.75, b: 2 },
+  walnut:        { tex: 'woodPanel', r: 0.5, m: 0, b: 3, c: 0x8a6048 },
   tilesWhite:    { tex: 'tilesWhite', r: 0.3, m: 0, b: 2 },
   tilesFloor:    { tex: 'tilesFloor', r: 0.35, m: 0, b: 1.5 },
   carpet:        { tex: 'carpet', r: 1, m: 0, b: 1 },

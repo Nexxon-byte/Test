@@ -6,7 +6,7 @@ import { mat, glowMat } from '../gfx/materials.js';
 import { flameTexture, glowTexture, neonSign, chalkTexture, posterTexture } from '../gfx/textures.js';
 import { generate, CS, SOLID, FLOOR, CABIN, DIRS } from './levelgen.js';
 import { RNG } from '../core/rng.js';
-import { CAB } from './elevator.js';
+import { CAB } from './cab.js';
 import { P } from './props.js';
 
 export class Level {
@@ -80,8 +80,8 @@ export function buildLevel(R, collision, theme, seed, genOverrides = {}) {
   const level = new Level(grid, theme, rng);
   const b = new Builder();
   level.builder = b;
-  level.reserve(grid.ex, grid.ez + 1);   // Absatz vor der Tür freihalten
-  level.reserve(grid.ex, grid.ez + 2);
+  // Absatz vor dem Tor freihalten (die mittleren 2 × 2 Zellen; die Randzellen dürfen Deko tragen)
+  for (let z = grid.ez + 1; z <= grid.ez + 2; z++) for (let x = grid.ex - 1; x <= grid.ex; x++) level.reserve(x, z);
 
   buildArchitecture(b, grid, theme, level);
   buildPortal(b, grid, theme, level);
@@ -193,22 +193,41 @@ function buildArchitecture(b, grid, t, level) {
   }
 }
 
-// Wand mit Kabinentür zum Absatz
+// Wand mit dem Etagentor zum Absatz: 3 m breites Lasttor in schwerem Stahlrahmen
 function buildPortal(b, grid, t, level) {
   const H = t.height, z = CAB.LANDING_Z, dw = CAB.DOOR / 2, dh = CAB.DOOR_H;
+  const half = (CAB.CELLS_X * CS) / 2;
   const wallM = mat(t.wall);
-  const side = CS / 2 - dw;
+  const side = half - dw;
   for (const s of [-1, 1]) {
-    const x0 = s < 0 ? -CS / 2 : dw, x1 = s < 0 ? -dw : CS / 2;
+    const x0 = s < 0 ? -half : dw, x1 = s < 0 ? -dw : half;
     b.add(wallM, quadGeometry([x0, 0, z], [x1, 0, z], [x1, H, z], [x0, H, z], side, H, x0, 0));
   }
   b.add(wallM, quadGeometry([-dw, dh, z], [dw, dh, z], [dw, H, z], [-dw, H, z], CAB.DOOR, H - dh, -dw, dh));
-  const fm = mat(t.portal || 'brassDark');
-  b.box(fm, -dw - 0.08, dh / 2, z + 0.07, 0.16, dh + 0.1, 0.14);
-  b.box(fm, dw + 0.08, dh / 2, z + 0.07, 0.16, dh + 0.1, 0.14);
-  b.box(fm, 0, dh + 0.1, z + 0.07, CAB.DOOR + 0.32, 0.2, 0.14);
-  b.box(fm, 0, dh + 0.62, z + 0.05, 0.62, 0.34, 0.1);
-  level.anchors.portal = new THREE.Vector3(0, 0, z + 0.6);
+  const fm = mat(t.portal || 'brassDark'), steel = mat('steel'), hz = mat('hazard');
+  // Pfosten & Sturz (Themenmaterial) mit Stahlkante
+  for (const s of [-1, 1]) {
+    b.box(fm, s * (dw + 0.12), dh / 2, z + 0.07, 0.24, dh + 0.1, 0.14, { collide: true });
+    b.box(steel, s * (dw + 0.01), dh / 2, z + 0.1, 0.03, dh, 0.08);
+    b.box(hz, s * (dw + 0.12), 0.5, z + 0.142, 0.24, 1.0, 0.004);
+    // Rammschutz am Fuß
+    b.box(steel, s * (dw + 0.2), 0.25, z + 0.2, 0.18, 0.5, 0.18, { collide: true });
+  }
+  b.box(fm, 0, dh + 0.14, z + 0.07, CAB.DOOR + 0.48, 0.28, 0.14);
+  b.box(hz, 0, dh + 0.14, z + 0.142, CAB.DOOR + 0.1, 0.12, 0.004);
+  b.box(steel, 0, dh + 0.005, z + 0.1, CAB.DOOR, 0.03, 0.08);
+  // Schwelle mit Warnstreifen
+  b.box(steel, 0, 0.004, z + 0.2, CAB.DOOR + 0.2, 0.012, 0.4);
+  b.box(hz, 0, 0.011, z + 0.3, CAB.DOOR, 0.004, 0.16);
+  // Anzeigetafel für die Nixie-Röhre (die Röhre selbst gehört zur Kabine)
+  const px = CAB.OUTER_PANEL_X, py = CAB.OUTER_PANEL_Y;
+  b.box(fm, px, py, z + 0.05, 0.56, 0.3, 0.1);
+  b.box(steel, px, py - 0.18, z + 0.05, 0.1, 0.06, 0.06);
+  // Ruftaster darunter
+  b.box(steel, px, 1.35, z + 0.04, 0.16, 0.26, 0.08);
+  b.cyl(mat('brass'), px, 1.35, z + 0.08, 0.03, 0.03, 0.03, 10, { rx: Math.PI / 2 });
+  level.anchors.portal = new THREE.Vector3(0, 0, z + 0.9);
+  level.anchors.callButton = new THREE.Vector3(px, 1.35, z + 0.1);
 }
 
 // ----------------------------------------------------------------------------

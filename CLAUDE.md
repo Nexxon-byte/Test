@@ -15,7 +15,10 @@ Browser-/Desktop-Horrorspiel (Three.js r186, Node-Server). **Maßgebliche Spezif
 npm install
 node server.js          # http://localhost:3033
 ```
-Oder `START.bat` (Windows). Test-Sandkasten: `http://localhost:3033/?sandbox&theme=dock&seed=3` (Themen: dock, scriptorium, banquet, ossuary, mine). Im Sandkasten: `window.__sb` = { R, elev, player, pool, level } zum Steuern per JS. F = Lampe, N = Noclip.
+Oder `START.bat` (Windows). Test-Sandkasten: `http://localhost:3033/?sandbox&theme=dock&seed=3` (Themen: dock, scriptorium, banquet, ossuary, mine). Zusätze: `&modules=all` oder `&modules=flutlicht,salzkanone,panzergitter:2`, `&stufe=4` (Seilstufe). Im Sandkasten: `window.__sb` = { R, elev, player, pool, level } zum Steuern per JS. Tasten: F Lampe · N Noclip · O Tor auf/zu · [ ] Tiefenhebel · B Rufglocke · L Flutlicht · K Salzkanone.
+
+### Web-Testversion (ohne Installation, auch Handy)
+Der Nutzer testet oft nicht lokal. `node tools/build-web.mjs` baut `dist/web/` (Seite aus `tools/web/index.html`, Startmenü `js/dev/web.js`, Touch-Steuerung `js/dev/touch.js`, three.js per jsDelivr-Import-Map, Schriften per Google Fonts). Veröffentlicht als Artifact: https://claude.ai/artifact/M1JYKtUUgZvJ12xL46PQzn – nach Änderungen neu bauen und mit `url` + `root: dist/web` + Dateiliste aus `dist/web/files.json` erneut veröffentlichen.
 
 ## Stand der Dateien
 | Bereich | Datei | Stand |
@@ -27,10 +30,11 @@ Oder `START.bat` (Windows). Test-Sandkasten: `http://localhost:3033/?sandbox&the
 | Material/Geo | `gfx/materials.js`, `gfx/geo.js` | ✅ `mat(name)`, `glowMat()`, `Builder` (verschmilzt Geometrie pro Material, Meter-UVs, Kollider) |
 | Licht | `gfx/lightpool.js` | ✅ feste Anzahl Punktlichter, den nächsten „Leuchten“ zugewiesen (Modi steady/neon/candle/dying/strobe) |
 | Partikel | `gfx/particles.js` | ✅ Staub im Lichtkegel, Lichtkegel-Mesh, Funken |
-| Kabine | `world/elevator.js` | ⚠️ alte 2,2-m-Heilige-Kabine (Scherengitter, Zifferblatt mit Nadel, Nixie-Anzeige, Spiegel/Reflector, Telefon, Schachtfahrt). **Muss zur Lastkabine 5×4 m umgebaut werden** |
+| Kabine | `world/elevator.js`, `world/cab.js` | ✅ **Lastkabine „Die Neunte“** 5 × 4 × 3,3 m (Maße/Stufen/Module als reine Daten in `cab.js`). Nussholz, Damast, Messing, überschraubt mit Stahlplatten und Riffelblech, Messing-Zifferblatt im Boden, Lastnetz mit Säcken unter der Decke, Doppel-T-Träger, Käfiglampen, Spiegel-Schrein mit Kerzen, 3-m-Scherengitter, zweiflügliges Etagentor „IX“ (gleitet hinter die Wand des Absatzes), Zifferblatt + Nixie, AUFWÄRTS-Knopf, Telefon, **Maschinentelegraf zur Tiefenwahl** (`setDepthStage`, `setUnlockedStages` = Seilstufe), Schachtfahrt. `contains(p)` = Beute zählt. `interactables` = Liste {id, pos, radius} für das spätere Benutzen-System |
+| Module | `world/cabin-modules.js` | ✅ Leere Montageplatten + Module: Flutlicht (SpotLight + Schalter), Salzkanone (`aimCannon`, `fireCannon`), Panzergitter I–II (dickeres Stahlgitter), Weihöl-Station, Horchgerät (Radarschirm, `setRadarBlips`), Rufglocke (`ringBell`), Lastregal (`shelfSlots`), Notstrom (Licht bleibt bei Stromausfall), Anselms Kessel, Kosmetik (Neon, Radio, Plüsch-Heiliger, `setPaint`). API: `elev.setModule(id, stufe)` |
 | Kollision | `world/collision.js` | ✅ AABB-Hash, Kreis-Auflösung, Sichtlinie |
-| Generator | `world/levelgen.js` | ✅ Stile rooms/halls/tunnels/city/nave, A*, Sichtlinie. **Auf 2×2-Kabinenzellen umstellen** (wx = (x-ex)*CS + CS/2) |
-| Ebenenbau | `world/levelbuild.js` | ✅ Wände, Vertäfelung, Pilaster, Rippengewölbe, Spitzbögen, Portal, Leuchten, Deko-Kontext |
+| Generator | `world/levelgen.js` | ✅ Stile rooms/halls/tunnels/city/nave, A*, Sichtlinie. Kabine = 2 × 2 Zellen (ex−1…ex, ez−1…ez), Absatz 4 × 2 (ex−2…ex+1, ez+1…ez+2). `wx(x) = (x−ex)·CS + OX`, `wz(z) = (z−ez)·CS + OZ` mit OX = CS/2, OZ = LANDING_Z − CS/2 → Zellgrenze Kabine/Absatz liegt genau auf der Torwand. Test: `node tools/test/check-levelgen.mjs` |
+| Ebenenbau | `world/levelbuild.js` | ✅ Wände, Vertäfelung, Pilaster, Rippengewölbe, Spitzbögen, Leuchten, Deko-Kontext. Portal = 3-m-Lasttor im Stahlrahmen mit Warnstreifen, Rammschutz, Nixie-Tafel + Ruftaster seitlich (`anchors.callButton`) |
 | Themen | `world/themes.js` | ✅ dock, scriptorium, banquet, ossuary; mine = Platzhalter |
 | Requisiten | `world/props.js` | ✅ Säulen, Container, Lastwagen, Drohnen, Regale, Server, Pulte, Festtafeln, Bühne, Kerzenständer, Bänke, Statue, Schädelnischen, Särge, Spinde, Beichtstühle, Kabel |
 | Spieler | `game/player.js` | ✅ Bewegung, Ducken, Sprint/Ausdauer, Kurbellampe (Intensität 95, Cookie, Schatten), Lärm, Verstecken, Kopfbewegung. Fehlt: LP, Inventar |
@@ -39,7 +43,7 @@ Oder `START.bat` (Windows). Test-Sandkasten: `http://localhost:3033/?sandbox&the
 | UI | `ui/ui.js`, `ui/menus.js`, `css/style.css` | ✅ HUD/Kom/Hinweise/Karten/Dokumente/Intro; Warnhinweis, Ident, Helligkeit, Titel, Name+Schwierigkeit, Einstellungen, Pause, Tod. Fehlt: Shops, Auftragsbrett, Abrechnung, Tagebuch |
 
 ## Nächste Schritte (Reihenfolge)
-1. `world/elevator.js` → **Lastkabine „Die Neunte“** 5 × 4 m, Tür 3 m, entweihte Heilige Kabine (Nussholz/Messing + Stahlplatten, Lastnetze), Modulplätze (Flutlicht, Salzkanone, Heilstation, Horchgerät, Rufglocke, Lastregal …), Zifferblatt-Hebel zur Tiefenwahl. `levelgen/levelbuild` auf 2×2-Kabine + 4×2-Absatz.
+1. ✅ Lastkabine „Die Neunte“ + Generator auf 2×2-Kabine / 4×2-Absatz (26.09.2026).
 2. `public/js/app.js` + `game/game.js`: Boot-Fluss (Warnhinweis → Ident → Helligkeit → Titel → Name), Modi Hub/Nacht, Nacht-Uhr (00:00–03:07, 1 Spielminute ≈ 4 s, Warnungen 02:30/02:50/03:00/03:05), Auto-Aufstieg um 03:07.
 3. LP, Inventar (4 Plätze + „beide Hände“), Beute mit Wert/Gewicht (tragbar, im Kabinenraum gezählt), Scan (Q), Abrechnung der Nacht, Quote pro Zehntwoche (3 Nächte), Speichern.
 4. Hub „Markt Neun“ (handgebaut, Neon, Regen): Disposition (Dieter), Kantorei (Veit), Voss, Adas Werkstatt, Kapelle, Stille Ecke, Quartier + Shop-/Auftrags-UI.
@@ -53,7 +57,11 @@ Oder `START.bat` (Windows). Test-Sandkasten: `http://localhost:3033/?sandbox&the
 - Nach Textänderungen in `story/lines.js`: `node tools/export-lines.mjs` (schreibt `tools/tts/lines.json`). Geänderte Texte brauchen neue IDs oder `--redo`.
 
 ## Visuell testen ohne Grafikkarte
-Playwright/Chromium headless mit Software-WebGL (`--use-angle=swiftshader --enable-unsafe-swiftshader`), Server starten, Screenshots. Pointer-Lock gibt es headless nicht → Spieler per JS steuern (`window.__sb.player.teleport(x, z, yaw, pitch)`).
+Playwright/Chromium headless mit Software-WebGL (`--use-angle=swiftshader --enable-unsafe-swiftshader`), Server starten, Screenshots. Pointer-Lock gibt es headless nicht → Spieler per JS steuern (`window.__sb.player.teleport(x, z, yaw, pitch)`). Fertiges Werkzeug: `node tools/test/shot.mjs "<query>" <präfix> '<views-json>' [ordner]` (Bilder landen in `shots/`, nicht im Repo).
+
+## Gelöste Stolperfallen (nicht wieder einbauen)
+- **dt nie negativ werden lassen:** Der rAF-Zeitstempel kann nach einem langen Ladeblock *vor* `performance.now()` liegen → erstes dt ≈ −0,5 s → gedämpfte Werte explodieren → weißes Bild. Immer `Math.max(0, Math.min(0.05, …))` (gilt auch für das kommende `app.js`).
+- **Bump-Mapping auf dünner Geometrie** (Ketten, Kabel < 1 Pixel) ergab NaN-Normalen; ein NaN-Pixel schwärzt über den Bloom den ganzen Bildschirm. `gfx/materials.js` patcht deshalb `ShaderChunk.bumpmap_pars_fragment` (Fallback auf die ungestörte Normale). Bei three.js-Updates prüfen, ob die Warnung „Bump-Shader-Schutz nicht angewendet“ erscheint.
 
 ## Konventionen
 - Code-Kommentare und UI-Texte auf Deutsch, Code-Bezeichner Englisch. ES-Module, Import-Map (`three`, `three/addons/`), keine Build-Tools.

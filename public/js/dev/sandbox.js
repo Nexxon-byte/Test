@@ -1,4 +1,6 @@
 // Entwickler-Sandkasten: Kabine + generierte Ebene.  ?sandbox&theme=dock&seed=1
+// Zusätze: &modules=all | &modules=flutlicht,salzkanone,panzergitter:2 · &stufe=3 (Seilstufe)
+// Tasten: F Lampe · N Noclip · O Tor auf/zu · [ ] Tiefenhebel · B Rufglocke · L Flutlicht · K Salzkanone
 
 import * as THREE from 'three';
 import { Renderer } from '../gfx/renderer.js';
@@ -10,10 +12,10 @@ import { LightPool } from '../gfx/lightpool.js';
 import { Dust } from '../gfx/particles.js';
 import { buildLevel } from '../world/levelbuild.js';
 import { THEMES, applyThemeEnvironment } from '../world/themes.js';
+import { MODULES } from '../world/cab.js';
 
-export async function runSandbox() {
+export async function runSandbox(params = new URLSearchParams(location.search)) {
   await document.fonts.ready;
-  const params = new URLSearchParams(location.search);
   const canvas = document.getElementById('game');
   const R = new Renderer(canvas);
   const col = new CollisionWorld();
@@ -33,6 +35,13 @@ export async function runSandbox() {
   applyThemeEnvironment(R, hemi, theme);
   elev.setOuterStyle(theme.outerDoors);
 
+  // Module & Seilstufe
+  const modParam = params.get('modules') || '';
+  const mods = modParam === 'all' ? Object.keys(MODULES).map(id => [id, MODULES[id].max]) : modParam.split(',').filter(Boolean).map(m => { const [id, lv] = m.split(':'); return [id, Number(lv || 1)]; });
+  for (const [id, lv] of mods) elev.setModule(id, lv);
+  elev.setUnlockedStages(Number(params.get('stufe') || 2));
+  elev.setDepthStage(1, true);
+
   elev.setDisplay('−2');
   elev.setNeedleDepth(2, true);
   elev.gateOpen = 1; elev.gateTarget = 1; elev.doorsOpen = 1; elev.doorsTarget = 1;
@@ -46,11 +55,19 @@ export async function runSandbox() {
 
   let last = performance.now();
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000);
+    // rAF-Zeitstempel kann vor „last“ liegen (langer Ladeblock) → nie negativ werden lassen
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
     last = now;
     if (input.hit('KeyF')) player.toggleLamp();
     if (input.hit('KeyN')) player.noclip = !player.noclip;
+    if (input.hit('KeyO')) { if (elev.doorsTarget > 0) elev.closeDoors(); else elev.openDoors(); }
+    if (input.hit('BracketRight')) elev.stepDepthStage(1);
+    if (input.hit('BracketLeft')) elev.stepDepthStage(-1);
+    if (input.hit('KeyB')) elev.ringBell();
+    if (input.hit('KeyL')) elev.setFlood(!elev.floodOn);
+    if (input.hit('KeyK')) { elev.aimCannon(player.pos); elev.fireCannon(); }
     player.update(dt);
+    elev.setRadarBlips([{ x: player.pos.x, z: player.pos.z, kind: 'crew' }, { x: Math.sin(now * 0.0003) * 14, z: 12 + Math.cos(now * 0.0003) * 6, kind: 'monster' }]);
     elev.update(dt);
     pool.update(dt, R.camera.position);
     for (const c of level.candles) c.scale.y = 0.07 * (0.85 + Math.sin(now * 0.011 + c.userData.phase) * 0.15);

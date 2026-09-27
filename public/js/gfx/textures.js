@@ -219,6 +219,43 @@ const DEFS = {
     return [...mix3(c, [0.35, 0.16, 0.07], rust), 0.5 + s * 0.2 + rivet];
   } },
 
+  // Riffelblech (Lastkabinenboden): Linsen im Fischgrätmuster, blank gelaufen
+  treadPlate: { size: 128, world: 0.6, gen: (u, v, x, y) => {
+    const cx = (x % 16) - 7.5, cy = (y % 16) - 7.5;
+    const alt = (((x >> 4) + (y >> 4)) & 1) === 1;
+    const a = alt ? cx + cy : cx - cy, b = alt ? cx - cy : cx + cy;
+    const lens = Math.abs(a) < 6.5 && Math.abs(b) < 1.8 ? 1 : 0;
+    const s = fbm(NA, u * 3, v * 3, 3, 3);
+    const wear = smooth(0.45, 0.7, fbm(NB, u * 2, v * 2, 3, 2));
+    const rust = smooth(0.62, 0.78, fbm(NC, u * 4, v * 4, 4, 4));
+    const c = mix3([0.22, 0.23, 0.24], [0.4, 0.41, 0.42], s * 0.5 + lens * (0.2 + wear * 0.35));
+    return [...mix3(c, [0.33, 0.15, 0.06], rust * 0.85), 0.42 + lens * 0.45];
+  } },
+
+  // Warnstreifen Gelb/Schwarz, abgewetzt
+  hazard: { size: 128, world: 0.5, gen: (u, v, x, y) => {
+    const stripe = ((x + y) & 63) < 32;
+    const wear = smooth(0.55, 0.72, fbm(NA, u * 6, v * 6, 4, 6));
+    const dirt = 0.72 + fbm(NB, u * 3, v * 3, 3, 3) * 0.35;
+    const base = stripe ? [0.8, 0.6, 0.08] : [0.06, 0.055, 0.05];
+    const c = mix3(base, [0.3, 0.29, 0.28], wear * 0.85);
+    return [c[0] * dirt, c[1] * dirt, c[2] * dirt, 0.5 - wear * 0.12];
+  } },
+
+  // Genietete Stahlplatten (über das alte Nussholz geschraubt)
+  steelPanel: { size: 128, world: 1.2, gen: (u, v, x, y) => {
+    const px = x & 63, py = y & 63;
+    const seam = px < 1 || py < 1;
+    const rivet = ((px === 4 || px === 59) && (py & 7) === 4) || ((py === 4 || py === 59) && (px & 7) === 4);
+    const s = fbm(NA, u * 2, v * 48, 2, 2);
+    const rust = smooth(0.58, 0.76, fbm(NC, u * 6, v * 6, 4, 6));
+    const streak = smooth(0.55, 0.8, fbm(NB, u * 24, v * 3, 2, 3)) * 0.5;
+    let c = mix3([0.2, 0.21, 0.22], [0.34, 0.35, 0.36], s);
+    c = mix3(c, [0.3, 0.13, 0.05], Math.min(1, rust + streak * 0.6));
+    if (seam) c = [c[0] * 0.35, c[1] * 0.35, c[2] * 0.35];
+    return [...c, seam ? 0.1 : rivet ? 0.98 : 0.5 + s * 0.1];
+  } },
+
   rust: { size: 256, world: 2, gen: (u, v) => {
     const n = fbm(NA, u * 8, v * 8, 5, 8);
     const p = fbm(NC, u * 20, v * 20, 3, 20);

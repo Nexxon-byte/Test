@@ -1,10 +1,16 @@
-// Ebenen-Generator: Gitter aus Zellen (2,5 m). Die Kabine steht immer in Zelle (ex, ez),
-// Weltursprung = Kabinenmitte, der Treppenabsatz liegt bei +Z.
+// Ebenen-Generator: Gitter aus Zellen (2,5 m). Die Lastkabine belegt 2 × 2 Zellen
+// (x = ex−1 … ex, z = ez−1 … ez), davor liegt der Absatz mit 4 × 2 Zellen
+// (x = ex−2 … ex+1, z = ez+1 … ez+2). Weltursprung = Kabinenmitte, Tür bei +Z.
+// Die Zellgrenze zwischen Kabine und Absatz liegt genau auf der Wand mit dem Etagentor (CAB.LANDING_Z).
 
 import { RNG } from '../core/rng.js';
+import { CAB } from './cab.js';
 
 export const CS = 2.5;
 export const SOLID = 0, FLOOR = 1, CABIN = 2;
+// Versatz Zellmitte → Welt: X-Grenze der beiden Kabinenzellen auf x = 0, Z-Grenze auf LANDING_Z
+export const OX = CS / 2;
+export const OZ = CAB.LANDING_Z - CS / 2;
 
 export class Grid {
   constructor(w, h) {
@@ -14,7 +20,7 @@ export class Grid {
     this.block = new Uint8Array(w * h);          // von Requisiten belegt (für Navigation)
     this.tag = new Array(w * h).fill(null);
     this.ex = Math.floor(w / 2);
-    this.ez = 1;
+    this.ez = 2;
     this.rooms = [];
   }
   idx(x, z) { return z * this.w + x; }
@@ -25,11 +31,15 @@ export class Grid {
   walkable(x, z) { return this.get(x, z) === FLOOR && !this.block[z * this.w + x]; }
 
   // Zelle → Welt (Zellmitte)
-  wx(x) { return (x - this.ex) * CS; }
-  wz(z) { return (z - this.ez) * CS; }
+  wx(x) { return (x - this.ex) * CS + OX; }
+  wz(z) { return (z - this.ez) * CS + OZ; }
   // Welt → Zelle
-  cx(x) { return Math.floor(x / CS + 0.5) + this.ex; }
-  cz(z) { return Math.floor(z / CS + 0.5) + this.ez; }
+  cx(x) { return Math.floor((x - OX) / CS + 0.5) + this.ex; }
+  cz(z) { return Math.floor((z - OZ) / CS + 0.5) + this.ez; }
+
+  // Liegt die Zelle in der Kabine bzw. auf dem Absatz?
+  isCabin(x, z) { return x >= this.ex - 1 && x <= this.ex && z >= this.ez - 1 && z <= this.ez; }
+  isLanding(x, z) { return x >= this.ex - 2 && x <= this.ex + 1 && z >= this.ez + 1 && z <= this.ez + 2; }
 
   carveRect(x0, z0, x1, z1, roomId = -1) {
     for (let z = z0; z <= z1; z++) for (let x = x0; x <= x1; x++) {
@@ -50,8 +60,8 @@ export class Grid {
   _carveCell(x, z) {
     if (!this.in(x, z) || x === 0 || z === 0 || x === this.w - 1 || z === this.h - 1) return;
     if (this.get(x, z) === CABIN) return;
-    // hinter und neben der Kabine bleibt Fels
-    if (z <= this.ez && Math.abs(x - this.ex) <= 1) return;
+    // hinter und neben der Kabine bleibt Fels (eine Zelle Rand)
+    if (z <= this.ez && x >= this.ex - 2 && x <= this.ex + 1) return;
     this.set(x, z, FLOOR);
   }
 
@@ -78,8 +88,8 @@ export class Grid {
 
   // Sichtlinie durch das Gitter (DDA), in Weltkoordinaten
   lineOfSight(x0, z0, x1, z1) {
-    const gx0 = x0 / CS + this.ex + 0.5, gz0 = z0 / CS + this.ez + 0.5;
-    const gx1 = x1 / CS + this.ex + 0.5, gz1 = z1 / CS + this.ez + 0.5;
+    const gx0 = (x0 - OX) / CS + this.ex + 0.5, gz0 = (z0 - OZ) / CS + this.ez + 0.5;
+    const gx1 = (x1 - OX) / CS + this.ex + 0.5, gz1 = (z1 - OZ) / CS + this.ez + 0.5;
     let cx = Math.floor(gx0), cz = Math.floor(gz0);
     const tx = Math.floor(gx1), tz = Math.floor(gz1);
     const dx = gx1 - gx0, dz = gz1 - gz0;
@@ -156,12 +166,12 @@ export function generate(style, seed, params = {}) {
   const rng = new RNG(seed);
   const w = params.w ?? 28, h = params.h ?? 28;
   const grid = new Grid(w, h);
-  // Kabine
-  grid.set(grid.ex, grid.ez, CABIN);
-  // Treppenabsatz (3 breit, 2 tief)
+  // Kabine (2 × 2)
+  for (let z = grid.ez - 1; z <= grid.ez; z++) for (let x = grid.ex - 1; x <= grid.ex; x++) grid.set(x, z, CABIN);
+  // Absatz vor dem Etagentor (4 breit, 2 tief)
   const landingId = grid.rooms.length;
-  grid.rooms.push({ id: landingId, x0: grid.ex - 1, z0: grid.ez + 1, x1: grid.ex + 1, z1: grid.ez + 2, kind: 'landing' });
-  grid.carveRect(grid.ex - 1, grid.ez + 1, grid.ex + 1, grid.ez + 2, landingId);
+  grid.rooms.push({ id: landingId, x0: grid.ex - 2, z0: grid.ez + 1, x1: grid.ex + 1, z1: grid.ez + 2, kind: 'landing' });
+  grid.carveRect(grid.ex - 2, grid.ez + 1, grid.ex + 1, grid.ez + 2, landingId);
 
   const gen = GENERATORS[style] || GENERATORS.rooms;
   gen(grid, rng, params);
@@ -250,8 +260,8 @@ const GENERATORS = {
       const street = (x % pitch === grid.ex % pitch) || (z % pitch === 3 % pitch);
       if (street) grid._carveCell(x, z);
     }
-    // Hauptstraße vom Absatz
-    grid.carveLine(grid.ex, grid.ez + 1, grid.ex, grid.h - 3, 1);
+    // Hauptstraße vom Absatz (2 breit, mittig vor der Kabine)
+    grid.carveLine(grid.ex - 1, grid.ez + 1, grid.ex - 1, grid.h - 3, 2);
     // Plätze
     placeRooms(grid, rng, p.plazas ?? 2, 3, 5, 'plaza');
     // Ein paar Läden (kleine Räume an Straßen)
@@ -269,12 +279,13 @@ const GENERATORS = {
 
   // Kirchenschiff: gewaltige Halle + Seitenkapellen
   nave(grid, rng, p) {
-    const nw = p.naveW ?? 7, nl = p.naveL ?? 14;
+    // gerade Breite → das Schiff liegt mittig vor der Kabine (Mitte zwischen ex−1 und ex)
+    const nw = p.naveW ?? 8, nl = p.naveL ?? 14;
     const x0 = grid.ex - Math.floor(nw / 2), z0 = grid.ez + 4;
     const id = grid.rooms.length;
     grid.rooms.push({ id, x0, z0, x1: x0 + nw - 1, z1: z0 + nl - 1, kind: 'nave' });
     grid.carveRect(x0, z0, x0 + nw - 1, z0 + nl - 1, id);
-    grid.carveLine(grid.ex, grid.ez + 2, grid.ex, z0, 3);
+    grid.carveLine(grid.ex - 1, grid.ez + 2, grid.ex - 1, z0, 4);
     // Seitenkapellen
     for (let i = 0; i < (p.chapels ?? 6); i++) {
       const side = i % 2 ? 1 : -1;
@@ -291,7 +302,7 @@ const GENERATORS = {
     const az0 = z0 + nl + 1;
     grid.rooms.push({ id: aid, x0: x0 + 1, z0: az0, x1: x0 + nw - 2, z1: az0 + 3, kind: 'apse' });
     grid.carveRect(x0 + 1, az0, x0 + nw - 2, az0 + 3, aid);
-    grid.carveLine(grid.ex, z0 + nl - 1, grid.ex, az0, 3);
+    grid.carveLine(grid.ex - 1, z0 + nl - 1, grid.ex - 1, az0, 4);
     const more = placeRooms(grid, rng, p.rooms ?? 3, 3, 5, 'room');
     connectRooms(grid, rng, [grid.rooms[id], ...more], { width: 1, extra: 0.5 });
   },

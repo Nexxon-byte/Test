@@ -1,0 +1,201 @@
+<title>TIEFER Testkabine</title>
+<meta name="description" content="Web-Testversion von TIEFER: die Lastkabine „Die Neunte“ in generierten Ebenen.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Special+Elite&family=VT323&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+  }
+}
+</script>
+<style>
+  /* Eine einzige, bewusst dunkle Welt: Kabinenmessing auf Schachtschwarz */
+  :root {
+    color-scheme: dark;
+    --ink: #0a0706;
+    --panel: #130d0a;
+    --line: #3a2a18;
+    --brass: #c9a050;
+    --parchment: #e9dcc2;
+    --muted: #9c8b70;
+    --sodium: #ff8a2a;
+    --rose: #ff4a9a;
+    --display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+    --type: "Special Elite", "Courier New", Courier, monospace;
+    --nixie: "VT323", "Lucida Console", monospace;
+  }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body { background: var(--ink); color: var(--parchment); font-family: var(--type); overflow: hidden; }
+
+  #web { position: fixed; inset: 0; z-index: 20; pointer-events: none; }
+  #web .live { pointer-events: auto; }
+
+  /* ---------- Startmenü ---------- */
+  #menu {
+    position: fixed; inset: 0; overflow-y: auto; pointer-events: auto;
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 3px),
+      radial-gradient(ellipse at 50% 0%, #2a1a0c 0%, var(--ink) 62%);
+    padding-inline: 16px; padding-block: 28px 40px;
+  }
+  .sheet { max-width: 680px; margin-inline: auto; display: grid; gap: 22px; }
+  .masthead { display: grid; gap: 4px; }
+  .wordmark { font-family: var(--display); font-weight: 300; font-size: clamp(56px, 13vw, 104px); letter-spacing: 0.32em; line-height: 0.95; color: var(--parchment); margin: 0; text-shadow: 0 0 24px rgba(255,138,42,0.25); }
+  .eyebrow { font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--brass); margin: 0; }
+  .lede { font-size: 15px; line-height: 1.6; color: var(--muted); max-width: 60ch; margin: 0; text-wrap: pretty; }
+  .lede b { color: var(--parchment); font-weight: normal; }
+
+  fieldset { border: 1px solid var(--line); border-radius: 2px; margin: 0; padding: 14px 16px 16px; display: grid; gap: 10px; background: rgba(19,13,10,0.8); }
+  legend { font-family: var(--display); font-weight: 600; font-size: 22px; color: var(--brass); padding-inline: 8px; letter-spacing: 0.04em; }
+
+  /* Etagenverzeichnis wie neben einer alten Aufzugstür */
+  .floors { display: grid; gap: 2px; }
+  .floor { display: grid; grid-template-columns: 4.2em 1fr auto; align-items: center; gap: 12px; padding: 8px 10px; border: 1px solid transparent; cursor: pointer; }
+  .floor:hover { border-color: var(--line); }
+  .floor input { position: absolute; opacity: 0; pointer-events: none; }
+  .floor .depth { font-family: var(--nixie); font-size: 30px; color: #7a5a38; text-align: right; font-variant-numeric: tabular-nums; }
+  .floor .name { font-family: var(--display); font-size: 21px; font-weight: 600; color: var(--parchment); }
+  .floor .note { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+  .floor:has(input:checked) { border-color: var(--brass); background: rgba(201,160,80,0.08); }
+  .floor:has(input:checked) .depth { color: var(--sodium); text-shadow: 0 0 10px rgba(255,138,42,0.7); }
+  .floor:has(input:focus-visible) { outline: 2px solid var(--sodium); outline-offset: 2px; }
+
+  .row { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; }
+  label.inline { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+  select, input[type="number"] { font-family: var(--nixie); font-size: 22px; background: var(--ink); color: var(--sodium); border: 1px solid var(--line); padding: 2px 8px; border-radius: 2px; }
+  input[type="number"] { width: 5.5em; }
+  input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--brass); }
+  .small-btn { font-family: var(--type); font-size: 13px; background: transparent; color: var(--brass); border: 1px solid var(--line); padding: 6px 10px; cursor: pointer; }
+  .small-btn:hover, .small-btn:focus-visible { border-color: var(--brass); outline: none; }
+
+  #einsteigen {
+    font-family: var(--display); font-weight: 700; font-size: 26px; letter-spacing: 0.18em; text-transform: uppercase;
+    background: linear-gradient(#3a2a14, #1c1309); color: #f4e2b8; border: 1px solid var(--brass); padding: 14px 20px; cursor: pointer;
+    box-shadow: inset 0 0 0 3px #120c06, 0 0 18px rgba(201,160,80,0.18);
+  }
+  #einsteigen:hover, #einsteigen:focus-visible { box-shadow: inset 0 0 0 3px #120c06, 0 0 26px rgba(255,138,42,0.45); outline: none; }
+  #einsteigen:disabled { opacity: 0.7; cursor: wait; }
+
+  .keys { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px 24px; }
+  .keys h3 { font-family: var(--display); font-size: 18px; font-weight: 600; color: var(--brass); margin: 0 0 6px; }
+  .keys dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0; font-size: 13px; }
+  .keys dt { color: var(--sodium); font-family: var(--nixie); font-size: 18px; line-height: 1.1; }
+  .keys dd { margin: 0; color: var(--parchment); line-height: 1.35; }
+  .is-touch .only-pc { display: none; }
+  body:not(.is-touch) .only-touch { display: none; }
+  .fine { font-size: 12px; color: var(--muted); line-height: 1.5; margin: 0; }
+
+  /* ---------- Im Spiel ---------- */
+  #hud { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 10px); left: 12px; right: 12px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; z-index: 30; }
+  .plate { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brass); background: rgba(10,7,6,0.72); border: 1px solid var(--line); padding: 6px 10px; }
+  .hud-btns { display: flex; gap: 8px; }
+  #hilfe { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 52px); right: 12px; max-width: min(360px, calc(100vw - 24px)); background: rgba(10,7,6,0.9); border: 1px solid var(--line); padding: 14px; z-index: 30; }
+
+  /* Touch */
+  .touch-layer { position: fixed; inset: 0; z-index: 25; touch-action: none; pointer-events: auto; }
+  .touch-stick { position: fixed; width: 112px; height: 112px; border-radius: 50%; border: 1px solid rgba(201,160,80,0.5); background: rgba(10,7,6,0.35); }
+  .touch-knob { position: absolute; left: 32px; top: 32px; width: 48px; height: 48px; border-radius: 50%; background: rgba(201,160,80,0.55); }
+  .touch-buttons { position: fixed; right: 10px; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); display: grid; grid-template-columns: repeat(2, 76px); gap: 8px; }
+  .touch-btn { font-family: var(--type); font-size: 13px; height: 46px; color: var(--parchment); background: rgba(19,13,10,0.7); border: 1px solid var(--line); border-radius: 3px; touch-action: none; }
+  .touch-btn.down { border-color: var(--sodium); color: var(--sodium); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<canvas id="game"></canvas>
+<div id="ui"></div>
+
+<div id="web">
+  <div id="menu" class="live">
+    <form id="start-form" class="sheet">
+      <header class="masthead">
+        <p class="eyebrow">Testkabine · Die Neunte</p>
+        <h1 class="wordmark">TIEFER</h1>
+        <p class="lede">Hier stehst du in der neuen Lastkabine <b>„Die Neunte“</b> auf einer generierten Etage. Du kannst dich umsehen, das Tor bedienen, den Tiefenhebel stellen und die Module ausprobieren. <b>Monster, Beute und die Nacht bis 03:07 gibt es noch nicht</b>, die kommen in den nächsten Schritten.</p>
+      </header>
+
+      <fieldset>
+        <legend>Etage wählen</legend>
+        <div class="floors" role="radiogroup">
+          <label class="floor"><input type="radio" name="welt" value="dock" data-name="Die Ladebucht" checked><span class="depth">−2</span><span class="name">Die Ladebucht</span><span class="note">Natrium, Container</span></label>
+          <label class="floor"><input type="radio" name="welt" value="scriptorium" data-name="Das Skriptorium"><span class="depth">−7</span><span class="name">Das Skriptorium</span><span class="note">Archivgrün, Regale</span></label>
+          <label class="floor"><input type="radio" name="welt" value="banquet" data-name="Der Saal der Vierzig"><span class="depth">−13</span><span class="name">Der Saal der Vierzig</span><span class="note">Gold, Festtafel</span></label>
+          <label class="floor"><input type="radio" name="welt" value="ossuary" data-name="Das Beinhaus der Bruderschaft"><span class="depth">−17</span><span class="name">Das Beinhaus</span><span class="note">Knochen, Kerzen</span></label>
+          <label class="floor"><input type="radio" name="welt" value="mine" data-name="Bohrung Null"><span class="depth">−33</span><span class="name">Bohrung Null</span><span class="note">Salz · Platzhalter</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Kabine</legend>
+        <div class="row">
+          <label class="inline"><input type="checkbox" id="module" checked> Alle Module von Ada einbauen</label>
+        </div>
+        <div class="row">
+          <label class="inline" for="stufe">Seilstufe</label>
+          <select id="stufe">
+            <option value="2">I</option>
+            <option value="3">II</option>
+            <option value="4" selected>III</option>
+            <option value="5">IV</option>
+            <option value="6">V</option>
+            <option value="7">VI</option>
+          </select>
+          <label class="inline" for="seed">Ebene Nr.</label>
+          <input type="number" id="seed" min="1" max="99999" value="3">
+          <button type="button" class="small-btn" id="wuerfeln">Würfeln</button>
+        </div>
+        <p class="fine">Ohne Module siehst du die leeren Montageplatten. Die Seilstufe sperrt am Telegrafen alle tieferen Stellungen (rot).</p>
+      </fieldset>
+
+      <button type="submit" id="einsteigen">Einsteigen</button>
+
+      <section class="keys" aria-label="Steuerung">
+        <div class="only-pc">
+          <h3>Tastatur &amp; Maus</h3>
+          <dl>
+            <dt>Klick</dt><dd>Maus fangen (Esc lässt los). Klappt das nicht: mit gedrückter Maustaste ziehen</dd>
+            <dt>WASD</dt><dd>Gehen · Shift rennen · C ducken</dd>
+            <dt>F</dt><dd>Kurbellampe · R kurbeln</dd>
+            <dt>O</dt><dd>Gitter und Etagentor auf/zu</dd>
+            <dt>[ ]</dt><dd>Tiefenhebel am Telegrafen</dd>
+            <dt>B · L · K</dt><dd>Rufglocke · Flutlicht · Salzkanone</dd>
+            <dt>N</dt><dd>Noclip (durch Wände)</dd>
+          </dl>
+        </div>
+        <div class="only-touch">
+          <h3>Touch</h3>
+          <dl>
+            <dt>links</dt><dd>Daumen auflegen und schieben = gehen, weit nach vorn = rennen</dd>
+            <dt>rechts</dt><dd>Ziehen = umsehen</dd>
+            <dt>Knöpfe</dt><dd>Lampe, Tor, Hebel, Glocke, Flutlicht, Ducken, Kanone</dd>
+          </dl>
+        </div>
+      </section>
+      <p class="fine">Tipp: Das Beste ist der Blick vom Absatz zurück in die Kabine und der Telegraf rechts neben der Tür.</p>
+    </form>
+  </div>
+
+  <div id="hud" class="live" hidden>
+    <span class="plate" id="hud-welt">Die Ladebucht</span>
+    <div class="hud-btns">
+      <button type="button" class="small-btn plate" id="hilfe-btn">Steuerung</button>
+      <button type="button" class="small-btn plate" id="neu-btn">Andere Etage</button>
+    </div>
+  </div>
+  <div id="hilfe" class="live" hidden>
+    <dl class="keys" style="display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px;margin:0">
+      <dt class="only-pc">Klick</dt><dd class="only-pc">Maus fangen · Esc loslassen</dd>
+      <dt class="only-pc">WASD</dt><dd class="only-pc">Gehen · Shift · C</dd>
+      <dt>Lampe</dt><dd>F · kurbeln mit R</dd>
+      <dt>Tor</dt><dd>O</dd>
+      <dt>Hebel</dt><dd>[ und ]</dd>
+      <dt>Glocke</dt><dd>B · Flutlicht L · Kanone K</dd>
+    </dl>
+  </div>
+</div>
+
+<script type="module" src="js/dev/web.js"></script>
