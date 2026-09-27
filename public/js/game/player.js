@@ -305,6 +305,9 @@ export class Player {
     if (this.monsterFlicker > 0) flick *= Math.random() < this.monsterFlicker * 0.4 ? 0.05 : 1;
     const level = this.lampOn ? (0.35 + 0.65 * Math.min(1, this.battery * 3)) * flick : 0;
     this.spot.intensity = 95 * level;
+    // Schattenkarte nur neu zeichnen, wenn die Lampe wirklich leuchtet (spart einen ganzen Szenendurchlauf)
+    this.spot.shadow.autoUpdate = level > 0.01;
+    if (!this.spot.shadow.map) this.spot.shadow.needsUpdate = true;   // einmal anlegen, sonst passt der Shader-Sampler nicht
     this.bounce.intensity = 0.9 * level;
     this.lensMat.emissiveIntensity = 1.1 * level + 0.02;
     this.beam.material.uniforms.strength.value = 0.0;

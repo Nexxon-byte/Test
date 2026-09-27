@@ -29,7 +29,11 @@ import { QUOTES } from '../story/codex.js';
 import { DOCS } from '../story/docs.js';
 import { KOM, SLATE } from '../story/lines.js';
 import { DEATHS } from '../story/codex.js';
-import { Director } from './monsters/director.js';
+import { Director, MONSTER_CHARS } from './monsters/director.js';
+import { ratWarmupMesh } from './monsters/rats.js';
+import { Character, hasCharacter } from '../gfx/characters.js';
+import { GoldMark } from './goldmark.js';
+import { TOOLS, buildItemModel } from './items.js';
 import * as menus from '../ui/menus.js';
 
 export { FLOORS };
@@ -534,6 +538,7 @@ export class Game {
     if (st.flags.tutorial) voice.say('v_e1_power', { interrupt: true });
     await this._wait(st.flags.tutorial ? 2.6 : 1.2);
     this._enterLevel(level, theme, depth, name);
+    await this.prewarm();
     this.elev.lightMode = 'normal';
     this.elev.light = 0.55;
     audio.play('powerUp', { vol: 0.4 });
@@ -715,6 +720,23 @@ export class Game {
       else if (k < 0.9) voice.say(Math.random() < 0.5 ? 'r_e1_1' : 'i_e1_hum', { pos });
       else audio.play('knock', { pos, vol: 0.5, n: 3 });
     }
+  }
+
+  // ---------------------------------------------------------------- Shader vorkompilieren
+
+  // Alles, was im Lauf der Nacht erst auftaucht (Monster, Ratten, Werkzeug, Markierungen), einmal
+  // unsichtbar weit unter der Welt anlegen und die Shader asynchron kompilieren lassen – sonst
+  // ruckelt es genau in dem Moment, in dem das erste Monster ins Bild kommt.
+  async prewarm() {
+    const R = this.R, tmp = [];
+    const put = (o) => { o.position.set(0, -60, 0); R.scene.add(o); tmp.push(o); };
+    for (const id of MONSTER_CHARS) if (hasCharacter(id)) { const c = new Character(id); c.update(0.01); put(c.root); }
+    put(ratWarmupMesh());
+    for (const t of Object.keys(TOOLS)) put(buildItemModel(t));
+    const gm = new GoldMark(R.scene, new THREE.Vector3(0, -60, 0));
+    try { await R.renderer.compileAsync(R.scene, R.camera); } catch { try { R.renderer.compile(R.scene, R.camera); } catch { /* */ } }
+    for (const o of tmp) o.removeFromParent();
+    gm.dispose();
   }
 
   // ---------------------------------------------------------------- Schaden & Tod
@@ -951,6 +973,7 @@ export class Game {
     const level = buildLevel(this.R, this.col, theme, seed);
     this.elev.arrive();
     this._enterLevel(level, theme, depth, name);
+    await this.prewarm();
     this.elev.lightMode = 'normal';
     this.elev.light = 0.55;
     this.elev.openDoors();

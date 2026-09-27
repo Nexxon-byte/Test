@@ -2,34 +2,57 @@
 // (Leuchten flackern und sterben), beißen im Dunkeln und fliehen vor Licht und Salz.
 
 import * as THREE from 'three';
-import { cloneModel, hasModel } from '../../gfx/models.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { glowTexture } from '../../gfx/textures.js';
 import { audio } from '../../audio/audio.js';
 
-const SCALE = 2.2;          // Modell ist 15 cm lang (mit Schwanz) → ~33 cm
+const SCALE = 1;            // Modell in echter Größe: ~20 cm Körper + 18 cm Schwanz
+const EYE_F = 0.112, EYE_Y = 0.05, EYE_S = 0.014;   // Augen relativ zur Rattenmitte
 const BITE = 5;
 const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _v = new THREE.Vector3();
 const _up = new THREE.Vector3(0, 1, 0);
 const _qDead = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI * 0.9);   // tot: auf dem Rücken
 let proto = null;
 
-// Geometrie + Material des Modells mit seiner Grundlage (Boden = 0, Mitte = 0)
+// Low-Poly-Ratte (~450 Dreiecke statt 57 000 des Scans): Rumpf, Hinterteil, spitzer Kopf, Ohren,
+// Beinchen, hängender Schwanz. Farbe per Vertex – Fell graubraun, Ohren/Schwanz/Pfoten fahlrosa.
+// Nase zeigt nach +Z, Boden = 0.
 function ratProto() {
   if (proto) return proto;
-  let geo, material, base = new THREE.Matrix4();
-  const g = hasModel('street_rat') ? cloneModel('street_rat') : null;
-  if (g) {
-    g.updateMatrixWorld(true);
-    g.traverse(o => { if (o.isMesh && !geo) { geo = o.geometry; material = o.material.clone(); base.copy(o.matrixWorld); } });
-    material.color?.multiplyScalar(0.7);
+  const FUR = new THREE.Color(0x3a312a), BELLY = new THREE.Color(0x5a4c40), SKIN = new THREE.Color(0x8a6660), NOSE = new THREE.Color(0x201515);
+  const parts = [];
+  const add = (geo, color) => {
+    geo = geo.toNonIndexed();
+    const n = geo.attributes.position.count, c = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { const k = 0.85 + Math.random() * 0.3; c[i * 3] = color.r * k; c[i * 3 + 1] = color.g * k; c[i * 3 + 2] = color.b * k; }
+    geo.setAttribute('color', new THREE.BufferAttribute(c, 3));
+    geo.deleteAttribute('uv');
+    parts.push(geo);
+  };
+  add(new THREE.SphereGeometry(1, 10, 7).scale(0.042, 0.036, 0.08).translate(0, 0.042, 0.01), FUR);            // Rumpf
+  add(new THREE.SphereGeometry(1, 10, 7).scale(0.05, 0.042, 0.055).translate(0, 0.045, -0.045), FUR);          // Hinterteil
+  add(new THREE.SphereGeometry(1, 8, 5).scale(0.034, 0.018, 0.07).translate(0, 0.025, 0.0), BELLY);             // Bauch
+  add(new THREE.ConeGeometry(0.03, 0.075, 8).rotateX(Math.PI / 2).translate(0, 0.048, 0.1), FUR);              // Kopf
+  add(new THREE.SphereGeometry(0.009, 6, 4).translate(0, 0.046, 0.138), NOSE);                                  // Nase
+  for (const s of [-1, 1]) {
+    add(new THREE.CircleGeometry(0.014, 8).rotateY(s * 0.5).translate(s * 0.02, 0.07, 0.085), SKIN);           // Ohren
+    add(new THREE.CylinderGeometry(0.006, 0.005, 0.03, 5).translate(s * 0.026, 0.015, 0.05), SKIN);            // Vorderbeine
+    add(new THREE.CylinderGeometry(0.009, 0.006, 0.032, 5).translate(s * 0.03, 0.016, -0.055), SKIN);          // Hinterbeine
   }
-  if (!geo) {
-    // Ersatz: Kapsel mit Schwanz
-    geo = new THREE.CapsuleGeometry(0.018, 0.06, 3, 6).rotateX(Math.PI / 2).translate(0, 0.02, 0);
-    material = new THREE.MeshStandardMaterial({ color: 0x2a2320, roughness: 0.9 });
-  }
-  proto = { geo, material, base };
+  // Schwanz: drei verjüngte Glieder, erst waagrecht, dann auf den Boden gesenkt
+  const tail = [[0, 0.04, -0.1, 0.008, 0.006, 0.07, 0.35], [0, 0.022, -0.165, 0.006, 0.004, 0.07, 0.15], [0.012, 0.012, -0.23, 0.004, 0.002, 0.07, 0.05]];
+  for (const [x, y, z, r1, r2, len, tilt] of tail) add(new THREE.CylinderGeometry(r2, r1, len, 5).rotateX(Math.PI / 2 - tilt).translate(x, y, z), SKIN);
+  const geo = mergeGeometries(parts, false);
+  geo.computeVertexNormals();
+  const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, metalness: 0 });
+  proto = { geo, material, base: new THREE.Matrix4() };
   return proto;
+}
+
+// Für das Vorkompilieren der Shader: eine einzelne Ratte (gleiches Material wie der Schwarm)
+export function ratWarmupMesh() {
+  const P = ratProto();
+  return new THREE.Mesh(P.geo, P.material);
 }
 
 export class RatSwarm {
@@ -239,7 +262,7 @@ export class RatSwarm {
       const bob = r.alive ? Math.abs(Math.sin(r.hop)) * 0.008 : 0;
       _q.setFromAxisAngle(_up, r.yaw);
       if (!r.alive) _q.multiply(_qDead);
-      _p.set(r.pos.x, bob + (r.alive ? 0 : 0.06 * k), r.pos.z);
+      _p.set(r.pos.x, bob + (r.alive ? 0 : 0.085 * k), r.pos.z);
       _s.setScalar(k);
       _m.compose(_p, _q, _s).multiply(base);
       this.mesh.setMatrixAt(i, _m);
@@ -249,10 +272,10 @@ export class RatSwarm {
       r.blink -= this._dt || 0.016;
       if (r.blink < -0.12) r.blink = 2 + Math.random() * 6;
       const shut = r.blink < 0 || !r.alive;
-      const ex = r.pos.x + fx * 0.036 * k, ez = r.pos.z + fz * 0.036 * k, ey = shut ? -1 : 0.026 * k + bob;
+      const ex = r.pos.x + fx * EYE_F * k, ez = r.pos.z + fz * EYE_F * k, ey = shut ? -1 : EYE_Y * k + bob;
       const o = i * 6;
-      this.eyePos[o] = ex + sx * 0.006 * k; this.eyePos[o + 1] = ey; this.eyePos[o + 2] = ez + sz * 0.006 * k;
-      this.eyePos[o + 3] = ex - sx * 0.006 * k; this.eyePos[o + 4] = ey; this.eyePos[o + 5] = ez - sz * 0.006 * k;
+      this.eyePos[o] = ex + sx * EYE_S * k; this.eyePos[o + 1] = ey; this.eyePos[o + 2] = ez + sz * EYE_S * k;
+      this.eyePos[o + 3] = ex - sx * EYE_S * k; this.eyePos[o + 4] = ey; this.eyePos[o + 5] = ez - sz * EYE_S * k;
       i++;
     }
     this.mesh.instanceMatrix.needsUpdate = true;

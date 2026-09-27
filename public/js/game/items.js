@@ -166,9 +166,11 @@ const MODELS = {
 
 export function buildItemModel(type) {
   const def = itemDef(type);
+  // Schatten wirft nur Großes (zweihändig): kleine Dinge am Boden kosten sonst einen Schattendurchlauf je Stück
+  const shadow = !!def?.two;
   if (def?.model && hasModel(def.model)) {
     const g = cloneModel(def.model);
-    g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    g.traverse(o => { if (o.isMesh) { o.castShadow = shadow; o.receiveShadow = true; } });
     if (type === 'fackel') tintFlare(g);
     return g;
   }
@@ -177,7 +179,7 @@ export function buildItemModel(type) {
   (MODELS[type] || MODELS.zahnrad)(b, g);
   const m = b.build();
   g.add(m);
-  g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  g.traverse(o => { if (o.isMesh) { o.castShadow = shadow; o.receiveShadow = true; } });
   return g;
 }
 

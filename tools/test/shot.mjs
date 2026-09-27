@@ -40,5 +40,5 @@ for (const v of views.length ? views : [{ name: 'start' }]) {
   await page.waitForTimeout(v.wait ?? 1200);
   if (v.shot !== false) await page.screenshot({ path: `${out}/${prefix}_${v.name}.png`, timeout: 180000 });
 }
-console.log(logs.filter(l => !/pointer ?lock|GPU stall|WebGL-|swiftshader/i.test(l)).join('\n'));
+console.log(logs.filter(l => process.env.ALL || !/pointer ?lock|GPU stall|WebGL-|swiftshader/i.test(l)).join('\n'));
 await browser.close();
