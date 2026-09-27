@@ -12,3 +12,6 @@ shots/
 tools/blender/packs/
 tools/blender/out/
 tools/blender/__pycache__/
+
+# Arbeitsordner von Subagenten
+.claude/worktrees/
