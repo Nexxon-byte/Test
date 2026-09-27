@@ -253,7 +253,7 @@ class UI {
   doc(d, text) {
     return new Promise((resolve) => {
       const scr = $('#doc'), paper = scr.querySelector('.paper');
-      paper.className = 'paper ' + ({ hand: 'hand', church: 'church', terminal: 'terminal', chalk: 'chalk', tape: 'tape', child: 'hand' }[d.style] || '');
+      paper.className = 'paper ' + ({ hand: 'hand', church: 'church', terminal: 'terminal', chalk: 'chalk', tape: 'tape', child: 'child' }[d.style] || '');
       paper.querySelector('h3').textContent = d.title;
       paper.querySelector('.meta').textContent = d.meta || '';
       paper.querySelector('.body').textContent = text;
@@ -262,7 +262,8 @@ class UI {
       audio.play('paper');
       const close = (e) => {
         if (e && e.type === 'keydown' && !['KeyE', 'Escape', 'Tab', 'Space'].includes(e.code)) return;
-        if (e) e.preventDefault();
+        // Taste verbrauchen: sonst öffnet dasselbe E das Dokument sofort wieder bzw. Tab das Tagebuch
+        if (e) { e.preventDefault(); e.stopPropagation(); }
         window.removeEventListener('keydown', close, true);
         scr.removeEventListener('click', close);
         this.hide('doc');

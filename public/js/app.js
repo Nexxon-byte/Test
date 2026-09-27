@@ -10,6 +10,7 @@ import { voice } from './audio/voice.js';
 import { ui } from './ui/ui.js';
 import * as menus from './ui/menus.js';
 import { Game } from './game/game.js';
+import { openJournal } from './ui/journal.js';
 import { newCampaign, loadCampaign, saveCampaign } from './game/state.js';
 import { INTRO_HYBRID } from './story/codex.js';
 import { meta, saveMeta } from './core/save.js';
@@ -76,7 +77,7 @@ export async function boot() {
     for (;;) {
       const a = await menus.pause({ where });
       if (a === 'settings') { await menus.settingsPanel({ onChange: () => R.applyQuality() }); continue; }
-      if (a === 'journal') { ui.toast('Das Tagebuch folgt im nächsten Sprint.'); continue; }
+      if (a === 'journal') { await openJournal(game, { fromPause: true }); continue; }
       if (a === 'quit') { saveCampaign(game.state); location.reload(); return; }
       break;
     }
