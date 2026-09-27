@@ -621,6 +621,8 @@ export class Game {
     once('300', 180, () => { voice.say('v_time_300'); audio.play('bell', { vol: 0.8, f: 82 }); this.R.glitchPulse(0.4); });
     once('305', 185, () => { voice.say('v_time_305', { interrupt: true }); audio.play('bell', { vol: 0.6, f: 98 }); music.setTension(0.8); });
     once('307', NIGHT_END, () => this.ascend('ruf'));
+    // Lampe wird schwach: einmal pro Nacht mahnt die Vermittlerin
+    if (!ev.lowbat && this.player.battery < 0.18 && !this.player.dead) { ev.lowbat = true; voice.say('v_e1_lamp'); ui.hint('crank', 'R', 'Kurbeln – aber leise ist es nicht', 8); }
     // Umgebungsschrecken (sanft, ohne Monster)
     this._ambT = (this._ambT ?? 8) - dt;
     if (this._ambT <= 0) {

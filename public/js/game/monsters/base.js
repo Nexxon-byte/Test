@@ -5,9 +5,21 @@ import * as THREE from 'three';
 import { Character } from '../../gfx/characters.js';
 import { monsterize } from '../../gfx/monsterize.js';
 import { findPath, FLOOR } from '../../world/levelgen.js';
+import { mat } from '../../gfx/materials.js';
 
 const _v = new THREE.Vector3();
 let nextId = 1;
+
+// Kleinigkeiten an den Figuren: der Sack über dem Kopf der Fahrgäste ist im Modell reines Weiß
+// (ohne Textur) und strahlt im Lampenlicht – er bekommt grobes Sackleinen.
+export function dressMonster(root) {
+  root.traverse(o => {
+    if (!o.isMesh) return;
+    o.castShadow = true;
+    o.receiveShadow = true;
+    if (/bag_on_head/i.test(o.name)) o.material = mat('burlap');
+  });
+}
 
 export class Monster {
   // opts: char (Figuren-ID), profile (monsterize), radius, height
@@ -35,7 +47,7 @@ export class Monster {
     this.removed = false;
     this.stuckT = 0;
     this._last = new THREE.Vector3();
-    this.root.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    dressMonster(this.root);
     director.R.scene.add(this.root);
   }
 

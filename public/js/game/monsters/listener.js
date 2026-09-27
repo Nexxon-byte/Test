@@ -37,6 +37,7 @@ export class Listener extends Monster {
     this.onScreen = d.seen(this);
     this.attackCd -= dt;
     const dist = this.distTo(p.pos);
+    if (dist < 14 && (this.onScreen || dist < 8)) d.firstSight('listener');
 
     // Geräusche des Hörers selbst: Klicken (er „sieht“ mit den Ohren), Atem in der Nähe
     this.clickT -= dt;

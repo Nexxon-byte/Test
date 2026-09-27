@@ -14,6 +14,9 @@ import { Passenger } from './passenger.js';
 import { Listener } from './listener.js';
 import { RatSwarm } from './rats.js';
 import { Scares } from './scares.js';
+import { voice } from '../../audio/voice.js';
+import { ui } from '../../ui/ui.js';
+import { KOM } from '../../story/lines.js';
 
 export const MONSTER_CHARS = ['gast_m', 'gast_f', 'hoerer'];
 
@@ -423,6 +426,17 @@ export class Director {
     for (const m of this.monsters) if (!m.ghost) list.push({ x: m.pos.x, z: m.pos.z, kind: 'monster' });
     for (const s of this.swarms) if (s.alive) list.push({ x: s.center.x, z: s.center.z, kind: 'monster' });
     this.elev.setRadarBlips(list);
+  }
+
+  // Erste Begegnung mit einer Art (einmal pro Kampagne): Kom-Zeile von Dieter, Warnung der Vermittlerin
+  firstSight(kind) {
+    const flags = this.state?.flags;
+    if (!flags || flags['met_' + kind]) return;
+    flags['met_' + kind] = true;
+    if (kind === 'passenger') { ui.komMessage(KOM.k_gast); voice.sequence(['v_tut_pass1', 'v_tut_pass2'], 0.6); }
+    else if (kind === 'listener') { ui.komMessage(KOM.k_hoerer); voice.say('v_hoerer_1', { delay: 0.5 }); }
+    else if (kind === 'rats') ui.komMessage(KOM.k_ratten);
+    this.spike = Math.max(this.spike, 0.6);
   }
 
   // Schaden am Spieler (über das Spiel)

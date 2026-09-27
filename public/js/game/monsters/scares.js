@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { Character, hasCharacter } from '../../gfx/characters.js';
 import { monsterize } from '../../gfx/monsterize.js';
+import { dressMonster } from './base.js';
 import { CAB } from '../../world/cab.js';
 import { audio } from '../../audio/audio.js';
 import { voice } from '../../audio/voice.js';
@@ -60,7 +61,7 @@ export class Scares {
       ['phone', 2, () => !inCab && cabDist > 8 && cabDist < 30 && !this.ringing],
       ['steps', 2, () => !inCab],
       ['whisper', 3, () => true],
-      ['apparition', 2, () => hasCharacter('gast_m') && !inCab && this.apparitions.length === 0],
+      ['apparition', 2, () => hasCharacter('gast_m') && !inCab && this.apparitions.length === 0 && this._hasApparitionSpot()],
       ['gate', 2, () => hasCharacter('gast_f') && inCab && this.apparitions.length === 0 && d.elev.gateOpen > 0.5],
       ['strobe', 1, () => d.phase !== 'calm' && !!this._nearFixture(15)],
     ];
@@ -74,6 +75,8 @@ export class Scares {
     this[pick]();
     return pick;
   }
+
+  _hasApparitionSpot() { this._spot = this._findApparitionSpot(); return !!this._spot; }
 
   _nearFixture(range) {
     const p = this.d.player.pos;
@@ -171,11 +174,25 @@ export class Scares {
     setTimeout(() => { for (const f of list) { f.mode = f._strobeOld; delete f._strobeOld; } }, 900);
   }
 
+  // Frei sichtbar, sobald man sich umdreht – aber gerade nicht im Bild
+  _behindView(x, z) {
+    const d = this.d, p = d.player.pos;
+    if (d.canSeePoint(_v.set(x, 1, z))) return false;
+    return d.grid.lineOfSight(p.x, p.z, x, z) && d.col.lineClear(p.x, p.z, x, z, 1.2);
+  }
+
   // Jemand sitzt dort, wo eben niemand war
   apparition() {
+    const spot = this._spot || this._findApparitionSpot();
+    this._spot = null;
+    if (!spot) return;
+    this.apparitions.push(new Apparition(this, this.rng.pick(['gast_m', 'gast_f']), spot));
+  }
+
+  _findApparitionSpot() {
     const d = this.d, lv = d.level;
     let spot = null;
-    const seats = (lv.anchors.seats || []).filter(s => !d.canSeePoint(_v.set(s.pos.x, 1, s.pos.z)) && Math.hypot(s.pos.x - d.player.pos.x, s.pos.z - d.player.pos.z) > 6);
+    const seats = (lv.anchors.seats || []).filter(s => Math.hypot(s.pos.x - d.player.pos.x, s.pos.z - d.player.pos.z) > 6 && this._behindView(s.pos.x, s.pos.z));
     if (seats.length) { const s = this.rng.pick(seats); spot = { x: s.pos.x, z: s.pos.z, ry: s.ry, clip: 'Sitting_Idle_Loop', y: 0 }; }
     else {
       // an einer Wand, 7–15 m entfernt, gerade nicht im Blick
@@ -187,12 +204,12 @@ export class Scares {
         const dd = Math.hypot(cx - p.x, cz - p.z);
         if (dd > 7 && dd < 15) cells.push([x, z]);
       }
-      const slots = lv.wallSlots(this.rng.shuffle(cells).slice(0, 30), 0.45).filter(s => !d.canSeePoint(_v.set(s.x, 1, s.z)) && d.col.pointFree(s.x, s.z, 0.3, 0.2, 1.4));
-      if (!slots.length) return;
+      const slots = lv.wallSlots(this.rng.shuffle(cells).slice(0, 60), 0.45).filter(s => d.col.pointFree(s.x, s.z, 0.3, 0.2, 1.4) && this._behindView(s.x, s.z));
+      if (!slots.length) return null;
       const s = this.rng.pick(slots);
       spot = { x: s.x, z: s.z, ry: s.ry, clip: this.rng.chance(0.5) ? 'Sitting_Idle_Loop' : 'Idle_Loop', y: 0 };
     }
-    this.apparitions.push(new Apparition(this, this.rng.pick(['gast_m', 'gast_f']), spot));
+    return spot;
   }
 
   // Hinter dem Scherengitter steht jemand, wenn man sich umdreht
@@ -213,7 +230,7 @@ class Apparition {
     this.ch.randomize();
     this.ch.root.position.set(spot.x, spot.y || 0, spot.z);
     this.ch.root.rotation.y = spot.ry;
-    this.ch.root.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    dressMonster(this.ch.root);
     this.ch.update(0.01);
     this.warp.update(0.5);
     this.warp.frozen = true;

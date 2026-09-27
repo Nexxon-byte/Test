@@ -37,6 +37,7 @@ export const LINES = {
   v_e1_girl:   ['vermittlerin', 'Da war niemand, Seilkind. Hier unten ist seit langer Zeit niemand.'],
   v_tut_pass1: ['vermittlerin', 'Seilkind. Sehen Sie die Gestalt am Ende des Gangs? Sehen Sie sie an. Solange jemand hinsieht, kann sie sich nicht bewegen.'],
   v_tut_pass2: ['vermittlerin', 'Und im Dunkeln … sieht niemand hin.'],
+  v_hoerer_1:  ['vermittlerin', 'Leise jetzt, Seilkind. Dort unten ist jemand, der sehr gut hört. Ducken Sie sich. Und atmen Sie durch die Nase.'],
   v_tut_5:     ['vermittlerin', 'Sie haben genug für heute. Kommen Sie zurück in die Kabine und legen Sie den Hebel um.'],
   v_tut_6:     ['vermittlerin', 'Sehr gut. Die Kanzlei ist zufrieden. Für den Anfang.'],
 
@@ -319,6 +320,9 @@ export const KOM = {
   k_nosig:   'KEIN SIGNAL',
   k_47:      '47',
   k_home:    'KOMMT HEIM, KINDER.',
+  k_gast:    'FAHRGÄSTE: IM LICHT UND IM BLICK STEHEN SIE STILL. NICHT WEGSEHEN. NIE. – D.',
+  k_hoerer:  'DER HÖRER IST BLIND. LEISE GEHEN, DUCKEN. EINE KLAPPER WIRFT MAN WEIT. – D.',
+  k_ratten:  'RATTEN IM KABEL. LAMPE DRAUF, DANN LAUFEN SIE. – D.',
 };
 
 // Tafelsprüche (stumme Figuren)

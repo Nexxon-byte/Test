@@ -42,6 +42,7 @@ export class Passenger extends Monster {
     // Wird sie beobachtet? Im Blick UND im Licht – oder im bannenden Licht (Fackel, Flutlicht)
     const light = d.lightAt(this.chest);
     const seen = d.seen(this);
+    if (seen && light.lit && this.distTo(p.pos) < 20) d.firstSight('passenger');
     const observed = light.holy || (seen && light.lit);
     this.onScreen = seen;
     if (observed) {

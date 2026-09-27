@@ -146,7 +146,7 @@ export class RatSwarm {
 
     // Moduswechsel
     if (this.mode === 'nest') {
-      if (!p.dead && dist < 7 && !this.lit && !d.elev.contains(p.pos)) { this.mode = 'swarm'; this.modeT = 0; audio.play('ratSqueak', { pos: this.center.clone().setY(0.1), vol: 0.9, n: 5 }); }
+      if (!p.dead && dist < 7 && !this.lit && !d.elev.contains(p.pos)) { this.mode = 'swarm'; this.modeT = 0; audio.play('ratSqueak', { pos: this.center.clone().setY(0.1), vol: 0.9, n: 5 }); d.firstSight('rats'); }
       this._gnaw(dt);
     } else if (this.mode === 'swarm') {
       if (this.lit && this.modeT > 0.3) { this.mode = 'flee'; this.modeT = 0; this._fleeFrom = p.pos.clone(); }
