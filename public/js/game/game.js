@@ -31,6 +31,7 @@ import { KOM, SLATE } from '../story/lines.js';
 import { DEATHS } from '../story/codex.js';
 import { Director } from './monsters/director.js';
 import * as menus from '../ui/menus.js';
+import { withLoading } from '../ui/loading.js';
 
 export { FLOORS };
 
@@ -797,7 +798,8 @@ export class Game {
     st.flags.tutorial = false;
     saveCampaign(st);
 
-    await this.loadHub({ spawn: lost ? 'cabin' : 'stay' });
+    // Ladebildschirm verdeckt den Bau des Markts (nur wenn er spürbar dauert)
+    await withLoading(() => this.loadHub({ spawn: lost ? 'cabin' : 'stay' }), { kind: 'hub', depth, sub: lost ? 'Die Neunte bringt zurück, was von dir übrig ist.' : undefined });
     if (lost) { this.player.dead = false; ui.setEcho(false); this.player.teleport(0, -0.6, Math.PI, 0); this.hp = 100; this.blood = 0; }
     this.busy = true;
     input.unlock();
@@ -852,6 +854,11 @@ export class Game {
 
   // Direkt in eine Nacht springen (ohne Fahrt): ?skip&night=ossuary&seed=7[&monsters=passenger,listener,rats]
   async devNight(themeId = 'dock', seed = 7) {
+    const [, depth, name] = floorOfTheme(themeId);
+    return withLoading(() => this._devNight(themeId, seed), { kind: 'night', title: name, sub: `−${depth}`, depth });
+  }
+
+  async _devNight(themeId, seed) {
     const [tid, depth, name] = floorOfTheme(themeId);
     const theme = THEMES[tid] || THEMES.dock;
     this.nightInfo = { themeId: tid, depth, name, stage: stageOfTheme(tid), seed };

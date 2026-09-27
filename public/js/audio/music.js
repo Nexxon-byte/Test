@@ -47,6 +47,9 @@ class Music {
     this.out.connect(A.bus.music);
     const s = ctx.createGain(); s.gain.value = 0.55;
     this.out.connect(s).connect(A.revSend);
+    // Zonenteppich über eigenen Bus – der Ladebildschirm kann ihn so leiser drehen
+    this.zoneBus = ctx.createGain();
+    this.zoneBus.connect(this.out);
     this._buildTension();
     this._buildChase();
     this._tick();
@@ -70,7 +73,7 @@ class Music {
     const g = A.ctx.createGain();
     g.gain.value = 0.0001;
     g.gain.setTargetAtTime(1, t, fade / 3);
-    g.connect(this.out);
+    g.connect(this.zoneBus);
     const srcs = [];
     // Tiefe Streicher/Drone
     const lp = A.filt('lowpass', 200 + z.bright * 700, 0.8, g);
@@ -204,12 +207,136 @@ class Music {
   }
   setMaster(v, tc = 1) { if (this.out) this.out.gain.setTargetAtTime(v, A.now, tc); }
 
+  // ---------------------------------------------------------------- Ladebildschirm
+
+  // Eigene Schicht über den Zonen: tiefe Drone, Motor, Luftzug im Schacht, Schienenstöße,
+  // Seilknarren, ferne Glocke und – weit weg – Ilses Spieluhr. Alles wird im Voraus auf der
+  // Audio-Uhr geplant, damit es auch weiterklingt, während der Hauptthread eine Welt baut.
+  // kind: 'boot' | 'night' (abwärts, dunkel) · 'hub' (aufwärts, wärmer) · null = ausblenden.
+  // Gibt false zurück, solange der Ton noch nicht freigegeben ist.
+  setLoading(kind, fade = 0.9) {
+    if (!this._ensure()) return false;
+    const t = A.now;
+    if (!kind) {
+      const old = this.ld;
+      if (!old) return true;
+      this.ld = null;
+      clearTimeout(old.timer); clearTimeout(old.boxT);
+      old.box?.stop();
+      old.gain.gain.cancelScheduledValues(t);
+      old.gain.gain.setTargetAtTime(0.0001, t, fade / 3);
+      this.zoneBus.gain.cancelScheduledValues(t);
+      this.zoneBus.gain.setTargetAtTime(1, t + 0.2, fade / 2);
+      setTimeout(() => { for (const s of old.srcs) { try { s.stop(); } catch { /* */ } } try { old.gain.disconnect(); } catch { /* */ } }, fade * 1000 + 3000);
+      return true;
+    }
+    if (this.ld) { this.ld.kind = kind; return true; }
+    const up = kind === 'hub';
+    const g = A.ctx.createGain();
+    g.gain.value = 0.0001;
+    g.gain.setTargetAtTime(0.28, t, 0.35);
+    g.connect(this.out);
+    this.zoneBus.gain.cancelScheduledValues(t);
+    this.zoneBus.gain.setTargetAtTime(0.15, t, 0.25);
+    const srcs = [];
+    const T1 = t + 1e5;
+    // Drone: tiefe, schwebende Sägezähne unter einem atmenden Tiefpass
+    const lp = A.filt('lowpass', up ? 320 : 210, 1.2, g);
+    const cut = A.ctx.createGain(); cut.gain.value = up ? 110 : 70; cut.connect(lp.frequency);
+    srcs.push(A.osc('sine', 0.045, t, T1, cut));
+    const notes = up ? [33, 40, 45, 48] : [28, 35, 40, 41];
+    notes.forEach((m, i) => {
+      for (const det of [-8, 7]) {
+        const vg = A.vca(lp, (i === 0 ? 0.05 : 0.026) * (i === 3 && !up ? 0.5 : 1));
+        const o = A.osc('sawtooth', mtof(m), t, T1, vg);
+        o.detune.value = det + rnd(-3, 3);
+        srcs.push(o);
+      }
+    });
+    // Unterton, langsam pulsierend
+    const sub = A.vca(g, 0.12);
+    srcs.push(A.osc('sine', mtof(up ? 33 : 28) / 2 * 1.0, t, T1, sub));
+    const sp = A.ctx.createGain(); sp.gain.value = 0.05; sp.connect(sub.gain);
+    srcs.push(A.osc('sine', up ? 0.2 : 0.14, t, T1, sp));
+    // Motor der Neunten + Luftzug im Schacht
+    const mg = A.vca(A.filt('lowpass', 240, 1.5, g), 0.1);
+    srcs.push(A.osc('sawtooth', 49, t, T1, mg), A.noiseSrc('brown', t, T1, A.vca(A.filt('lowpass', 420, 0.7, g), 0.12)));
+    const whine = A.vca(A.filt('bandpass', 1400, 14, g), 0.006);
+    srcs.push(A.osc('sawtooth', up ? 620 : 470, t, T1, whine));
+    const wind = A.filt('bandpass', up ? 700 : 480, 1.6, A.vca(g, 0.14));
+    const wlfo = A.ctx.createGain(); wlfo.gain.value = 220; wlfo.connect(wind.frequency);
+    srcs.push(A.noiseSrc('pink', t, T1, wind), A.osc('sine', 0.11, t, T1, wlfo));
+    // ferne Spieluhr (dumpf, verstimmt, wie hinter einer Wand)
+    const boxBus = A.filt('lowpass', up ? 2600 : 1700, 0.6, A.filt('highpass', 260, 0.6, g));
+    const rs = A.ctx.createGain(); rs.gain.value = 0.9; boxBus.connect(rs).connect(A.revSend);
+    const ld = { kind, gain: g, srcs, timer: 0, box: null, next: t + 0.4, bell: t + rnd(6, 10), creak: t + rnd(1.5, 4), whoosh: t + 1.2 };
+    this.ld = ld;
+    const playBox = () => {
+      if (this.ld !== ld) return;
+      ld.box = this.musicBox({ dest: boxBus, vol: up ? 0.34 : 0.28, tempo: up ? 64 : 54, wobble: 22, detune: up ? -18 : -40, onEnd: () => { ld.boxT = setTimeout(playBox, 5000); } });
+    };
+    ld.boxT = setTimeout(playBox, 1600);
+    // Ereignisse im Voraus planen (reicht über kurze Blockaden des Hauptthreads hinweg)
+    const AHEAD = 3.5;
+    const sched = () => {
+      if (this.ld !== ld) { clearTimeout(ld.boxT); return; }
+      const now = A.now, until = now + AHEAD;
+      // Schienenstöße: „ta-tack“ alle ~0,9 s
+      while (ld.next < until) {
+        const tt = Math.max(ld.next, now + 0.02);
+        this._railJoint(g, tt, 1);
+        this._railJoint(g, tt + 0.13, 0.6);
+        ld.next += 0.9 + rnd(-0.04, 0.04);
+      }
+      // Absätze rauschen vorbei
+      while (ld.whoosh < until) { this._whoosh(g, Math.max(ld.whoosh, now + 0.02)); ld.whoosh += 1.8 + rnd(-0.1, 0.1); }
+      // Seil knarrt
+      while (ld.creak < until) { this._creak(g, Math.max(ld.creak, now + 0.02)); ld.creak += rnd(3.5, 8); }
+      // ferne Glocke (unten dunkler)
+      while (ld.bell < until) { A._ring(A.vca(g, 0.5), Math.max(ld.bell, now + 0.02), up ? rnd(98, 131) : rnd(55, 73), 6, 0.09, [1, 2.4, 3.9, 5.6]); ld.bell += rnd(14, 24); }
+      ld.timer = setTimeout(sched, 400);
+    };
+    sched();
+    return true;
+  }
+
+  // Schienenstoß: dumpfer Schlag + kurzes Metallklirren
+  _railJoint(dest, t, k) {
+    const o = A.vca(A.filt('lowpass', 1600, 0.7, dest), 0.5 * k);
+    A._thump(o, t, 95, 48, 0.09, 0.22);
+    A._burst(o, t, 0.035, 1900, 3, 0.05);
+  }
+
+  // Luftstoß, wenn ein Absatz vorbeizieht
+  _whoosh(dest, t) {
+    const bp = A.filt('bandpass', 380, 1.2, dest);
+    bp.frequency.setValueAtTime(260, t);
+    bp.frequency.linearRampToValueAtTime(900, t + 0.35);
+    bp.frequency.linearRampToValueAtTime(300, t + 0.9);
+    const g = A.vca(bp);
+    A.env(g, t, 0.3, 0.05, 0.7);
+    A.noiseSrc('pink', t, t + 1.1, g);
+  }
+
+  // Seilknarren (wie SFX.cableCreak, aber zeitlich planbar)
+  _creak(dest, t) {
+    const dur = rnd(0.7, 1.5);
+    const bp = A.filt('bandpass', rnd(500, 1000), 6, A.vca(dest, 0.1));
+    const am = A.vca(bp);
+    const mod = A.ctx.createGain(); mod.gain.value = 0; mod.connect(am.gain);
+    mod.gain.setValueAtTime(0, t); mod.gain.linearRampToValueAtTime(0.6, t + dur * 0.3); mod.gain.linearRampToValueAtTime(0, t + dur);
+    const lfo = A.osc('square', rnd(16, 32), t, t + dur, mod);
+    lfo.frequency.linearRampToValueAtTime(rnd(10, 45), t + dur);
+    const s = A.osc('sawtooth', rnd(80, 140), t, t + dur, am);
+    s.frequency.linearRampToValueAtTime(rnd(70, 170), t + dur);
+  }
+
   // ---------------------------------------------------------------- Spieluhr
 
   // Spieluhr-Klang: Stimmzunge (Sinus + Oberton bei 3,01×) + mechanisches Klicken
-  musicBox({ pos = null, vol = 0.5, tempo = 88, wobble = 0, from = 0, count = ILSE_THEME.length, detune = 0, rev = 0.7, bus = 'music', onEnd = null } = {}) {
+  musicBox({ pos = null, vol = 0.5, tempo = 88, wobble = 0, from = 0, count = ILSE_THEME.length, detune = 0, rev = 0.7, bus = 'music', onEnd = null, dest = null } = {}) {
     if (!A.ready) return { stop() {} };
-    const o = A.out({ pos, vol, rev, bus, ref: 1.2 });
+    const o = dest ? { input: A.vca(dest, vol) } : A.out({ pos, vol, rev, bus, ref: 1.2 });
     const beat = 60 / tempo;
     let t = A.now + 0.1;
     let alive = true;

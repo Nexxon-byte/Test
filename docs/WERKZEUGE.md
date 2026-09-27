@@ -51,6 +51,7 @@ Recherche zu weiteren Quellen/Werkzeugen mit Lizenzprüfung: [RECHERCHE_WERKZEUG
 | Neonschild | `ctx.neon(text, color, x, y, z, ry, w, {plate})` | bekommt automatisch Trägerplatte; Text passt sich an |
 | Figur | `world/npc.js` `new NPC(char, {clip, talk, prop:'phone'|'lantern'|'torch', look})` | Blick zum Spieler, Sprechclip über Bus `voice:start/end` |
 | Figuren laden | `gfx/characters.js` `preloadCharacters(ids)`, `Character.play/lookAt` | |
+| Ladebildschirm | `ui/loading.js` (+ `loading-art.js` im Worker, `css/loading.css`, Tipps `story/tips.js`) | `await loading.show({kind: boot/hub/night, title, sub, depth})`, `loading.progress(0…1)`, `loading.status(text)`, `await loading.hide()`; `await withLoading(fn, {kind, …})` blendet nur ein, wenn fn spürbar dauert (Ladezeiten gemerkt), mind. 0,8 s. Musik: `music.setLoading(kind oder null)` |
 
 ## 6. Gestaltungsregeln (gegen „KI-Look“)
 - Nichts schwebt: Schilder auf Platte/Halterung, Lampen mit Gehäuse, Kerzen mit Stumpf, Plakate auf Wand. Nach jeder Änderung `placecheck`.

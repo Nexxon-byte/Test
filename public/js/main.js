@@ -21,8 +21,13 @@ if (params.has('viewer')) {
 } else if (params.has('sandbox')) {
   import('./dev/sandbox.js').then(m => m.runSandbox());
 } else {
-  import('./app.js').then(m => m.boot()).catch((e) => {
+  // Schnellstart (?skip) oder „Zum Titel“: Ladebildschirm sofort – noch bevor das Spiel (three.js …) geladen ist
+  let quick = params.has('skip');
+  try { quick ||= sessionStorage.getItem('tiefer.toTitle') === '1'; } catch { /* privat */ }
+  const pre = quick ? import('./ui/loading.js').then(({ loading }) => { loading.show({ kind: 'boot' }); }).catch(e => console.warn('Ladebildschirm fehlt', e)) : Promise.resolve();
+  pre.then(() => import('./app.js')).then(m => m.boot()).catch((e) => {
     console.error(e);
+    import('./ui/loading.js').then(({ loading }) => loading.hide({ fade: 200 })).catch(() => {});
     document.getElementById('ui').innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#e9dcc2;font:20px monospace;text-align:center;padding:40px">Kabine 9 hat eine Störung.<br><br>${String(e && e.message || e)}</div>`;
   });
 }

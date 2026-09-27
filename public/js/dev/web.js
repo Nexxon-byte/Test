@@ -48,6 +48,9 @@ async function start(touch) {
   btn.textContent = 'Kabine wird gebaut …';
   if (touch) settings.quality = 'retro';
 
+  // Ladebildschirm (Schacht der Neunten) statt Warten vor dem Menü
+  const { loading } = await import('../ui/loading.js');
+  loading.show({ kind: 'night', title: document.querySelector(`input[name="welt"]:checked`)?.dataset.name || theme, sub: 'Testkabine', status: 'Kabine wird gebaut' });
   await loadFonts();
   const params = new URLSearchParams({ theme, seed: String(seed), stufe });
   if (modules) params.set('modules', 'all');
@@ -58,6 +61,7 @@ async function start(touch) {
 
   $('menu').hidden = true;
   $('hud').hidden = false;
+  loading.hide();
   $('hud-welt').textContent = document.querySelector(`input[name="welt"][value="${theme}"]`)?.dataset.name || theme;
   if (touch) {
     attachTouchControls($('web'), [
