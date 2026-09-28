@@ -572,6 +572,7 @@ class Segnung {
     e.lightMode = 'normal';
     e.light = L0;
     e.candlesLit = true;
+    if (p.lampOn) p.toggleLamp(false);   // die eigene Lampe blendet sonst am Gitter
     p.lookLocked = false;           // umsehen erlaubt, gehen nicht
     p.lookTarget = null;
     const motor = audio.loop('motor', { vol: 0.35 });

@@ -32,6 +32,7 @@ Getestet im echten Spiel (Stand `fbaf002` + zwei Einbauzeilen) mit Playwright un
 | **Segnung** (Schachtratte) | Woche mit 120/320 M abrechnen | Folgen sofort gespeichert (Marken 220 → 110, Beute weg, Nacht 0, `pk_segnungPending`), Kantorei-Fenster schließt, Szene startet |
 | | Akte I–III | Veits Urteil, Glocken, Rückzug auf den Platz, Käfig mit Hochkantor fährt herab, Büttel in Weiß, Schleier, Kerzen, Anselm gibt das Salzbrot (liegt danach im Inventar) |
 | | Akte V–VII | Fahrt hinab bis ∞, Hände und Gesichter am Gitter, Telefon, Entscheidungs-Karte („JULIAN_ → JUL_AN_“), Klick „geben“ → Buchstaben 1 → 2, Fahrt hinauf, Markt lädt, Dieter „Das kommt eigentlich nie vor“, Strichliste 47, `segnungen` 1, Steuerung zurück |
+| | Fahrt, Blick zum Tor | Kabinenlicht glimmt schwach und erlischt bei ¾ der Fahrt, eigene Lampe aus, Spielanzeigen während der Szene ausgeblendet |
 | | Dauer | im Spiel etwa 3½ Minuten (unter Software-Grafik im Test ein Vielfaches, weil der Markt dort nur etwa 1 Bild/s schafft) |
 
 **Gefundene und behobene Fehler** (alle im Paket, bis auf den letzten):
