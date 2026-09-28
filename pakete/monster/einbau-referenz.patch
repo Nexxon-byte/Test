@@ -1,0 +1,20 @@
+diff --git a/public/js/game/game.js b/public/js/game/game.js
+index b46e472..44f27b2 100644
+--- a/public/js/game/game.js
++++ b/public/js/game/game.js
+@@ -38,6 +38,7 @@ import * as menus from '../ui/menus.js';
+ import { withLoading } from '../ui/loading.js';
+ import { placeDocuments, clearDocuments } from './documents.js';
+ import { openJournal } from '../ui/journal.js';
++import { installPack } from './monsters/pack.js';
+ 
+ export { FLOORS };
+ 
+@@ -84,6 +85,7 @@ export class Game {
+     this._wireGate();
+     this._wirePlayerSounds();
+     this.heart = null;
++    installPack(this);   // Monster-Paket „Die Tiefe“ (pakete/monster)
+   }
+ 
+   // ---------------------------------------------------------------- Aufbau
